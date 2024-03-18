@@ -34,11 +34,21 @@
 #define STD_CONTAINER_ENUM_GET_AND_CHECK(V,IMPLEMENTS)	\
 	(STD_CONTAINER_CALL_EXISTS(V,IMPLEMENTS), STD_CONTAINER_ENUM_GET(V))
 
+#define STD_ITERATOR_IMPLEMENTS_GET(INDEX,IMPLEMENTS)	\
+			((INDEX == std_iterator_enum_forward) ? std_container_implements_forward_ ## IMPLEMENTS : std_container_implements_reverse_ ## IMPLEMENTS)
+
+#define STD_ITERATOR_CALL_EXISTS(IT, IMPLEMENTS) \
+			STD_EXPR_ASSERT(STD_CONTAINER_IMPLEMENTS_GET(IT) & STD_ITERATOR_IMPLEMENTS_GET(STD_ITERATOR_ENUM_GET(IT),IMPLEMENTS), \
+					STD_CONCAT(IMPLEMENTS ## _is_not_implemented_for_this_type_of_iterator_,__COUNTER__) )
+
+#define STD_ITERATOR_ENUM_GET_AND_CHECK(IT,IMPLEMENTS) \
+	(STD_ITERATOR_CALL_EXISTS(IT,IMPLEMENTS), STD_ITERATOR_ENUM_GET(IT))
+
 typedef struct
 {
 	const char * const pachContainerName;
 
-	bool	(* const pfn_init)			(std_container_t * pstContainer, size_t szFullSizeof, size_t szPayloadOffset,
+	bool	(* const pfn_construct)		(std_container_t * pstContainer, size_t szFullSizeof, size_t szPayloadOffset,
 											std_container_has_t eHas, const std_container_handlers_t * pstHandlers);
 	void	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);
@@ -73,10 +83,10 @@ inline const char* std_container_name_get(std_container_enum_t eContainer)
 	return std_container_jumptable_array[eContainer].pachContainerName;
 }
 
-inline bool std_container_call_init(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
+inline bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
 				size_t szFullSizeof, size_t szPayloadOffset, const std_container_handlers_t * pstHandlers)
 {
-	return STD_CONTAINER_CALL(eContainer, pfn_init)(pstContainer, szFullSizeof, szPayloadOffset, eHas, pstHandlers);
+	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szFullSizeof, szPayloadOffset, eHas, pstHandlers);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -213,9 +223,9 @@ inline bool std_container_call_empty(std_container_t* pstContainer, std_containe
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-inline void std_iterator_call_init(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
+inline void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
 {
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_init)(pstContainer, pstIterator);
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
 }
 
 inline void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
@@ -250,8 +260,8 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 #define std_read_front(V,RESULT)	(RESULT)[0] = std_const_front(V)[0]
 #define std_read_back(V,RESULT)		(RESULT)[0] = std_const_back(V)[0]
 
-#define std_init(V,...)			std_container_call_init(&V.stBody.stContainer, \
-									STD_CONTAINER_ENUM_GET_AND_CHECK(V,init), STD_CONTAINER_HAS_GET(V), \
+#define std_construct(V,...)	std_container_call_construct(&V.stBody.stContainer, \
+									STD_CONTAINER_ENUM_GET_AND_CHECK(V,construct), STD_CONTAINER_HAS_GET(V), \
 									STD_CONTAINER_FULLSIZEOF_GET(V), STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
 									&(std_container_handlers_t){ __VA_ARGS__ })
 
@@ -277,13 +287,13 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 #define std_ranged_sort(V,A,B,COMPARE)	std_container_call_ranged_sort(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort), STD_CONTAINER_HAS_GET(V), A, B, 	\
 		(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE))
 
-#define std_iterator_init(V, IT)			\
-		std_iterator_call_init(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(V), std_iterator_enum(IT), &IT.stItBody.stIterator)
+#define std_iterator_construct(V, IT)			\
+		std_iterator_call_construct(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(V), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct), &IT.stItBody.stIterator)
 #define std_iterator_range(IT,BEGIN,END)	\
-		std_iterator_call_range(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), std_iterator_enum(IT), BEGIN, END)
+		std_iterator_call_range(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,range), BEGIN, END)
 #define std_iterator_next(IT)				\
-		std_iterator_call_next(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), std_iterator_enum(IT))
+		std_iterator_call_next(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next))
 #define std_iterator_prev(IT)				\
-		std_iterator_call_prev(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), std_iterator_enum(IT))
+		std_iterator_call_prev(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev))
 
 #endif /* STD_CONTAINER_H_ */

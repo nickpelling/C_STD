@@ -82,7 +82,7 @@ inline bool stdlib_vector_empty(std_container_t * pstContainer)
  * @param[in]	eHas			Enumeration saying which handlers to expect
  * @param[in]	pstHandlers		Struct holding handlers declared
  */
-bool stdlib_vector_init(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
+bool stdlib_vector_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
 {
 	bool bResult = std_container_constructor(pstContainer, szFullSizeof - szPayloadOffset, eHas, pstHandlers);
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
@@ -307,7 +307,7 @@ void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_ite
 	}
 }
 
-void stdlib_vector_forwarditerator_init(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	stdlib_vector_forwarditerator_range(	pstContainer,
 											pstIterator,
@@ -332,7 +332,7 @@ void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_ite
 	}
 }
 
-void stdlib_vector_reverseiterator_init(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	stdlib_vector_reverseiterator_range(	pstContainer,
 											pstIterator,

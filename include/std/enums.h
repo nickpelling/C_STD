@@ -4,7 +4,7 @@
 typedef enum
 {
 	std_container_implements_name = 1 << 0,
-	std_container_implements_init = 1 << 1,
+	std_container_implements_construct = 1 << 1,
 	std_container_implements_push_front = 1 << 2,
 	std_container_implements_push_back = 1 << 3,
 	std_container_implements_push = 1 << 4,
@@ -16,11 +16,11 @@ typedef enum
 	std_container_implements_reserve = 1 << 10,
 	std_container_implements_fit = 1 << 11,
 	std_container_implements_ranged_sort = 1 << 12,
-	std_container_implements_forward_init = 1 << 13,
+	std_container_implements_forward_construct = 1 << 13,
 	std_container_implements_forward_next = 1 << 14,
 	std_container_implements_forward_prev = 1 << 15,
 	std_container_implements_forward_range = 1 << 16,
-	std_container_implements_reverse_init = 1 << 17,
+	std_container_implements_reverse_construct = 1 << 17,
 	std_container_implements_reverse_next = 1 << 18,
 	std_container_implements_reverse_prev = 1 << 19,
 	std_container_implements_reverse_range = 1 << 20,
@@ -28,8 +28,8 @@ typedef enum
 	std_container_implements_pushpop_front = std_container_implements_push_front | std_container_implements_pop_front,
 	std_container_implements_pushpop_back = std_container_implements_push_back | std_container_implements_pop_back,
 	std_container_implements_pushpop = std_container_implements_push | std_container_implements_pop,
-	std_container_implements_forward_initnextprev = std_container_implements_forward_init | std_container_implements_forward_next | std_container_implements_forward_prev,
-	std_container_implements_reverse_initnextprev = std_container_implements_reverse_init | std_container_implements_reverse_next | std_container_implements_reverse_prev,
+	std_container_implements_forward_constructnextprev = std_container_implements_forward_construct | std_container_implements_forward_next | std_container_implements_forward_prev,
+	std_container_implements_reverse_constructnextprev = std_container_implements_reverse_construct | std_container_implements_reverse_next | std_container_implements_reverse_prev,
 
 } std_container_implements_t;
 

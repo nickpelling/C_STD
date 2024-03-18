@@ -22,7 +22,7 @@ typedef enum
 
 typedef struct
 {
-	void (*pfn_init)(	std_container_t * pstContainer, std_iterator_t * pstIterator);
+	void (*pfn_construct)(	std_container_t * pstContainer, std_iterator_t * pstIterator);
 	void (*pfn_range)(	std_container_t * pstContainer, std_iterator_t * pstIterator, void * pvBegin, void * pvEnd);
 	void (*pfn_next)(	std_iterator_t  * pstIterator);
 	void (*pfn_prev)(	std_iterator_t  * pstIterator);
@@ -39,35 +39,36 @@ struct std_iterator_s
 	bool bDone;
 };
 
-#define STD_ITERATOR_ENUM(ENUM)			uint8_t (*pau8IteratorEnum)[1U + (ENUM)]
+#define STD_ITERATOR_ENUM_SET(ENUM)		uint8_t (*pau8IteratorEnum)[1U + (ENUM)]
 
 // Note: every iterator class should include an std_iterator_enum_t stored as the length of a char[] - 1
-#define std_iterator_enum(ITERATOR)		((std_iterator_enum_t)(sizeof(ITERATOR.pau8IteratorEnum[0]) - 1U))
+#define STD_ITERATOR_ENUM_GET(ITERATOR)	((std_iterator_enum_t)(sizeof(ITERATOR.pau8IteratorEnum[0]) - 1U))
 
-#define STD_ITERATOR_IS_CONST(BOOL)		uint8_t (*pau8IteratorConst)[1U + (BOOL)]
+#define STD_ITERATOR_IS_CONST_SET(BOOL)		uint8_t (*pau8IteratorConst)[1U + (BOOL)]
 
-#define std_iterator_is_const(ITERATOR)	((bool)(sizeof(ITERATOR.pau8IteratorConst[0]) - 1U))
+#define STD_ITERATOR_IS_CONST_GET(ITERATOR)	((bool)(sizeof(ITERATOR.pau8IteratorConst[0]) - 1U))
 
 // The STD_ITERATOR macro creates a union of five separate things
 //	- an untyped base class, that gets passed down to library-side shared calls
 //		- Note that this should always contain a std_iterator_t called "stIterator"!
 //	- a type smuggle, used to give easy access to an item (TYPE *) cast
-#define STD_ITERATOR(BASE, CONTAINER_ENUM, HAS_ENUM, ITERATOR_ENUM, IS_CONST, TYPE)	\
+#define STD_ITERATOR(BASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, ITERATOR_ENUM, IS_CONST, TYPE)	\
 	union										\
 	{											\
 		BASE 	   		stItBody;				\
 		TYPE		*	pstType;				\
 		STD_CONTAINER_ENUM_SET(CONTAINER_ENUM);	\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
-		STD_ITERATOR_ENUM(ITERATOR_ENUM);		\
-		STD_ITERATOR_IS_CONST(IS_CONST);		\
+		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS_ENUM); \
+		STD_ITERATOR_ENUM_SET(ITERATOR_ENUM);	\
+		STD_ITERATOR_IS_CONST_SET(IS_CONST);	\
 	}
 
-#define STD_ITERATORS(ITBASE, TYPE, CONTAINER_ENUM, HAS_ENUM)	\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, std_iterator_enum_forward, false, TYPE)		*	pstForwardIterator;			\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, std_iterator_enum_forward, true,  TYPE const)	*	pstForwardConstIterator;	\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, std_iterator_enum_reverse, false, TYPE)		*	pstReverseIterator;			\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
+#define STD_ITERATORS(ITBASE, TYPE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM)	\
+	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_forward, false, TYPE)			*	pstForwardIterator;			\
+	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_forward, true,  TYPE const)	*	pstForwardConstIterator;	\
+	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_reverse, false, TYPE)			*	pstReverseIterator;			\
+	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
 
 // Because containers all use the same type smuggling mechanism for their
 // associated iterators, the following macros work the same for ALL of them:
@@ -91,7 +92,7 @@ struct std_iterator_s
 //	- steps the named iterator
 //	- terminates the iterating when complete
 #define std_for(CONTAINER, IT, IT_TYPE)	\
-	for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_init(CONTAINER,IT),NULL); \
+	for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_construct(CONTAINER,IT),NULL); \
 		!std_iterator_done(IT); \
 		std_iterator_next(IT))
 

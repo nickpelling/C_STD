@@ -30,7 +30,7 @@
 		STD_COMPARE(TYPE const, pfnCompare);	\
 		STD_EQUALS(TYPE const, pfnEquals);		\
 		\
-		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM);	\
+		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
@@ -75,7 +75,7 @@ typedef struct
 
 extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize);
 
-extern bool stdlib_deque_init(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_deque_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 
 extern void * stdlib_deque_push_front(std_container_t * pstContainer);
 extern void * stdlib_deque_push_back(std_container_t * pstContainer);
@@ -93,8 +93,8 @@ extern void * stdlib_deque_rbegin(std_container_t * pstContainer);
 extern void * stdlib_deque_rend(std_container_t * pstContainer);
 extern bool stdlib_deque_empty(std_container_t * pstContainer);
 
-extern void stdlib_deque_forwarditerator_init(std_container_t * pstContainer, std_iterator_t * pstIterator);
-extern void stdlib_deque_reverseiterator_init(std_container_t * pstContainer, std_iterator_t * pstIterator);
+extern void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
+extern void stdlib_deque_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
 extern void stdlib_deque_next(std_iterator_t * pstIterator);
 extern void stdlib_deque_prev(std_iterator_t * pstIterator);
 
@@ -102,18 +102,18 @@ enum
 {
 	std_deque_implements =
 		( std_container_implements_name
-		| std_container_implements_init
+		| std_container_implements_construct
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
 		| std_container_implements_empty
-		| std_container_implements_forward_initnextprev
-		| std_container_implements_reverse_initnextprev)
+		| std_container_implements_forward_constructnextprev
+		| std_container_implements_reverse_constructnextprev)
 };
 
 #define STD_DEQUE_JUMPTABLE								\
 	.pachContainerName = "deque",						\
-	.pfn_init			= &stdlib_deque_init,			\
+	.pfn_construct			= &stdlib_deque_construct,			\
 	.pfn_push_front		= &stdlib_deque_push_front,		\
 	.pfn_push_back		= &stdlib_deque_push_back,		\
 	.pfn_pop_front		= &stdlib_deque_pop_front,		\
@@ -124,13 +124,13 @@ enum
 	{													\
 		[std_iterator_enum_forward] =					\
 		{												\
-			.pfn_init = &stdlib_deque_forwarditerator_init,	\
+			.pfn_construct = &stdlib_deque_forwarditerator_construct,	\
 			.pfn_next = &stdlib_deque_next,				\
 			.pfn_prev = &stdlib_deque_prev				\
 		},												\
 		[std_iterator_enum_reverse] =					\
 		{												\
-			.pfn_init = &stdlib_deque_reverseiterator_init,	\
+			.pfn_construct = &stdlib_deque_reverseiterator_construct,	\
 			.pfn_next = &stdlib_deque_prev,				\
 			.pfn_prev = &stdlib_deque_next				\
 		}												\

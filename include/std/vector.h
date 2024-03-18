@@ -28,7 +28,7 @@
 		STD_COMPARE(const TYPE, pfnCompare);	\
 		STD_EQUALS(const TYPE, pfnEquals);		\
 		\
-		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM);	\
+		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
@@ -60,7 +60,7 @@ typedef	struct
 
 // Library-side (untyped) methods
 
-extern bool stdlib_vector_init(			std_container_t * pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_vector_construct(			std_container_t * pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 extern void stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
 extern void stdlib_vector_fit(			std_container_t * pstContainer);
 extern void * stdlib_vector_push_back(	std_container_t * pstContainer);
@@ -76,9 +76,9 @@ extern void * stdlib_vector_rbegin(std_container_t * pstContainer);
 extern void * stdlib_vector_rend(std_container_t * pstContainer);
 extern bool stdlib_vector_empty(std_container_t * pstContainer);
 
-extern void stdlib_vector_forwarditerator_init(std_container_t * pstContainer, std_iterator_t * pstIterator);
+extern void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
 extern void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
-extern void stdlib_vector_reverseiterator_init(std_container_t * pstContainer, std_iterator_t * pstIterator);
+extern void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
 extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
 extern void stdlib_vector_iterator_next(std_iterator_t * pstIterator);
 extern void stdlib_vector_iterator_prev(std_iterator_t * pstIterator);
@@ -87,22 +87,22 @@ enum
 {
 	std_vector_implements = 
 		( std_container_implements_name
-		| std_container_implements_init
+		| std_container_implements_construct
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
 		| std_container_implements_empty
 		| std_container_implements_reserve
 		| std_container_implements_fit
 		| std_container_implements_ranged_sort
-		| std_container_implements_forward_initnextprev
+		| std_container_implements_forward_constructnextprev
 		| std_container_implements_forward_range
-		| std_container_implements_reverse_initnextprev
+		| std_container_implements_reverse_constructnextprev
 		| std_container_implements_reverse_range)
 };
 
 #define STD_VECTOR_JUMPTABLE \
 	.pachContainerName = "vector",						\
-	.pfn_init			= &stdlib_vector_init,			\
+	.pfn_construct			= &stdlib_vector_construct,			\
 	.pfn_push_back		= &stdlib_vector_push_back,		\
 	.pfn_pop_back		= &stdlib_vector_pop_back,		\
 	.pfn_at				= &stdlib_vector_at,			\
@@ -114,14 +114,14 @@ enum
 	{													\
 		[std_iterator_enum_forward] =					\
 		{												\
-			.pfn_init		= &stdlib_vector_forwarditerator_init,	\
+			.pfn_construct		= &stdlib_vector_forwarditerator_construct,	\
 			.pfn_range		= &stdlib_vector_forwarditerator_range,	\
 			.pfn_next		= &stdlib_vector_iterator_next,			\
 			.pfn_prev		= &stdlib_vector_iterator_prev			\
 		},												\
 		[std_iterator_enum_reverse] =					\
 		{												\
-			.pfn_init		= &stdlib_vector_reverseiterator_init,	\
+			.pfn_construct		= &stdlib_vector_reverseiterator_construct,	\
 			.pfn_range		= &stdlib_vector_reverseiterator_range,	\
 			.pfn_next		= &stdlib_vector_iterator_prev,			\
 			.pfn_prev		= &stdlib_vector_iterator_next			\

@@ -19,7 +19,7 @@ enum
 {
 	std_queue_implements =
 		( std_container_implements_name
-		| std_container_implements_init
+		| std_container_implements_construct
 		| std_container_implements_push
 		| std_container_implements_pop
 		| std_container_implements_at
@@ -28,7 +28,7 @@ enum
 
 #define STD_QUEUE_JUMPTABLE \
 	.pachContainerName = "queue",					\
-	.pfn_init			= &stdlib_deque_init,		\
+	.pfn_construct			= &stdlib_deque_construct,		\
 	.pfn_push			= &stdlib_deque_push_front,	\
 	.pfn_pop			= &stdlib_deque_pop_back,	\
 	.pfn_at				= &stdlib_deque_at,			\

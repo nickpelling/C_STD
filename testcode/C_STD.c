@@ -77,7 +77,7 @@ void vector_test(void)
 
 	printf("V0: v is a %s" CRLF, std_container_name(v));
 
-	std_init(v);
+	std_construct(v);
 	std_reserve(v, 5);
 	for (int i = 0; i < 5; i++)
 		std_push_back(v)[0] = (i + 2) ^ 1;
@@ -96,7 +96,7 @@ void vector_test(void)
 	printf(CRLF);
 
 	std_vector(int) v2;
-	std_init(v2);
+	std_construct(v2);
 	std_push_back(v)[0] = 25;
 }
 
@@ -106,7 +106,7 @@ void list_test(void)
 
 	printf("L0: list is a %s" CRLF, std_container_name(list));
 
-	std_init(list);
+	std_construct(list);
 	for (int i = 0; i < 5; i++)
 		std_push_back(list)[0] = (i + 2) ^ 1;
 
@@ -132,7 +132,7 @@ void deque_test(void)
 
 	printf("D0: deque is a %s" CRLF, std_container_name(deque));
 
-	std_init(deque);
+	std_construct(deque);
 
 	printf("D1: ");
 	for (int i = 0; i < 5; i++)
@@ -177,7 +177,7 @@ void queue_test(void)
 
 	printf("Q0: queue is a %s" CRLF, std_container_name(queue));
 
-	std_init(queue);
+	std_construct(queue);
 	for (int i = 0; i < 5; i++)
 		std_push(queue)[0] = (i + 2) ^ 1;
 
@@ -196,7 +196,7 @@ void stack_test(void)
 
 	printf("S0: stack is a %s" CRLF, std_container_name(stack));
 
-	std_init(stack);
+	std_construct(stack);
 	for (int i = 0; i < 5; i++)
 		std_push(stack)[0] = (i + 2) ^ 1;
 

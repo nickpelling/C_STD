@@ -37,7 +37,7 @@
 		\
 		STD_LIST_NODE(TYPE,) * pstLink;			\
 		\
-		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM);	\
+		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
@@ -81,15 +81,15 @@ typedef	struct
 #define std_list_handlers(T,HAS_ENUM)	STD_VECTOR_DECLARE(T,HAS_ENUM)
 
 
-extern bool stdlib_list_init(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_list_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 
 extern void * stdlib_list_push_front(	std_container_t * pstContainer);
 extern void * stdlib_list_push_back(	std_container_t * pstContainer);
 extern void * stdlib_list_pop_front(	std_container_t * pstContainer, void * pvResult);
 extern void * stdlib_list_pop_back(		std_container_t * pstContainer, void * pvResult);
 
-extern void stdlib_list_forwarditerator_init(std_container_t* pstContainer, std_iterator_t* pstIterator);
-extern void stdlib_list_reverseiterator_init(std_container_t* pstContainer, std_iterator_t* pstIterator);
+extern void stdlib_list_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
+extern void stdlib_list_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
 extern void stdlib_list_next(std_iterator_t * pstIterator);
 extern void stdlib_list_prev(std_iterator_t * pstIterator);
 
@@ -105,17 +105,17 @@ enum
 {
 	std_list_implements =
 		( std_container_implements_name
-		| std_container_implements_init
+		| std_container_implements_construct
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_empty
-		| std_container_implements_forward_initnextprev
-		| std_container_implements_reverse_initnextprev)
+		| std_container_implements_forward_constructnextprev
+		| std_container_implements_reverse_constructnextprev)
 };
 
 #define STD_LIST_JUMPTABLE \
 	.pachContainerName = "list",					\
-	.pfn_init			= &stdlib_list_init,		\
+	.pfn_construct			= &stdlib_list_construct,		\
 	.pfn_push_front		= &stdlib_list_push_front,	\
 	.pfn_push_back		= &stdlib_list_push_back,	\
 	.pfn_pop_front		= &stdlib_list_pop_front,	\
@@ -125,13 +125,13 @@ enum
 	{												\
 		[std_iterator_enum_forward] =				\
 		{											\
-			.pfn_init = &stdlib_list_forwarditerator_init,	\
+			.pfn_construct = &stdlib_list_forwarditerator_construct,	\
 			.pfn_next = &stdlib_list_next,			\
 			.pfn_prev = &stdlib_list_prev			\
 		},											\
 		[std_iterator_enum_reverse] =				\
 		{											\
-			.pfn_init = &stdlib_list_reverseiterator_init,	\
+			.pfn_construct = &stdlib_list_reverseiterator_construct,	\
 			.pfn_next = &stdlib_list_prev,			\
 			.pfn_prev = &stdlib_list_next			\
 		}											\

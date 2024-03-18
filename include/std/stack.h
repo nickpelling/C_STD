@@ -19,7 +19,7 @@ enum
 {
 	std_stack_implements =
 		( std_container_implements_name
-		| std_container_implements_init
+		| std_container_implements_construct
 		| std_container_implements_pushpop
 		| std_container_implements_at
 		| std_container_implements_empty)
@@ -27,7 +27,7 @@ enum
 
 #define STD_STACK_JUMPTABLE \
 	.pachContainerName = "stack",					\
-	.pfn_init			= &stdlib_deque_init,		\
+	.pfn_construct			= &stdlib_deque_construct,		\
 	.pfn_push			= &stdlib_deque_push_back,	\
 	.pfn_pop			= &stdlib_deque_pop_back,	\
 	.pfn_at				= &stdlib_deque_at,			\
