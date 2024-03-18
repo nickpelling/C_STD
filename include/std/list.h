@@ -33,7 +33,6 @@
 		TYPE			*	pstType;			\
 		TYPE const		*	pstConstType;		\
 		STD_COMPARE(const TYPE, pfnCompare);	\
-		STD_EQUALS(const TYPE, pfnEquals);		\
 		\
 		STD_LIST_NODE(TYPE,) * pstLink;			\
 		\

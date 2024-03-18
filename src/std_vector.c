@@ -370,7 +370,7 @@ void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std
 											stdlib_vector_rend(pstContainer)		);
 }
 
-
+#if 0
 /**
  * Compare two vectors for equality using a per-item comparison function
  * 
@@ -402,3 +402,4 @@ bool stdlib_vector_equal(std_container_t * pstContainer1, std_container_t * pstC
 
 	return true;
 }
+#endif

@@ -26,7 +26,6 @@
 		TYPE			*	pstType;			\
 		TYPE const		*	pstConstType;		\
 		STD_COMPARE(const TYPE, pfnCompare);	\
-		STD_EQUALS(const TYPE, pfnEquals);		\
 		\
 		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
 		\
@@ -67,7 +66,6 @@ extern void stdlib_vector_fit(			std_container_t * pstContainer);
 extern void * stdlib_vector_push_back(	std_container_t * pstContainer);
 extern void * stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult);
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
-extern bool stdlib_vector_equal(		std_container_t * pstContainer1, std_container_t * pstContainer2, pfn_std_equal_t pfn_Equal);
 extern void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex);
 extern void * stdlib_vector_front(std_container_t * pstContainer);
 extern void * stdlib_vector_back(std_container_t * pstContainer);

@@ -79,9 +79,13 @@ static const std_container_jumptable_t std_container_jumptable_array[std_contain
 	[std_container_enum_vector]			= { STD_VECTOR_JUMPTABLE },
 };
 
-inline const char* std_container_name_get(std_container_enum_t eContainer)
+inline const char* std_container_name_get(std_container_enum_t eContainer, std_container_implements_t eImplements)
 {
-	return std_container_jumptable_array[eContainer].pachContainerName;
+	if (eImplements & std_container_implements_name)
+	{
+		return std_container_jumptable_array[eContainer].pachContainerName;
+	}
+	return "(Unnamed container)";
 }
 
 inline bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
@@ -253,7 +257,7 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 
 // Client-side (typed) methods
 
-#define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET(V))
+#define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET_AND_CHECK(V,name), STD_CONTAINER_IMPLEMENTS_GET(V))
 
 #define std_at(V,INDEX)			STD_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer,  	 STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))[0]
 #define std_front(V)			STD_ITEM_PTR_CAST(V, std_container_call_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,front), STD_CONTAINER_HAS_GET(V)))

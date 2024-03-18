@@ -28,7 +28,6 @@
 		TYPE			*	pstType;			\
 		TYPE const		*	pstConstType;		\
 		STD_COMPARE(TYPE const, pfnCompare);	\
-		STD_EQUALS(TYPE const, pfnEquals);		\
 		\
 		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
 		\
