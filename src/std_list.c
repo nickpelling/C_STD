@@ -72,8 +72,24 @@ inline bool stdlib_list_empty(std_container_t * pstContainer)
  */
 static void node_disconnect(std_list_t * pstList, std_list_node_t * pstNode)
 {
-	// FIXME
-	pstList->szNumItems--;
+	std_list_node_t * pstPrev = pstNode->pstPrev;
+	std_list_node_t * pstNext = pstNode->pstNext;
+	if (pstPrev == NULL)
+	{
+		pstList->pstHead = pstNext;
+	}
+	else
+	{
+		pstPrev->pstNext = pstNext;
+	}
+	if (pstNext == NULL)
+	{
+		pstList->pstTail = pstPrev;
+	}
+	else
+	{
+		pstNext->pstPrev = pstPrev;
+	}
 }
 
 /**
@@ -238,7 +254,7 @@ void * stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult)
 	std_list_node_t * pstNode;
 	void * pvItem;
 
-	pstNode = stdlib_list_front(pstContainer);
+	pstNode = pstList->pstHead;
 	node_disconnect(pstList, pstNode);
 	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
@@ -258,9 +274,8 @@ void * stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult)
 	std_list_node_t * pstNode;
 	void * pvItem;
 
-	pstNode = stdlib_list_back(pstContainer);
+	pstNode = pstList->pstTail;
 	node_disconnect(pstList, pstNode);
-
 	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
 	std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
