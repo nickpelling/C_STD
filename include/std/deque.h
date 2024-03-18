@@ -76,6 +76,7 @@ typedef struct
 extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize);
 
 extern bool stdlib_deque_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_deque_destruct(std_container_t* pstContainer);
 
 extern void * stdlib_deque_push_front(std_container_t * pstContainer);
 extern void * stdlib_deque_push_back(std_container_t * pstContainer);
@@ -103,6 +104,7 @@ enum
 	std_deque_implements =
 		( std_container_implements_name
 		| std_container_implements_construct
+		| std_container_implements_destruct
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
@@ -113,7 +115,8 @@ enum
 
 #define STD_DEQUE_JUMPTABLE								\
 	.pachContainerName = "deque",						\
-	.pfn_construct			= &stdlib_deque_construct,			\
+	.pfn_construct		= &stdlib_deque_construct,		\
+	.pfn_destruct		= &stdlib_deque_destruct,		\
 	.pfn_push_front		= &stdlib_deque_push_front,		\
 	.pfn_push_back		= &stdlib_deque_push_back,		\
 	.pfn_pop_front		= &stdlib_deque_pop_front,		\

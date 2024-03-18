@@ -74,7 +74,7 @@ inline bool stdlib_vector_empty(std_container_t * pstContainer)
 }
 
 /**
- * Initialise a vector
+ * Construct a vector
  *
  * @param[in]	pstContainer	Vector to initialise
  * @param[in]	szFullSizeof	Size of a (possibly wrapped) item
@@ -93,6 +93,36 @@ bool stdlib_vector_construct(std_container_t* pstContainer, size_t szFullSizeof,
 	return bResult;
 }
 
+bool stdlib_vector_destruct(std_container_t * pstContainer)
+{
+	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	size_t i;
+
+	if (pstContainer == NULL)
+	{
+		return false;
+	}
+
+	// If an item handler is attached AND that item handler has a destructor, destruct each item in the container
+	if (	(pstContainer->eHas & std_container_has_itemhandler)
+		&&	(pstContainer->pstItemHandler->pfn_Destructor != NULL)	)
+	{
+		for (i = 0; i < pstVector->szNumItems; i++)
+		{
+			(*pstContainer->pstItemHandler->pfn_Destructor)(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, i));
+		}
+	}
+
+	// Free the memory allocated for this vector
+	free(pstVector->pvStartAddr);
+
+	// Clear out all the fields (just to be tidy)
+	pstVector->szNumItems	= 0;
+	pstVector->szNumAlloced	= 0;
+	pstVector->pvStartAddr	= NULL;
+
+	return true;
+}
 /**
  * Reserve space within a vector for a number of items
  *

@@ -82,6 +82,7 @@ typedef	struct
 
 
 extern bool stdlib_list_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_list_destruct(std_container_t* pstContainer);
 
 extern void * stdlib_list_push_front(	std_container_t * pstContainer);
 extern void * stdlib_list_push_back(	std_container_t * pstContainer);
@@ -106,6 +107,7 @@ enum
 	std_list_implements =
 		( std_container_implements_name
 		| std_container_implements_construct
+		| std_container_implements_destruct
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_empty
@@ -115,7 +117,8 @@ enum
 
 #define STD_LIST_JUMPTABLE \
 	.pachContainerName = "list",					\
-	.pfn_construct			= &stdlib_list_construct,		\
+	.pfn_construct		= &stdlib_list_construct,	\
+	.pfn_destruct		= &stdlib_list_destruct,	\
 	.pfn_push_front		= &stdlib_list_push_front,	\
 	.pfn_push_back		= &stdlib_list_push_back,	\
 	.pfn_pop_front		= &stdlib_list_pop_front,	\

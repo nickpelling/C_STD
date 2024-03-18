@@ -183,6 +183,22 @@ bool stdlib_deque_construct(std_container_t * pstContainer, size_t szFullSizeof,
 	return bResult;
 }
 
+bool stdlib_deque_destruct(std_container_t* pstContainer)
+{
+	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	if (pstContainer == NULL)
+	{
+		return false;
+	}
+
+	while (pstDeque->szNumItems != 0)
+	{
+		stdlib_deque_pop_front(pstContainer, NULL);
+	}
+
+	return true;
+}
+
 void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);

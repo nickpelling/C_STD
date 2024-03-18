@@ -162,6 +162,23 @@ bool stdlib_list_construct(std_container_t* pstContainer, size_t szFullSizeof, s
 	return bResult;
 }
 
+bool stdlib_list_destruct(std_container_t* pstContainer)
+{
+	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
+
+	if (pstContainer == NULL)
+	{
+		return false;
+	}
+
+	while (pstList->szNumItems != 0)
+	{
+		stdlib_list_pop_front(pstContainer, NULL);
+	}
+
+	return true;
+}
+
 /**
  * Create a new item and insert it at the front of an existing list
  *

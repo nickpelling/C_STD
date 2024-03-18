@@ -62,6 +62,7 @@ typedef struct
 	void	(* const pfn_ranged_sort)	(std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 	void *	(* const pfn_at)			(std_container_t * pstContainer, int32_t iIndex);
 	bool	(* const pfn_empty)			(std_container_t * pstContainer);
+	bool	(* const pfn_destruct)		(std_container_t * pstContainer);
 
 	std_container_iterate_jumptable_t	astIterators[std_iterator_enum_MAX];
 
@@ -116,6 +117,13 @@ inline void std_container_lock_restore(std_container_t* pstContainer, std_contai
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+inline bool std_container_call_destruct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
+{
+	std_lock_state_t eOldState;
+	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	return STD_CONTAINER_CALL(eContainer, pfn_destruct)(pstContainer);
+}
 
 inline void std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
 {
@@ -264,6 +272,8 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 									STD_CONTAINER_ENUM_GET_AND_CHECK(V,construct), STD_CONTAINER_HAS_GET(V), \
 									STD_CONTAINER_FULLSIZEOF_GET(V), STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
 									&(std_container_handlers_t){ __VA_ARGS__ })
+
+#define std_destruct(V)			std_container_call_destruct(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct))
 
 #define std_reserve(V,N)		std_container_call_reserve(   &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve), STD_CONTAINER_HAS_GET(V), N)
 #define std_fit(V)				std_container_call_fit(       &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), STD_CONTAINER_HAS_GET(V))
