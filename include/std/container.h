@@ -273,7 +273,7 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 									STD_CONTAINER_FULLSIZEOF_GET(V), STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
 									&(std_container_handlers_t){ __VA_ARGS__ })
 
-#define std_destruct(V)			std_container_call_destruct(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct))
+#define std_destruct(V)			std_container_call_destruct(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct), STD_CONTAINER_HAS_GET(V))
 
 #define std_reserve(V,N)		std_container_call_reserve(   &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve), STD_CONTAINER_HAS_GET(V), N)
 #define std_fit(V)				std_container_call_fit(       &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), STD_CONTAINER_HAS_GET(V))

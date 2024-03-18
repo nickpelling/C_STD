@@ -95,9 +95,12 @@ void vector_test(void)
 		printf("%d ", std_iterator_at(it));
 	printf(CRLF);
 
+	std_destruct(v);
+
 	std_vector(int) v2;
 	std_construct(v2);
 	std_push_back(v)[0] = 25;
+	std_destruct(v2);
 }
 
 void list_test(void)
@@ -124,6 +127,8 @@ void list_test(void)
 	for_each_reverse(list, it2)
 		printf("%d ", std_iterator_at(it2));
 	printf(CRLF);
+
+	std_destruct(list);
 }
 
 void deque_test(void)
@@ -168,6 +173,7 @@ void deque_test(void)
 		printf("%d ", std_iterator_at(it));
 	printf(CRLF);
 
+	std_destruct(deque);
 }
 
 void queue_test(void)
@@ -187,6 +193,8 @@ void queue_test(void)
 		printf("%d ", std_pop(queue, &num)[0]);
 	}
 	printf(CRLF);
+
+	std_destruct(queue);
 }
 
 void stack_test(void)
@@ -206,14 +214,13 @@ void stack_test(void)
 		printf("%d ", std_pop(stack, &num)[0]);
 	}
 	printf(CRLF);
+
+	std_destruct(stack);
 }
 
 int main(void)
 {
-	if (true)
-	{
-		vector_test();
-	}
+	vector_test();
 	list_test();
 	deque_test();
 	queue_test();

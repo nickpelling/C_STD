@@ -244,6 +244,8 @@ void * stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult)
 	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
 	std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
 
+	pstList->szNumItems--;
+
 	return pvResult;
 }
 
@@ -262,6 +264,8 @@ void * stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult)
 	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
 	std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
+
+	pstList->szNumItems--;
 
 	return pvResult;
 }
