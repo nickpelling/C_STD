@@ -22,10 +22,6 @@ struct std_memoryhandler_s
 };
 
 extern std_memoryhandler_t std_memoryhandler_default;
-extern std_memoryhandler_t std_memoryhandler_counter;
-
-extern void std_memoryhandler_counter_reset(void);
-extern void std_memoryhandler_counter_grab(int* piMallocs, int* piReallocs, int* piFrees);
 
 static inline void * std_memoryhandler_malloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, size_t szSize)
 {
