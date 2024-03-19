@@ -12,7 +12,6 @@
 #include "std/list.h"
 #include "std/queue.h"
 #include "std/stack.h"
-#include "std/typelist.h"
 #include "std/vector.h"
 
 #define CRLF	"\r\n"
@@ -21,54 +20,6 @@ static int int_compare(const int* a, const int* b)
 {
     return (*b < *a);
 }
-
-static bool int_equal(const int* a, const int* b)
-{
-    return (*b == *a);
-}
-
-#if 0
-void typeof_test(void)
-{
-	uint32_t u32;
-	 int32_t i32;
-	uint16_t u16;
-	 int16_t i16;
-
-#define P(RESULT)	printf("res = %d" CRLF, (int)(RESULT));
-#define TEST1(X)	P(STD_TYPEOF(X + 0U) == STD_TYPEOF(X))
-#define TEST2(X)	P(STD_TYPEOF(X) == STD_TYPEOF(X + 0U))
-#define TEST3(X)	P(STD_TYPEOF(X) == STD_TYPEOF(0U + X))
-#define TEST4(X)	P(STD_TYPEOF(X + 0) == STD_TYPEOF(X + 0U))
-#define TEST5(X)	P(STD_TYPEOF(0 + X) == STD_TYPEOF(0U + X))
-
-	TEST1(u16);
-	TEST2(u16);
-	TEST3(u16);
-	TEST4(u16);
-	TEST5(u16);
-}
-#endif
-
-#if 0
-typedef TYPELIST(int, char, float) myTypeList;
-typedef TYPELIST_APPEND(myTypeList, unsigned int) myTypeList2;
-typedef TYPELIST_REMOVELAST(myTypeList2) myTypeList3;
-
-void typelist_test(void)
-{
-	TYPELIST_TYPE1(myTypeList) a;
-	TYPELIST_TYPE2(myTypeList) b;
-	TYPELIST_TYPE3(myTypeList) c;
-	TYPELIST_TYPE4(myTypeList2) d;
-
-	a = 0;
-	b = '0';
-	c = 0.0;
-	d = 0U;
-	if (a || b || c || d) { /* lint unused */ }
-}
-#endif
 
 void vector_test(void)
 {
