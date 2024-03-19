@@ -63,7 +63,7 @@ extern bool stdlib_vector_construct(	std_container_t * pstContainer, size_t szFu
 extern bool stdlib_vector_destruct(		std_container_t * pstContainer);	
 extern void stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
 extern void stdlib_vector_fit(			std_container_t * pstContainer);
-extern void * stdlib_vector_push_back(	std_container_t * pstContainer);
+extern void * stdlib_vector_push_back(	std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
 extern void * stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult);
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 extern void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex);
@@ -115,14 +115,14 @@ enum
 	{													\
 		[std_iterator_enum_forward] =					\
 		{												\
-			.pfn_construct		= &stdlib_vector_forwarditerator_construct,	\
+			.pfn_construct	= &stdlib_vector_forwarditerator_construct,	\
 			.pfn_range		= &stdlib_vector_forwarditerator_range,	\
 			.pfn_next		= &stdlib_vector_iterator_next,			\
 			.pfn_prev		= &stdlib_vector_iterator_prev			\
 		},												\
 		[std_iterator_enum_reverse] =					\
 		{												\
-			.pfn_construct		= &stdlib_vector_reverseiterator_construct,	\
+			.pfn_construct	= &stdlib_vector_reverseiterator_construct,	\
 			.pfn_range		= &stdlib_vector_reverseiterator_range,	\
 			.pfn_next		= &stdlib_vector_iterator_prev,			\
 			.pfn_prev		= &stdlib_vector_iterator_next			\

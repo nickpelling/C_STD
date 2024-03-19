@@ -53,6 +53,10 @@
 #define STD_CONTAINER_OF(PTR, TYPE, FIELD)	((TYPE *)STD_LINEAR_SUB(PTR, (int)((char *)(void *)&((TYPE *)256U)->FIELD - (char *)256U)))
 #endif
 
+#ifndef STD_NUM_ELEMENTS
+#define STD_NUM_ELEMENTS(ARRAY)	(sizeof(ARRAY)/sizeof(ARRAY[0]))
+#endif
+
 // Command-based static assert - can be used inside or outside functions
 #if __STDC_VERSION__ >= 201112L /* test for C11 */
 #include <assert.h>

@@ -195,7 +195,7 @@ void stdlib_vector_fit(std_container_t * pstContainer)
  *
  * @return	Pointer to the newly created item
  */
-void * stdlib_vector_push_front(std_container_t * pstContainer)
+void * stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvItem;
@@ -221,7 +221,7 @@ void * stdlib_vector_push_front(std_container_t * pstContainer)
  *
  * @return	Pointer to the newly created item
  */
-void * stdlib_vector_push_back(std_container_t * pstContainer)
+void * stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvItem;

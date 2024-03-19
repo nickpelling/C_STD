@@ -30,8 +30,7 @@ void vector_test(void)
 
 	std_construct(v);
 	std_reserve(v, 5);
-	for (int i = 0; i < 5; i++)
-		std_push_back(v)[0] = (i + 2) ^ 1;
+	std_push_back(v, 2, 1, 4, 3, 6);
 	std_fit(v);
 
 	printf("V1: ");
@@ -50,7 +49,7 @@ void vector_test(void)
 
 	std_vector(int) v2;
 	std_construct(v2);
-	std_push_back(v)[0] = 25;
+	std_push_back(v, 25);
 	std_destruct(v2);
 }
 
@@ -61,8 +60,7 @@ void list_test(void)
 	printf("L0: list is a %s" CRLF, std_container_name(list));
 
 	std_construct(list);
-	for (int i = 0; i < 5; i++)
-		std_push_back(list)[0] = (i + 2) ^ 1;
+	std_push_back(list, 2, 1, 4, 3, 6);
 
 	printf("L1: ");
 	for_each(list, it)
@@ -91,8 +89,7 @@ void deque_test(void)
 	std_construct(deque);
 
 	printf("D1: ");
-	for (int i = 0; i < 5; i++)
-		std_push_back(deque)[0] = (i + 2) ^ 1;
+	std_push_back(deque, 2, 1, 4, 3, 6);
 	while (!std_empty(deque))
 	{
 		int iTemp;
@@ -103,7 +100,7 @@ void deque_test(void)
 
 	printf("D2: ");
 	for (int i = 0; i < 5; i++)
-		std_push_front(deque)[0] = (i + 2) ^ 1;
+		std_push_front(deque, 2, 1, 4, 3, 6);
 	while (!std_empty(deque))
 	{
 		int iTemp;
@@ -113,8 +110,7 @@ void deque_test(void)
 	printf(CRLF);
 
 	printf("D3: ");
-	for (int i = 0; i < 5; i++)
-		std_push_back(deque)[0] = (i + 2) ^ 1;
+	std_push_back(deque, 2, 1, 4, 3, 6);
 	for_each_const(deque, it)
 		printf("%d ", std_iterator_at(it));
 	printf(CRLF);
@@ -135,8 +131,7 @@ void queue_test(void)
 	printf("Q0: queue is a %s" CRLF, std_container_name(queue));
 
 	std_construct(queue);
-	for (int i = 0; i < 5; i++)
-		std_push(queue)[0] = (i + 2) ^ 1;
+	std_push(queue, 2, 1, 4, 3, 6);
 
 	printf("Q1: ");
 	while (!std_empty(queue))
@@ -156,8 +151,7 @@ void stack_test(void)
 	printf("S0: stack is a %s" CRLF, std_container_name(stack));
 
 	std_construct(stack);
-	for (int i = 0; i < 5; i++)
-		std_push(stack)[0] = (i + 2) ^ 1;
+	std_push(stack, 2, 1, 4, 3, 5);
 
 	printf("S1: ");
 	while (!std_empty(stack))
