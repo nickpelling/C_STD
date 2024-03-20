@@ -198,20 +198,19 @@ void stdlib_vector_fit(std_container_t * pstContainer)
 void * stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	void * pvItem;
 
-	pstVector->szNumItems++;
+	pstVector->szNumItems += szNumItems;
 	stdlib_vector_reserve(pstContainer, pstVector->szNumItems);
 
-	std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, 1), stdlib_vector_at(pstContainer, 0), (pstVector->szNumItems - 1U) * pstContainer->szSizeofItem);
+	std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, szNumItems), stdlib_vector_at(pstContainer, 0), (pstVector->szNumItems - szNumItems) * pstContainer->szSizeofItem);
+	memcpy(stdlib_vector_at(pstContainer, 0), pvBase, szNumItems * pstContainer->szSizeofItem);
 
-	pvItem = stdlib_vector_at(pstContainer, 0);
 	if (pstContainer->eHas & std_container_has_itemhandler)
 	{
-		std_item_construct(pstContainer->pstItemHandler, pvItem, 1);
+		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, 0), szNumItems);
 	}
 
-	return pvItem;
+	return NULL;	// FIXME
 }
 
 /**
@@ -224,18 +223,17 @@ void * stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, s
 void * stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	void * pvItem;
 
-	pstVector->szNumItems++;
+	pstVector->szNumItems += szNumItems;
 	stdlib_vector_reserve( pstContainer, pstVector->szNumItems );
+	memcpy(stdlib_vector_at(pstContainer, pstVector->szNumItems - szNumItems), pvBase, szNumItems * pstContainer->szSizeofItem);
 
-	pvItem = stdlib_vector_at(pstContainer, pstVector->szNumItems - 1);
 	if (pstContainer->eHas & std_container_has_itemhandler)
 	{
-		std_item_construct(pstContainer->pstItemHandler, pvItem, 1);
+		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, pstVector->szNumItems - szNumItems), szNumItems);
 	}
 
-	return pvItem;
+	return NULL;	// FIXME
 }
 
 /**

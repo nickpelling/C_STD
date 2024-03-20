@@ -83,8 +83,8 @@ typedef	struct
 extern bool stdlib_list_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 extern bool stdlib_list_destruct(std_container_t* pstContainer);
 
-extern void * stdlib_list_push_front(	std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
-extern void * stdlib_list_push_back(	std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
+extern void * stdlib_list_push_front(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+extern void * stdlib_list_push_back(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
 extern void * stdlib_list_pop_front(	std_container_t * pstContainer, void * pvResult);
 extern void * stdlib_list_pop_back(		std_container_t * pstContainer, void * pvResult);
 

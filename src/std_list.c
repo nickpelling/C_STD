@@ -202,22 +202,27 @@ bool stdlib_list_destruct(std_container_t* pstContainer)
  *
  * @return Pointer to the newly-created contained item
  */
-void * stdlib_list_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void * stdlib_list_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
 	void * pvItem;
+	size_t i;
 
-	pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
-	node_insert_before(pstList, pstList->pstHead, pstNode);
-
-	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-	if (pstContainer->eHas & std_container_has_itemhandler)
+	for (i = 0; i < szNumItems; i++, pvBase=STD_LINEAR_ADD(pvBase,pstList->stContainer.szSizeofItem))
 	{
-		std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
+		node_insert_before(pstList, pstList->pstHead, pstNode);
+
+		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		memcpy(pvItem, pvBase, pstList->stContainer.szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		}
 	}
 
-	return pvItem;
+	return NULL;	// FIXME
 }
 
 /**
@@ -227,22 +232,27 @@ void * stdlib_list_push_front(std_container_t * pstContainer, const* pvBase, siz
  *
  * @return Pointer to the newly-created contained item
  */
-void * stdlib_list_push_back(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void * stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
 	void * pvItem;
+	size_t i;
 
-	pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
-	node_insert_after(pstList, pstList->pstTail, pstNode);
-
-	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-	if (pstContainer->eHas & std_container_has_itemhandler)
+	for (i = 0; i < szNumItems; i++, pvBase=STD_LINEAR_ADD(pvBase,pstContainer->szSizeofItem))
 	{
-		std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
+		node_insert_after(pstList, pstList->pstTail, pstNode);
+
+		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		}
 	}
 
-	return pvItem;
+	return NULL;	// FIXME
 }
 
 /**
