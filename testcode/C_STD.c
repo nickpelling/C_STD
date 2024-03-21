@@ -24,7 +24,6 @@ static int int_compare(const int* a, const int* b)
 void vector_test(void)
 {
 	std_vector(int) v;
-	bool bSame;
 
 	printf("V0: v is a %s" CRLF, std_container_name(v));
 
@@ -99,8 +98,7 @@ void deque_test(void)
 	printf(CRLF);
 
 	printf("D2: ");
-	for (int i = 0; i < 5; i++)
-		std_push_front(deque, 2, 1, 4, 3, 6);
+	std_push_front(deque, 2, 1, 4, 3, 6);
 	while (!std_empty(deque))
 	{
 		int iTemp;

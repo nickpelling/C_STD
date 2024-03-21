@@ -322,24 +322,30 @@ void * stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, si
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
 
-    if (pstDeque->szStartOffset == 0)
-    {
-    	bucket_insert_at_start(pstDeque);
-    	pstDeque->szStartOffset = pstDeque->szItemsPerBucket - 1;
-    }
-	else
-	{
-		pstDeque->szStartOffset--;
-	}
-	pstDeque->szNumItems++;
+	size_t i;
 
-	pvItem = stdlib_deque_at(pstContainer, 0);
-	if (pstContainer->eHas & std_container_has_itemhandler)
+	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
 	{
-		std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		if (pstDeque->szStartOffset == 0)
+		{
+			bucket_insert_at_start(pstDeque);
+			pstDeque->szStartOffset = pstDeque->szItemsPerBucket - 1;
+		}
+		else
+		{
+			pstDeque->szStartOffset--;
+		}
+		pstDeque->szNumItems++;
+
+		pvItem = stdlib_deque_at(pstContainer, 0);
+		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		}
 	}
 
-	return pvItem;
+	return NULL;	// FIXME
 }
 
 /**
@@ -349,20 +355,25 @@ void * stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, siz
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
+	size_t i;
 
-	pstDeque->szNumItems++;
-    if ((pstDeque->szStartOffset + pstDeque->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
-    {
-    	bucket_append_to_end(pstDeque);
-    }
-
-	pvItem = stdlib_deque_at(pstContainer, pstDeque->szNumItems - 1U);
-	if (pstContainer->eHas & std_container_has_itemhandler)
+	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
 	{
-		std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		pstDeque->szNumItems++;
+		if ((pstDeque->szStartOffset + pstDeque->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
+		{
+			bucket_append_to_end(pstDeque);
+		}
+
+		pvItem = stdlib_deque_at(pstContainer, pstDeque->szNumItems - 1U);
+		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+		}
 	}
 
-	return pvItem;
+	return NULL;	// FIXME
 }
 
 /**
