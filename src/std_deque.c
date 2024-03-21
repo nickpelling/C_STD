@@ -171,9 +171,9 @@ static inline void * bucket_append_to_end(std_deque_t * pstDeque)
  * @param[in]	szSizeofItem	Size of an item
  * @param[in]	szAlignofItem	Alignment of an item
  */
-bool stdlib_deque_construct(std_container_t * pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t * pstHandlers)
+bool stdlib_deque_construct(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t * pstHandlers)
 {
-	bool bResult = std_container_constructor(pstContainer, szFullSizeof - szPayloadOffset, eHas, pstHandlers);
+	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas, pstHandlers);
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	pstDeque->szItemsPerBucket	= DEFAULT_BUCKET_SIZE;
 	pstDeque->papvBuckets		= NULL;

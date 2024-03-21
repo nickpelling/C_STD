@@ -82,9 +82,9 @@ inline bool stdlib_vector_empty(std_container_t * pstContainer)
  * @param[in]	eHas			Enumeration saying which handlers to expect
  * @param[in]	pstHandlers		Struct holding handlers declared
  */
-bool stdlib_vector_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
+bool stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
 {
-	bool bResult = std_container_constructor(pstContainer, szFullSizeof - szPayloadOffset, eHas, pstHandlers);
+	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas, pstHandlers);
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	pstVector->szNumItems	= 0;
 	pstVector->szNumAlloced	= 0;

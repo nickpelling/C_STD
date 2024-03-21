@@ -166,11 +166,11 @@ static void node_insert_before(std_list_t * pstList, std_list_node_t * pstPositi
  * @param[in]	szSizeofItem	Size of an item
  * @param[in]	szAlignofItem	Alignment of an item
  */
-bool stdlib_list_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
+bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
 {
-	bool bResult = std_container_constructor(pstContainer, szFullSizeof - szPayloadOffset, eHas, pstHandlers);
+	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas, pstHandlers);
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
-	pstList->szLinkSize			= szFullSizeof;
+	pstList->szLinkSize			= szWrappedSizeof;
 	pstList->szPayloadOffset	= szPayloadOffset;
 	pstList->szNumItems			= 0;
 	pstList->pstHead			= NULL;

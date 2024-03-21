@@ -41,7 +41,7 @@
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
 		STD_CONTAINER_PAYLOAD_OFFSET_SET(STD_OFFSETOF(STD_TYPEOF(STD_LIST_NODE(TYPE,STD_FAKEVAR())), stPayload));	\
-		STD_CONTAINER_FULLSIZEOF_SET(sizeof(STD_LIST_NODE(TYPE,STD_FAKEVAR())));	\
+		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_LIST_NODE(TYPE,STD_FAKEVAR())));	\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS); \
 	}
 
@@ -80,7 +80,7 @@ typedef	struct
 #define std_list_handlers(T,HAS_ENUM)	STD_VECTOR_DECLARE(T,HAS_ENUM)
 
 
-extern bool stdlib_list_construct(std_container_t* pstContainer, size_t szFullSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 extern bool stdlib_list_destruct(std_container_t* pstContainer);
 
 extern void * stdlib_list_push_front(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);

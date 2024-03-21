@@ -159,8 +159,8 @@ typedef enum
 	std_container_enum_MAX
 } std_container_enum_t;
 
-#define STD_CONTAINER_ENUM_SET(ENUM)					uint8_t (*pau8ContainerEnum)[(ENUM) + 1U]
-#define STD_CONTAINER_ENUM_GET(CONTAINER)				((std_container_enum_t)(sizeof(CONTAINER.pau8ContainerEnum[0]) - 1U))
+#define STD_CONTAINER_ENUM_SET(ENUM)				uint8_t (*pau8ContainerEnum)[(ENUM) + 1U]
+#define STD_CONTAINER_ENUM_GET(CONTAINER)			((std_container_enum_t)(sizeof(CONTAINER.pau8ContainerEnum[0]) - 1U))
 
 #define STD_CONTAINER_HAS_SET(ENUM)					uint8_t (*pau8HasHandler)[(ENUM) + 1U]
 #define STD_CONTAINER_HAS_GET(CONTAINER)			((std_container_has_t)(sizeof(CONTAINER.pau8HasHandler[0]) - 1U))
@@ -168,8 +168,8 @@ typedef enum
 #define STD_CONTAINER_HAS_MEMORYHANDLER(CONTAINER)	(STD_CONTAINER_HAS_GET(CONTAINER) & std_container_has_memoryhandler)
 #define STD_CONTAINER_HAS_LOCKHANDLER(CONTAINER)	(STD_CONTAINER_HAS_GET(CONTAINER) & std_container_has_lockhandler)
 
-#define STD_CONTAINER_FULLSIZEOF_SET(SIZE)			uint8_t (*pau8FullSizeof)[(SIZE) + 1U]
-#define STD_CONTAINER_FULLSIZEOF_GET(CONTAINER)		((size_t)(sizeof(CONTAINER.pau8FullSizeof[0]) - 1U))
+#define STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(SIZE)			uint8_t (*pau8FullSizeof)[(SIZE) + 1U]
+#define STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(CONTAINER)		((size_t)(sizeof(CONTAINER.pau8FullSizeof[0]) - 1U))
 
 #define STD_CONTAINER_PAYLOAD_OFFSET_SET(OFFSET)	uint8_t (*pau8PayloadOffset)[(OFFSET) + 1U]
 #define STD_CONTAINER_PAYLOAD_OFFSET_GET(CONTAINER)	((size_t)(sizeof(CONTAINER.pau8PayloadOffset[0]) - 1U))

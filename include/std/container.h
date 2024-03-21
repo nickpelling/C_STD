@@ -48,7 +48,7 @@ typedef struct
 {
 	const char * const pachContainerName;
 
-	bool	(* const pfn_construct)		(std_container_t * pstContainer, size_t szFullSizeof, size_t szPayloadOffset,
+	bool	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
 											std_container_has_t eHas, const std_container_handlers_t * pstHandlers);
 	void	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);
@@ -89,9 +89,9 @@ inline const char* std_container_name_get(std_container_enum_t eContainer, std_c
 }
 
 inline bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
-				size_t szFullSizeof, size_t szPayloadOffset, const std_container_handlers_t * pstHandlers)
+				size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, const std_container_handlers_t * pstHandlers)
 {
-	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szFullSizeof, szPayloadOffset, eHas, pstHandlers);
+	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas, pstHandlers);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -274,7 +274,7 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 
 #define std_construct(V,...)	std_container_call_construct(&V.stBody.stContainer, \
 									STD_CONTAINER_ENUM_GET_AND_CHECK(V,construct), STD_CONTAINER_HAS_GET(V), \
-									STD_CONTAINER_FULLSIZEOF_GET(V), STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
+									STD_ITEM_SIZEOF(V), STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V), STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
 									&(std_container_handlers_t){ __VA_ARGS__ })
 
 #define std_destruct(V)			std_container_call_destruct(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct), STD_CONTAINER_HAS_GET(V))
