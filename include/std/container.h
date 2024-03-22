@@ -52,9 +52,9 @@ typedef struct
 											std_container_has_t eHas, const std_container_handlers_t * pstHandlers);
 	void	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);
-	void *	(* const pfn_push_front)	(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-	void *	(* const pfn_push_back)		(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-	void *	(* const pfn_push)			(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	void 	(* const pfn_push_front)	(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	void 	(* const pfn_push_back)		(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	void 	(* const pfn_push)			(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
 	void *	(* const pfn_pop_front)		(std_container_t * pstContainer, void * pvResult);
 	void *	(* const pfn_pop_back)		(std_container_t * pstContainer, void * pvResult);
 	void *	(* const pfn_pop)			(std_container_t * pstContainer, void * pvResult);
@@ -96,27 +96,31 @@ inline bool std_container_call_construct(std_container_t* pstContainer, std_cont
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-inline void std_container_lock_for_writing(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t* peOldState)
+inline bool std_container_lock_for_writing(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t* peOldState)
 {
+	bool bWasLocked = false;
 	if (eHas & std_container_has_lockhandler)
 	{
-		*peOldState = std_lock_for_writing(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
+		bWasLocked = std_lock_for_writing(pstContainer->pstLockHandler, pstContainer->phLock, peOldState, CONTAINER_TIMEOUT_DEFAULT);
 	}
+	return bWasLocked;
 }
 
-inline void std_container_lock_for_reading(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t * peOldState)
+inline bool std_container_lock_for_reading(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t * peOldState)
 {
+	bool bWasLocked = false;
 	if (eHas & std_container_has_lockhandler)
 	{
-		*peOldState = std_lock_for_reading(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
+		bWasLocked = std_lock_for_reading(pstContainer->pstLockHandler, pstContainer->phLock, peOldState, CONTAINER_TIMEOUT_DEFAULT);
 	}
+	return bWasLocked;
 }
 
-inline void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState)
+inline void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState, bool bWasLocked)
 {
-	if (eHas & std_container_has_lockhandler)
+	if ((eHas & std_container_has_lockhandler) && bWasLocked)
 	{
-		std_lock_update(pstContainer->pstLockHandler, pstContainer->phLock, eOldState, CONTAINER_TIMEOUT_DEFAULT);
+		std_lock_update(pstContainer->pstLockHandler, pstContainer->phLock, eOldState, NULL, CONTAINER_TIMEOUT_DEFAULT);
 	}
 }
 
@@ -132,104 +136,101 @@ inline bool std_container_call_destruct(std_container_t* pstContainer, std_conta
 inline void std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
 	STD_CONTAINER_CALL(eContainer, pfn_reserve)(pstContainer, szNewSize);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
 inline void std_container_call_fit(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
 	STD_CONTAINER_CALL(eContainer, pfn_fit)(pstContainer);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
-inline void* std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+inline void std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
-	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return pvPtr;
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
-inline void* std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
+inline void std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
-	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return pvPtr;
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
-inline void* std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+inline void std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
-	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return pvPtr;
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
 inline void* std_container_call_pop_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
 	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_pop_front)(pstContainer, pvResult);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 	return pvPtr;
 }
 
 inline void* std_container_call_pop_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
 	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_pop_back)(pstContainer, pvResult);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 	return pvPtr;
 }
 
 inline void* std_container_call_pop(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
 	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_pop)(pstContainer, pvResult);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 	return pvPtr;
 }
 
 inline void std_container_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvBegin, void* pvEnd, std_iterator_t* pstIterator)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_reading(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_reading(pstContainer, eHas, &eOldState);
 	STD_CONTAINER_CALL(eContainer, pfn_range)(pstContainer, pvBegin, pvEnd, pstIterator);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
 inline void std_container_call_ranged_sort(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
 	STD_CONTAINER_CALL(eContainer, pfn_ranged_sort)(pstContainer, szFirst, szLast, pfn_Compare);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 }
 
 inline void* std_container_call_at(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, int32_t iIndex)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_reading(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_reading(pstContainer, eHas, &eOldState);
 	void * pvPtr = STD_CONTAINER_CALL(eContainer, pfn_at)(pstContainer, iIndex);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 	return pvPtr;
 }
 
 inline bool std_container_call_empty(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
 	std_lock_state_t eOldState;
-	std_container_lock_for_reading(pstContainer, eHas, &eOldState);
+	bool bWasLocked = std_container_lock_for_reading(pstContainer, eHas, &eOldState);
 	bool bResult = STD_CONTAINER_CALL(eContainer, pfn_empty)(pstContainer);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
+	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
 	return bResult;
 }
 
@@ -283,18 +284,15 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 #define std_fit(V)				std_container_call_fit(       &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), STD_CONTAINER_HAS_GET(V))
 #define std_empty(V)			std_container_call_empty(     &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,empty), STD_CONTAINER_HAS_GET(V))
 
-#define std_push_front(V,...)	\
-		STD_ITEM_PTR_CAST(V, std_container_call_push_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), STD_CONTAINER_HAS_GET(V), \
+#define std_push_front(V,...)	std_container_call_push_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), STD_CONTAINER_HAS_GET(V), \
 									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))))
-#define std_push_back(V,...)	\
-		STD_ITEM_PTR_CAST(V, std_container_call_push_back( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back), STD_CONTAINER_HAS_GET(V), \
+									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
+#define std_push_back(V,...)	std_container_call_push_back( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back), STD_CONTAINER_HAS_GET(V), \
 									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))))
-#define std_push(V,...)			\
-		STD_ITEM_PTR_CAST(V, std_container_call_push(      &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push), STD_CONTAINER_HAS_GET(V), \
+									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
+#define std_push(V,...)			std_container_call_push(      &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push), STD_CONTAINER_HAS_GET(V), \
 									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))))
+									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
 #define std_pop_front(V,RESULT)	STD_ITEM_PTR_CAST(V, std_container_call_pop_front( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_front), STD_CONTAINER_HAS_GET(V), RESULT))
 #define std_pop_back(V,RESULT)	STD_ITEM_PTR_CAST(V, std_container_call_pop_back(  &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_back), STD_CONTAINER_HAS_GET(V), RESULT))
 #define std_pop(V,RESULT)		STD_ITEM_PTR_CAST(V, std_container_call_pop(       &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop), STD_CONTAINER_HAS_GET(V), RESULT))

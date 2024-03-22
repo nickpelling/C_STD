@@ -202,7 +202,7 @@ bool stdlib_list_destruct(std_container_t* pstContainer)
  *
  * @return Pointer to the newly-created contained item
  */
-void * stdlib_list_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+void stdlib_list_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
@@ -221,8 +221,6 @@ void * stdlib_list_push_front(std_container_t * pstContainer, const void * pvBas
 			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
 		}
 	}
-
-	return NULL;	// FIXME
 }
 
 /**
@@ -232,7 +230,7 @@ void * stdlib_list_push_front(std_container_t * pstContainer, const void * pvBas
  *
  * @return Pointer to the newly-created contained item
  */
-void * stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+void stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
@@ -251,8 +249,6 @@ void * stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase
 			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
 		}
 	}
-
-	return NULL;	// FIXME
 }
 
 /**

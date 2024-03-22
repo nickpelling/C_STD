@@ -317,11 +317,10 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 /**
  *
  */
-void * stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
-
 	size_t i;
 
 	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
@@ -344,14 +343,12 @@ void * stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, si
 			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
 		}
 	}
-
-	return NULL;	// FIXME
 }
 
 /**
  *
  */
-void * stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
@@ -372,8 +369,6 @@ void * stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, siz
 			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
 		}
 	}
-
-	return NULL;	// FIXME
 }
 
 /**

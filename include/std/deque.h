@@ -77,8 +77,8 @@ extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t sz
 extern bool stdlib_deque_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 extern bool stdlib_deque_destruct(std_container_t* pstContainer);
 
-extern void * stdlib_deque_push_front(std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
-extern void * stdlib_deque_push_back(std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
+extern void stdlib_deque_push_front(std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
+extern void stdlib_deque_push_back(std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
 
 extern void * stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult);
 extern void * stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult);

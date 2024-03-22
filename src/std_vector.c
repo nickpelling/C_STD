@@ -192,10 +192,8 @@ void stdlib_vector_fit(std_container_t * pstContainer)
  * Create a new item at the very front of a vector
  *
  * @param[in]	pstContainer	Vector to add an item to
- *
- * @return	Pointer to the newly created item
  */
-void * stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
@@ -209,18 +207,14 @@ void * stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, s
 	{
 		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, 0), szNumItems);
 	}
-
-	return NULL;	// FIXME
 }
 
 /**
  * Create a new item at the very back of a vector
  *
  * @param[in]	pstContainer	Vector to add an item to
- *
- * @return	Pointer to the newly created item
  */
-void * stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size_t szNumItems)
+void stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
@@ -232,8 +226,6 @@ void * stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, si
 	{
 		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, pstVector->szNumItems - szNumItems), szNumItems);
 	}
-
-	return NULL;	// FIXME
 }
 
 /**
