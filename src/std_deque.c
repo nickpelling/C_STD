@@ -373,7 +373,7 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++)
+	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
 	{
 		// Get the address of the first item in the deque
 		pvItem = stdlib_deque_front(pstContainer);
@@ -399,7 +399,7 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++)
+	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
 	{
 		// Get the address of the final item in the deque
 		pvItem = stdlib_deque_back(pstContainer);

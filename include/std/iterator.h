@@ -107,17 +107,17 @@ struct std_iterator_s
 			!iterator_done(IT); \
 			std_iterator_next(IT))
 
-#define for_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
-#define for_each_const_forward(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
-#define for_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_reverse_iterator)
-#define for_each_const_reverse(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_reverse_const_iterator)
+#define std_for_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
+#define std_for_each_forward_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
+#define std_for_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_reverse_iterator)
+#define std_for_each_reverse_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_reverse_const_iterator)
 
-#define for_each(CONTAINER, IT)			for_each_forward(CONTAINER, IT)
-#define for_each_const(CONTAINER, IT)	for_each_const_forward(CONTAINER, IT)
+#define std_for_each(CONTAINER, IT)			std_for_each_forward(CONTAINER, IT)
+#define std_for_each_const(CONTAINER, IT)	std_for_each_const_forward(CONTAINER, IT)
 
-#define for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_forward_iterator,		BEGIN, END)
-#define for_range_const_forward(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_forward_const_iterator,	BEGIN, END)
-#define for_range_reverse(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_reverse_iterator,		BEGIN, END)
-#define for_range_const_reverse(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_reverse_const_iterator,	BEGIN, END)
+#define std_for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_forward_iterator,		BEGIN, END)
+#define std_for_range_forward_const(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_forward_const_iterator,	BEGIN, END)
+#define std_for_range_reverse(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_reverse_iterator,		BEGIN, END)
+#define std_for_range_reverse_const(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_reverse_const_iterator,	BEGIN, END)
 
 #endif /* STD_ITERATOR_H_ */

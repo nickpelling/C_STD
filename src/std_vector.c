@@ -226,7 +226,7 @@ size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, 
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++)
+	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
 	{
 		pvItem = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);

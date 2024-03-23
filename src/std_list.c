@@ -259,7 +259,7 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++)
+	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
 	{
 		pstNode = pstList->pstHead;
 		node_disconnect(pstList, pstNode);
@@ -287,7 +287,7 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++)
+	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
 	{
 		pstNode = pstList->pstTail;
 		node_disconnect(pstList, pstNode);
