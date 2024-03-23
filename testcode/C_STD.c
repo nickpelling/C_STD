@@ -162,6 +162,36 @@ void stack_test(void)
 	std_destruct(stack);
 }
 
+typedef std_list(int) list_int_t;
+
+void vector_of_lists_test(void)
+{
+	int num;
+
+	std_vector(list_int_t) v;
+	std_construct(v);
+
+	list_int_t list1;
+	std_construct(list1);
+	std_push_back(list1, 1, 2, 3);
+	std_push_back(v, list1);
+
+	list_int_t list2;
+	std_construct(list2);
+	std_push_back(list2, 4, 3, 2, 1);
+	std_push_back(v, list2);
+
+	list_int_t* list3 = std_at(v, 0);
+	num = std_size(list3[0]);
+	printf("veclist#0 size = %d" CRLF, num);
+
+	list_int_t * list4 = std_at(v, 1);
+	num = std_size(list4[0]);
+	printf("veclist#1 size = %d" CRLF, num);
+
+	std_destruct(v);	// FIXME: the contained lists will need an item handler with a deconstructor!
+}
+
 int main(void)
 {
 	vector_test();
@@ -169,6 +199,7 @@ int main(void)
 	deque_test();
 	queue_test();
 	stack_test();
+	vector_of_lists_test();
 
 	return EXIT_SUCCESS;
 }
