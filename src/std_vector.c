@@ -236,16 +236,25 @@ void stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size
  *
  * @return	Pointer to the newly popped item
  */
-void * stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult)
+size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvItem;
+	size_t i;
 
-	pvItem = stdlib_vector_at(pstContainer, pstVector->szNumItems - 1U);
-	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
-	pstVector->szNumItems--;
+	if (szMaxItems > pstVector->szNumItems)
+	{
+		szMaxItems = pstVector->szNumItems;
+	}
 
-	return pvResult;
+	for (i = 0; i < szMaxItems; i++)
+	{
+		pvItem = stdlib_vector_at(pstContainer, pstVector->szNumItems - 1U);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
+		pstVector->szNumItems--;
+	}
+
+	return szMaxItems;
 }
 
 /**

@@ -82,6 +82,7 @@ void list_test(void)
 void deque_test(void)
 {
 	std_deque(int) deque;
+	int iTemp;
 
 	printf("D0: deque is a %s" CRLF, std_container_name(deque));
 
@@ -91,8 +92,29 @@ void deque_test(void)
 	std_push_back(deque, 2, 1, 4, 3, 6);
 	while (!std_empty(deque))
 	{
-		int iTemp;
-		std_pop_front(deque, &iTemp);
+#if 1
+		std_pop_front(deque, &iTemp, 1);
+#else
+		(
+			(!sizeof(
+				struct pop_front_result_parameter_is_inconsistent_with_type_of_item_held_by_container___COUNTER__
+				{
+					int pop_front_result_parameter_is_inconsistent_with_type_of_item_held_by_container___COUNTER__ : ((1) ? 1 : -1);
+				})
+			),
+			std_container_call_pop_front(
+				&deque.stBody.stContainer,
+				(
+					(!sizeof(
+						struct pop_front_is_not_implemented_for_this_type_of_container_489
+						{
+							int pop_front_is_not_implemented_for_this_type_of_container_489 : ((((std_container_implements_t)(sizeof(deque.pau8Implements[0]) - 1U))& std_container_implements_pop_front) ? 1 : -1);
+						})
+					),
+				((std_container_enum_t)(sizeof(deque.pau8ContainerEnum[0]) - 1U))),
+				((std_container_has_t)(sizeof(deque.pau8HasHandler[0]) - 1U)), &iTemp, 1))
+		);
+#endif
 		printf("%d ", iTemp);
 	}
 	printf(CRLF);
@@ -101,8 +123,7 @@ void deque_test(void)
 	std_push_front(deque, 2, 1, 4, 3, 6);
 	while (!std_empty(deque))
 	{
-		int iTemp;
-		std_pop_back(deque, &iTemp);
+		std_pop_back(deque, &iTemp, 1);
 		printf("%d ", iTemp);
 	}
 	printf(CRLF);
@@ -134,7 +155,8 @@ void queue_test(void)
 	printf("Q1: ");
 	while (!std_empty(queue))
 	{
-		printf("%d ", std_pop(queue, &num)[0]);
+		std_pop(queue, &num, 1);
+		printf("%d ", num);
 	}
 	printf(CRLF);
 
@@ -154,7 +176,8 @@ void stack_test(void)
 	printf("S1: ");
 	while (!std_empty(stack))
 	{
-		printf("%d ", std_pop(stack, &num)[0]);
+		std_pop(stack, &num, 1);
+		printf("%d ", num);
 	}
 	printf(CRLF);
 

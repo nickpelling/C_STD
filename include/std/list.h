@@ -85,8 +85,8 @@ extern bool stdlib_list_destruct(std_container_t* pstContainer);
 
 extern void stdlib_list_push_front(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
 extern void stdlib_list_push_back(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-extern void * stdlib_list_pop_front(	std_container_t * pstContainer, void * pvResult);
-extern void * stdlib_list_pop_back(		std_container_t * pstContainer, void * pvResult);
+extern size_t stdlib_list_pop_front(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
+extern size_t stdlib_list_pop_back(		std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 
 extern void stdlib_list_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
 extern void stdlib_list_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);

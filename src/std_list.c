@@ -187,10 +187,7 @@ bool stdlib_list_destruct(std_container_t* pstContainer)
 		return false;
 	}
 
-	while (pstList->szNumItems != 0)
-	{
-		stdlib_list_pop_front(pstContainer, NULL);
-	}
+	stdlib_list_pop_front(pstContainer, NULL, pstList->szNumItems);
 
 	return true;
 }
@@ -254,41 +251,57 @@ void stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, 
 /**
  *
  */
-void * stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult)
+size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
 	void * pvItem;
+	size_t i;
 
-	pstNode = pstList->pstHead;
-	node_disconnect(pstList, pstNode);
-	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
-	std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
+	if (szMaxItems > pstList->szNumItems)
+	{
+		szMaxItems = pstList->szNumItems;
+	}
 
-	pstList->szNumItems--;
+	for (i = 0; i < szMaxItems; i++)
+	{
+		pstNode = pstList->pstHead;
+		node_disconnect(pstList, pstNode);
+		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
+		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
+		pstList->szNumItems--;
+	}
 
-	return pvResult;
+	return szMaxItems;
 }
 
 /**
  *
  */
-void * stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult)
+size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
 	void * pvItem;
+	size_t i;
 
-	pstNode = pstList->pstTail;
-	node_disconnect(pstList, pstNode);
-	pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
-	std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
+	if (szMaxItems > pstList->szNumItems)
+	{
+		szMaxItems = pstList->szNumItems;
+	}
 
-	pstList->szNumItems--;
+	for (i = 0; i < szMaxItems; i++)
+	{
+		pstNode = pstList->pstTail;
+		node_disconnect(pstList, pstNode);
+		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
+		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
+		pstList->szNumItems--;
+	}
 
-	return pvResult;
+	return szMaxItems;
 }
 
 /**

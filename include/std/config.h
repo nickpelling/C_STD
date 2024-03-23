@@ -74,4 +74,18 @@
 	(!sizeof(struct MSG { char MSG[1 - 2*!(CONDITION)]; }))
 #endif
 
+/* Create a (fake) instance of a pointer to a given type */
+#define STD_TYPE_TO_FAKE_INSTANCE(T)    ((STD_TYPEOF(T) *)1024U)
+
+/* Convert a type (or typed variable) to a pointer to that type */
+#define STD_VAR_TO_PTR_TO_TYPE(T)       STD_TYPEOF(T) *
+
+#if __STDC_VERSION__ >= 201112L /* test for C11 */
+#define STD_TYPES_ARE_SAME(T1,T2)  \
+    _Generic(STD_TYPE_TO_FAKE_INSTANCE(T1), \
+        STD_VAR_TO_PTR_TO_TYPE(T2): true, default: false)
+#else
+#define STD_TYPES_ARE_SAME(T1, T2)  1
+#endif
+
 #endif /* STD_CONFIG_H_ */

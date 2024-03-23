@@ -191,10 +191,7 @@ bool stdlib_deque_destruct(std_container_t* pstContainer)
 		return false;
 	}
 
-	while (pstDeque->szNumItems != 0)
-	{
-		stdlib_deque_pop_front(pstContainer, NULL);
-	}
+	stdlib_deque_pop_front(pstContainer, NULL, pstDeque->szNumItems);
 
 	return true;
 }
@@ -374,33 +371,51 @@ void stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, size_
 /**
  *
  */
-void * stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult)
+size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
+	size_t i;
 
-	// Get the address of the first item in the deque
-	pvItem = stdlib_deque_front(pstContainer);
-	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
-	pstDeque->szStartOffset++;
-	pstDeque->szNumItems--;
+	if (szMaxItems > pstDeque->szNumItems)
+	{
+		szMaxItems = pstDeque->szNumItems;
+	}
 
-	return pvResult;
+	for (i = 0; i < szMaxItems; i++)
+	{
+		// Get the address of the first item in the deque
+		pvItem = stdlib_deque_front(pstContainer);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+		pstDeque->szStartOffset++;
+		pstDeque->szNumItems--;
+	}
+
+	return szMaxItems;
 }
 
 /**
  *
  */
-void * stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult)
+size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
+	size_t i;
 
-	// Get the address of the final item in the deque
-	pvItem = stdlib_deque_back(pstContainer);
-	std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
-	pstDeque->szNumItems--;
+	if (szMaxItems > pstDeque->szNumItems)
+	{
+		szMaxItems = pstDeque->szNumItems;
+	}
 
-	return pvResult;
+	for (i = 0; i < szMaxItems; i++)
+	{
+		// Get the address of the final item in the deque
+		pvItem = stdlib_deque_back(pstContainer);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+		pstDeque->szNumItems--;
+	}
+
+	return szMaxItems;
 }
 

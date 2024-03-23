@@ -65,7 +65,7 @@ extern void stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNew
 extern void stdlib_vector_fit(			std_container_t * pstContainer);
 extern void stdlib_vector_push_front(	std_container_t * pstContainer, const* pvBase, size_t szNumItems);
 extern void stdlib_vector_push_back(	std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
-extern void * stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult);
+extern size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 extern void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex);
 extern void * stdlib_vector_front(std_container_t * pstContainer);
