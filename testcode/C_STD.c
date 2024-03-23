@@ -27,12 +27,17 @@ static int int_compare(const int* a, const int* b)
 		printf(" %d", std_iterator_at(it));	\
 	printf(CRLF)
 
+#define POP_ALL(CONTAINER, MSG, POPFUNC, MAXITEMS)	\
+	int aiNum[MAXITEMS];	\
+	size_t szNum = POPFUNC(CONTAINER, aiNum, STD_NUM_ELEMENTS(aiNum));	\
+	printf("%s:", MSG);		\
+	for (size_t i = 0; i < szNum; i++)	\
+		printf(" %d", aiNum[i]);	\
+	printf(CRLF)
 
 void vector_test(void)
 {
 	std_vector(int) v;
-	int aiNum[5];
-	size_t szNum;
 
 	printf("V0: v is a %s" CRLF, std_container_name(v));
 
@@ -46,14 +51,9 @@ void vector_test(void)
 	PRINT_ALL(v, "V4", std_for_each_reverse_const);
 
 	std_sort(v, &int_compare);
-
 	PRINT_ALL(v, "V5", std_for_each);
 
-	szNum = std_pop_back(v, aiNum, STD_NUM_ELEMENTS(aiNum));
-	printf("V6:");
-	for (size_t i = 0; i < szNum; i++)
-		printf(" %d", aiNum[i]);
-	printf(CRLF);
+	POP_ALL(v, "V6", std_pop_back, 5);
 
 	std_destruct(v);
 }
@@ -61,8 +61,6 @@ void vector_test(void)
 void list_test(void)
 {
 	std_list(int) list;
-	int aiNum[5];
-	size_t szNum;
 
 	printf("L0: list is a %s" CRLF, std_container_name(list));
 
@@ -74,11 +72,7 @@ void list_test(void)
 	PRINT_ALL(list, "L3", std_for_each_reverse);
 	PRINT_ALL(list, "L4", std_for_each_reverse_const);
 
-	szNum = std_pop_back(list, aiNum, STD_NUM_ELEMENTS(aiNum));
-	printf("L5:");
-	for (size_t i = 0; i < szNum; i++)
-		printf(" %d", aiNum[i]);
-	printf(CRLF);
+	POP_ALL(list, "L5", std_pop_back, 5);
 
 	std_destruct(list);
 }
@@ -86,25 +80,18 @@ void list_test(void)
 void deque_test(void)
 {
 	std_deque(int) deque;
-	int aiNum[5];
-	size_t szNum;
 
 	printf("D0: deque is a %s" CRLF, std_container_name(deque));
 
 	std_construct(deque);
-
 	std_push_back(deque, 2, 1, 4, 3, 5);
 
-	PRINT_ALL(deque, "L1", std_for_each_forward);
-	PRINT_ALL(deque, "L2", std_for_each_forward_const);
-	PRINT_ALL(deque, "L3", std_for_each_reverse);
-	PRINT_ALL(deque, "L4", std_for_each_reverse_const);
+	PRINT_ALL(deque, "D1", std_for_each_forward);
+	PRINT_ALL(deque, "D2", std_for_each_forward_const);
+	PRINT_ALL(deque, "D3", std_for_each_reverse);
+	PRINT_ALL(deque, "D4", std_for_each_reverse_const);
 
-	printf("D5:");
-	szNum = std_pop_back(deque, aiNum, STD_NUM_ELEMENTS(aiNum));
-	for (size_t i = 0; i < szNum; i++)
-		printf(" %d", aiNum[i]);
-	printf(CRLF);
+	POP_ALL(deque, "D5", std_pop_back, 5);
 
 	std_destruct(deque);
 }
@@ -112,19 +99,13 @@ void deque_test(void)
 void queue_test(void)
 {
 	std_queue(int) queue;
-	int aiNum[5];
-	size_t szNum;
 
 	printf("Q0: queue is a %s" CRLF, std_container_name(queue));
 
 	std_construct(queue);
 	std_push(queue, 2, 1, 4, 3, 5);
 
-	printf("Q1:");
-	szNum = std_pop(queue, aiNum, STD_NUM_ELEMENTS(aiNum));
-	for (size_t i = 0; i < szNum; i++)
-		printf(" %d", aiNum[i]);
-	printf(CRLF);
+	POP_ALL(queue, "Q1", std_pop, 5);
 
 	std_destruct(queue);
 }
@@ -132,19 +113,13 @@ void queue_test(void)
 void stack_test(void)
 {
 	std_stack(int) stack;
-	int aiNum[5];
-	size_t szNum;
 
 	printf("S0: stack is a %s" CRLF, std_container_name(stack));
 
 	std_construct(stack);
 	std_push(stack, 2, 1, 4, 3, 5);
 
-	printf("S1:");
-	szNum = std_pop(stack, aiNum, STD_NUM_ELEMENTS(aiNum));
-	for (size_t i = 0; i < szNum; i++)
-		printf(" %d", aiNum[i]);
-	printf(CRLF);
+	POP_ALL(stack, "S1", std_pop, 5);
 
 	std_destruct(stack);
 }
