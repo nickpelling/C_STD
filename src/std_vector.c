@@ -318,7 +318,6 @@ void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_ite
 	}
 	else
 	{
-		pstIterator->szSizeofItem = pstContainer->szSizeofItem;
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
 		pstIterator->pvRef		= pvBegin;
@@ -343,7 +342,6 @@ void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_ite
 	}
 	else
 	{
-		pstIterator->szSizeofItem = pstContainer->szSizeofItem;
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
 		pstIterator->pvRef		= pvBegin;

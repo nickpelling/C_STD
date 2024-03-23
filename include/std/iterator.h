@@ -10,8 +10,6 @@
 
 #include "std/common.h"
 
-typedef struct std_iterator_s std_iterator_t;
-
 typedef enum
 {
 	std_iterator_enum_forward,	// i.e. this is a forward iterator
@@ -19,6 +17,8 @@ typedef enum
 
 	std_iterator_enum_MAX
 } std_iterator_enum_t;
+
+typedef struct std_iterator_s std_iterator_t;
 
 typedef struct
 {
@@ -31,6 +31,7 @@ typedef struct
 // Shared base class for all iterators
 struct std_iterator_s
 {
+	std_container_t* pstContainer;
 	size_t szSizeofItem;
 	void * pvBegin;
 	void * pvEnd;
@@ -39,13 +40,12 @@ struct std_iterator_s
 	bool bDone;
 };
 
-#define STD_ITERATOR_ENUM_SET(ENUM)		uint8_t (*pau8IteratorEnum)[1U + (ENUM)]
+// Macro accessors to store & retrieve the type of an iterator inside its metadata
+#define STD_ITERATOR_ENUM_SET(ENUM)			uint8_t (*pau8IteratorEnum)[1U + (ENUM)]
+#define STD_ITERATOR_ENUM_GET(ITERATOR)		((std_iterator_enum_t)(sizeof(ITERATOR.pau8IteratorEnum[0]) - 1U))
 
-// Note: every iterator class should include an std_iterator_enum_t stored as the length of a char[] - 1
-#define STD_ITERATOR_ENUM_GET(ITERATOR)	((std_iterator_enum_t)(sizeof(ITERATOR.pau8IteratorEnum[0]) - 1U))
-
+// Macro accessors to store & retrieve the constness of an iterator inside its metadata
 #define STD_ITERATOR_IS_CONST_SET(BOOL)		uint8_t (*pau8IteratorConst)[1U + (BOOL)]
-
 #define STD_ITERATOR_IS_CONST_GET(ITERATOR)	((bool)(sizeof(ITERATOR.pau8IteratorConst[0]) - 1U))
 
 // The STD_ITERATOR macro creates a union of five separate things
@@ -85,6 +85,30 @@ struct std_iterator_s
 // Generic operations on a wrapped (and typed) iterator
 #define std_iterator_done(IT)		IT.stItBody.stIterator.bDone
 #define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)[0]
+
+// Lock a typed iterator specifically for reading
+#define std_iterator_lock_for_reading(IT,LOCKPTR)	\
+	std_container_lock_for_reading(pstIterator->pstContainer, STD_CONTAINER_HAS_GET(IT))
+
+// Lock a typed iterator specifically for writing
+#define std_iterator_lock_for_writing(IT, LOCKPTR)	\
+	std_container_lock_for_writing(pstIterator->pstContainer, STD_CONTAINER_HAS_GET(IT))
+
+// Lock a typed iterator for reading if const, else for writing
+#define std_iterator_lock(IT)	\
+	(STD_CONTAINER_IS_CONST_GET(IT) ? std_iterator_lock_for_reading(IT) : std_iterator_lock_for_writing(IT))
+
+// Restore the previous locked state of a typed iterator
+#define std_iterator_lock_restore(IT,OLDLOCKSTATE)	\
+	std_container_lock_restore(pstIterator->pstContainer, STD_CONTAINER_HAS_GET(IT), OLDLOCKSTATE)
+
+#if 0
+std_lock_state_t eOldState;
+bool bWasLocked = std_iterator_lock(IT);
+do stuff here
+std_iterator_lock_restore(IT, eOldState, bWasLocked);
+#endif
+
 
 // The generic std_for() macro
 //	- instantiates a named iterator within the for-loop scope

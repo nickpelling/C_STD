@@ -96,31 +96,30 @@ inline bool std_container_call_construct(std_container_t* pstContainer, std_cont
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-inline bool std_container_lock_for_writing(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t* peOldState)
+inline std_lock_state_t std_container_lock_for_writing(std_container_t* pstContainer, std_container_has_t eHas)
 {
-	bool bWasLocked = false;
 	if (eHas & std_container_has_lockhandler)
 	{
-		bWasLocked = std_lock_for_writing(pstContainer->pstLockHandler, pstContainer->phLock, peOldState, CONTAINER_TIMEOUT_DEFAULT);
+		return std_lock_for_writing(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
 	}
-	return bWasLocked;
+	return e_std_lock_NoRestoreNeeded;
 }
 
-inline bool std_container_lock_for_reading(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t * peOldState)
+inline std_lock_state_t std_container_lock_for_reading(std_container_t* pstContainer, std_container_has_t eHas)
 {
-	bool bWasLocked = false;
 	if (eHas & std_container_has_lockhandler)
 	{
-		bWasLocked = std_lock_for_reading(pstContainer->pstLockHandler, pstContainer->phLock, peOldState, CONTAINER_TIMEOUT_DEFAULT);
+		return std_lock_for_reading(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
 	}
-	return bWasLocked;
+	return e_std_lock_NoRestoreNeeded;
 }
 
-inline void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState, bool bWasLocked)
+inline void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState)
 {
-	if ((eHas & std_container_has_lockhandler) && bWasLocked)
+	if (	(eHas & std_container_has_lockhandler)
+		&&	(eOldState != e_std_lock_NoRestoreNeeded)	)
 	{
-		std_lock_update(pstContainer->pstLockHandler, pstContainer->phLock, eOldState, NULL, CONTAINER_TIMEOUT_DEFAULT);
+		std_lock_update(pstContainer->pstLockHandler, pstContainer->phLock, eOldState, CONTAINER_TIMEOUT_DEFAULT);
 	}
 }
 
@@ -128,109 +127,96 @@ inline void std_container_lock_restore(std_container_t* pstContainer, std_contai
 
 inline bool std_container_call_destruct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
-	std_lock_state_t eOldState;
-	std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	return STD_CONTAINER_CALL(eContainer, pfn_destruct)(pstContainer);
 }
 
 inline void std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_reserve)(pstContainer, szNewSize);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void std_container_call_fit(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_fit)(pstContainer);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void* std_container_call_pop_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_pop_front)(pstContainer, pvResult);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return pvPtr;
 }
 
 inline void* std_container_call_pop_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_pop_back)(pstContainer, pvResult);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return pvPtr;
 }
 
 inline void* std_container_call_pop(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_pop)(pstContainer, pvResult);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return pvPtr;
 }
 
 inline void std_container_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvBegin, void* pvEnd, std_iterator_t* pstIterator)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_reading(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_range)(pstContainer, pvBegin, pvEnd, pstIterator);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void std_container_call_ranged_sort(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_writing(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_ranged_sort)(pstContainer, szFirst, szLast, pfn_Compare);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
 inline void* std_container_call_at(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, int32_t iIndex)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_reading(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
 	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_at)(pstContainer, iIndex);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return pvPtr;
 }
 
 inline bool std_container_call_empty(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
-	std_lock_state_t eOldState;
-	bool bWasLocked = std_container_lock_for_reading(pstContainer, eHas, &eOldState);
+	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
 	bool bResult = STD_CONTAINER_CALL(eContainer, pfn_empty)(pstContainer);
-	std_container_lock_restore(pstContainer, eHas, eOldState, bWasLocked);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return bResult;
 }
 
@@ -238,6 +224,8 @@ inline bool std_container_call_empty(std_container_t* pstContainer, std_containe
 
 inline void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
 {
+	pstIterator->pstContainer = pstContainer;
+	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
 }
 
