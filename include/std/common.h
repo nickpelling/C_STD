@@ -39,6 +39,7 @@ typedef struct
 typedef struct
 {
 	size_t						szSizeofItem;
+	size_t						szNumItems;			// Number of items currently in the container
 	std_container_has_t			eHas;
 	const std_item_handler_t	* pstItemHandler;
 	const std_memoryhandler_t	* pstMemoryHandler;
@@ -51,6 +52,7 @@ inline bool std_container_constructor(std_container_t * pstContainer, size_t szS
 	bool bResult;
 
 	bResult = true;
+	pstContainer->szNumItems = 0;
 	pstContainer->szSizeofItem = szSizeofItem;
 	pstContainer->eHas = eHas;
 

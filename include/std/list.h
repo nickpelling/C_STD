@@ -60,7 +60,6 @@ typedef struct
 	size_t szPayloadOffset;
 	std_list_node_t * pstHead;
 	std_list_node_t * pstTail;
-	size_t szNumItems;
 } std_list_t;
 
 typedef	struct
@@ -109,7 +108,6 @@ enum
 		| std_container_implements_destruct
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
-		| std_container_implements_empty
 		| std_container_implements_forward_constructnextprev
 		| std_container_implements_reverse_constructnextprev)
 };
@@ -122,7 +120,6 @@ enum
 	.pfn_push_back		= &stdlib_list_push_back,	\
 	.pfn_pop_front		= &stdlib_list_pop_front,	\
 	.pfn_pop_back		= &stdlib_list_pop_back,	\
-	.pfn_empty			= &stdlib_list_empty,		\
 	.astIterators =									\
 	{												\
 		[std_iterator_enum_forward] =				\

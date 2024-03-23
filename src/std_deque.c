@@ -42,8 +42,7 @@ inline void * stdlib_deque_front(std_container_t * pstContainer)
 
 inline void * stdlib_deque_back(std_container_t * pstContainer)
 {
-	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
-    return stdlib_deque_at(pstContainer, pstDeque->szNumItems - 1U);
+	return stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
 }
 
 inline void * stdlib_deque_begin(std_container_t * pstContainer)
@@ -68,12 +67,6 @@ inline void * stdlib_deque_rend(std_container_t * pstContainer)
     if (pstContainer) { /* lint - parameter not used */ }
 
     return NULL;
-}
-
-inline bool stdlib_deque_empty(std_container_t * pstContainer)
-{
-	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
-    return (pstDeque->szNumItems == 0);
 }
 
 // --------------------------------------------------------------------------
@@ -102,7 +95,7 @@ static inline void * bucket_at(void * pvBucket, size_t szIndex, size_t szSizeofI
  */
 static inline size_t bucket_count(std_deque_t * pstDeque, size_t szExtraItems)
 {
-	return (pstDeque->szStartOffset + pstDeque->szNumItems + szExtraItems) / pstDeque->szItemsPerBucket;
+	return (pstDeque->szStartOffset + pstDeque->stContainer.szNumItems + szExtraItems) / pstDeque->szItemsPerBucket;
 }
 
 /**
@@ -178,20 +171,18 @@ bool stdlib_deque_construct(std_container_t * pstContainer, size_t szSizeof, siz
 	pstDeque->szItemsPerBucket	= DEFAULT_BUCKET_SIZE;
 	pstDeque->papvBuckets		= NULL;
 	pstDeque->szNumBuckets		= 0;
-	pstDeque->szNumItems		= 0U;
 	pstDeque->szStartOffset		= 0U;
 	return bResult;
 }
 
 bool stdlib_deque_destruct(std_container_t* pstContainer)
 {
-	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	if (pstContainer == NULL)
 	{
 		return false;
 	}
 
-	stdlib_deque_pop_front(pstContainer, NULL, pstDeque->szNumItems);
+	stdlib_deque_pop_front(pstContainer, NULL, pstContainer->szNumItems);
 
 	return true;
 }
@@ -213,7 +204,7 @@ void * stdlib_deque_at(std_container_t * pstContainer, int32_t iIndex)
 	size_t szQuotient;
 	size_t szRemainder;
 
-	if (iIndex >= pstDeque->szNumItems)
+	if (iIndex >= pstContainer->szNumItems)
 	{
 		return NULL;
 	}
@@ -271,7 +262,7 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 
-	if (pstDeque->szNumItems == 0)
+	if (pstContainer->szNumItems == 0)
 	{
     	pstDequeIt->stIterator.bDone = true;
 	}
@@ -283,7 +274,7 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
 		pstDequeIt->stIterator.pvRef		= stdlib_deque_at(pstContainer, 0);
 		pstDequeIt->stIterator.bDone = false;
 		pstDequeIt->szIndex			= 0U;
-		pstDequeIt->szRangeLen		= pstDeque->szNumItems;
+		pstDequeIt->szRangeLen		= pstContainer->szNumItems;
 	}
 }
 
@@ -295,7 +286,7 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 
-	if (pstDeque->szNumItems == 0)
+	if (pstContainer->szNumItems == 0)
 	{
 		pstDequeIt->stIterator.bDone = true;
 	}
@@ -304,10 +295,10 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 		pstDequeIt->pstDeque = pstDeque;
 
 		pstDequeIt->stIterator.szSizeofItem = pstContainer->szSizeofItem;
-		pstDequeIt->stIterator.pvRef = stdlib_deque_at(pstContainer, pstDeque->szNumItems - 1U);
+		pstDequeIt->stIterator.pvRef = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
 		pstDequeIt->stIterator.bDone = false;
-		pstDequeIt->szIndex = pstDeque->szNumItems - 1U;
-		pstDequeIt->szRangeLen = pstDeque->szNumItems;
+		pstDequeIt->szIndex = pstContainer->szNumItems - 1U;
+		pstDequeIt->szRangeLen = pstContainer->szNumItems;
 	}
 }
 
@@ -331,7 +322,7 @@ void stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, size
 		{
 			pstDeque->szStartOffset--;
 		}
-		pstDeque->szNumItems++;
+		pstContainer->szNumItems++;
 
 		pvItem = stdlib_deque_at(pstContainer, 0);
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
@@ -353,13 +344,13 @@ void stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, size_
 
 	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
 	{
-		pstDeque->szNumItems++;
-		if ((pstDeque->szStartOffset + pstDeque->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
+		pstContainer->szNumItems++;
+		if ((pstDeque->szStartOffset + pstContainer->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
 		{
 			bucket_append_to_end(pstDeque);
 		}
 
-		pvItem = stdlib_deque_at(pstContainer, pstDeque->szNumItems - 1U);
+		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
@@ -377,9 +368,9 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
 	void * pvItem;
 	size_t i;
 
-	if (szMaxItems > pstDeque->szNumItems)
+	if (szMaxItems > pstContainer->szNumItems)
 	{
-		szMaxItems = pstDeque->szNumItems;
+		szMaxItems = pstContainer->szNumItems;
 	}
 
 	for (i = 0; i < szMaxItems; i++)
@@ -388,7 +379,7 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
 		pvItem = stdlib_deque_front(pstContainer);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		pstDeque->szStartOffset++;
-		pstDeque->szNumItems--;
+		pstContainer->szNumItems--;
 	}
 
 	return szMaxItems;
@@ -403,9 +394,9 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 	void * pvItem;
 	size_t i;
 
-	if (szMaxItems > pstDeque->szNumItems)
+	if (szMaxItems > pstContainer->szNumItems)
 	{
-		szMaxItems = pstDeque->szNumItems;
+		szMaxItems = pstContainer->szNumItems;
 	}
 
 	for (i = 0; i < szMaxItems; i++)
@@ -413,7 +404,7 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 		// Get the address of the final item in the deque
 		pvItem = stdlib_deque_back(pstContainer);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
-		pstDeque->szNumItems--;
+		pstContainer->szNumItems--;
 	}
 
 	return szMaxItems;

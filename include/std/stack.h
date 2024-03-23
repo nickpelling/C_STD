@@ -22,8 +22,7 @@ enum
 		| std_container_implements_construct
 		| std_container_implements_destruct
 		| std_container_implements_pushpop
-		| std_container_implements_at
-		| std_container_implements_empty)
+		| std_container_implements_at)
 };
 
 #define STD_STACK_JUMPTABLE \
@@ -32,7 +31,6 @@ enum
 	.pfn_destruct		= &stdlib_deque_destruct,	\
 	.pfn_push			= &stdlib_deque_push_back,	\
 	.pfn_pop			= &stdlib_deque_pop_back,	\
-	.pfn_at				= &stdlib_deque_at,			\
-	.pfn_empty			= &stdlib_deque_empty,
+	.pfn_at				= &stdlib_deque_at,
 
 #endif /* STD_STACK_H_ */

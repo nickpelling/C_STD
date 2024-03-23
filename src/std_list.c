@@ -59,8 +59,7 @@ inline std_list_node_t * stdlib_list_rend(std_container_t * pstContainer)
 
 inline bool stdlib_list_empty(std_container_t * pstContainer)
 {
-	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
-    return (pstList->szNumItems == 0);
+    return (pstContainer->szNumItems == 0);
 }
 
 // --------------------------------------------------------------------------
@@ -120,7 +119,7 @@ static void node_insert_after(std_list_t * pstList, std_list_node_t * pstPositio
         	pstList->pstTail = pstNode;
         }
     }
-	pstList->szNumItems++;
+	pstList->stContainer.szNumItems++;
 }
 
 /**
@@ -151,7 +150,7 @@ static void node_insert_before(std_list_t * pstList, std_list_node_t * pstPositi
         	pstList->pstHead = pstNode;
         }
     }
-	pstList->szNumItems++;
+	pstList->stContainer.szNumItems++;
 }
 
 // --------------------------------------------------------------------------
@@ -172,7 +171,6 @@ bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
 	pstList->szLinkSize			= szWrappedSizeof;
 	pstList->szPayloadOffset	= szPayloadOffset;
-	pstList->szNumItems			= 0;
 	pstList->pstHead			= NULL;
 	pstList->pstTail			= NULL;
 	return bResult;
@@ -180,14 +178,12 @@ bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_
 
 bool stdlib_list_destruct(std_container_t* pstContainer)
 {
-	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
-
 	if (pstContainer == NULL)
 	{
 		return false;
 	}
 
-	stdlib_list_pop_front(pstContainer, NULL, pstList->szNumItems);
+	stdlib_list_pop_front(pstContainer, NULL, pstContainer->szNumItems);
 
 	return true;
 }
@@ -258,9 +254,9 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
 	void * pvItem;
 	size_t i;
 
-	if (szMaxItems > pstList->szNumItems)
+	if (szMaxItems > pstContainer->szNumItems)
 	{
-		szMaxItems = pstList->szNumItems;
+		szMaxItems = pstContainer->szNumItems;
 	}
 
 	for (i = 0; i < szMaxItems; i++)
@@ -268,9 +264,9 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
 		pstNode = pstList->pstHead;
 		node_disconnect(pstList, pstNode);
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
-		pstList->szNumItems--;
+		pstContainer->szNumItems--;
 	}
 
 	return szMaxItems;
@@ -286,9 +282,9 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 	void * pvItem;
 	size_t i;
 
-	if (szMaxItems > pstList->szNumItems)
+	if (szMaxItems > pstContainer->szNumItems)
 	{
-		szMaxItems = pstList->szNumItems;
+		szMaxItems = pstContainer->szNumItems;
 	}
 
 	for (i = 0; i < szMaxItems; i++)
@@ -296,9 +292,9 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 		pstNode = pstList->pstTail;
 		node_disconnect(pstList, pstNode);
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstList->szLinkSize - pstList->szPayloadOffset);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
-		pstList->szNumItems--;
+		pstContainer->szNumItems--;
 	}
 
 	return szMaxItems;

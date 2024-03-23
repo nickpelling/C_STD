@@ -32,18 +32,6 @@ inline void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex)
 	return STD_LINEAR_ADD(pstVector->pvStartAddr, pstVector->stContainer.szSizeofItem * (iIndex));
 }
 
-inline void * stdlib_vector_front(std_container_t * pstContainer)
-{
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return pstVector->pvStartAddr;
-}
-
-inline void * stdlib_vector_back(std_container_t * pstContainer)
-{
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return stdlib_vector_at(pstContainer, (int32_t)(pstVector->szNumItems) - 1);
-}
-
 inline void * stdlib_vector_begin(std_container_t * pstContainer)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
@@ -52,25 +40,17 @@ inline void * stdlib_vector_begin(std_container_t * pstContainer)
 
 inline void * stdlib_vector_end(std_container_t * pstContainer)
 {
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return stdlib_vector_at(pstContainer, (int32_t)(pstVector->szNumItems));
+	return stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems));
 }
 
 inline void * stdlib_vector_rbegin(std_container_t * pstContainer)
 {
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return stdlib_vector_at(pstContainer, (int32_t)(pstVector->szNumItems) - 1U);
+	return stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems) - 1U);
 }
 
 inline void * stdlib_vector_rend(std_container_t * pstContainer)
 {
 	return stdlib_vector_at(pstContainer, -1);
-}
-
-inline bool stdlib_vector_empty(std_container_t * pstContainer)
-{
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return (pstVector->szNumItems == 0);
 }
 
 /**
@@ -86,7 +66,6 @@ bool stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, siz
 {
 	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas, pstHandlers);
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	pstVector->szNumItems	= 0;
 	pstVector->szNumAlloced	= 0;
 	pstVector->pvStartAddr	= NULL;
 
@@ -107,7 +86,7 @@ bool stdlib_vector_destruct(std_container_t * pstContainer)
 	if (	(pstContainer->eHas & std_container_has_itemhandler)
 		&&	(pstContainer->pstItemHandler->pfn_Destructor != NULL)	)
 	{
-		for (i = 0; i < pstVector->szNumItems; i++)
+		for (i = 0; i < pstContainer->szNumItems; i++)
 		{
 			(*pstContainer->pstItemHandler->pfn_Destructor)(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, i));
 		}
@@ -117,9 +96,9 @@ bool stdlib_vector_destruct(std_container_t * pstContainer)
 	free(pstVector->pvStartAddr);
 
 	// Clear out all the fields (just to be tidy)
-	pstVector->szNumItems	= 0;
-	pstVector->szNumAlloced	= 0;
-	pstVector->pvStartAddr	= NULL;
+	pstContainer->szNumItems	= 0;
+	pstVector->szNumAlloced		= 0;
+	pstVector->pvStartAddr		= NULL;
 
 	return true;
 }
@@ -169,8 +148,8 @@ void stdlib_vector_fit(std_container_t * pstContainer)
 	size_t szSize;
 	size_t szNewCapacity;
 
-	szNewCapacity = 1U << (32U - __builtin_clz(pstVector->szNumItems));
-	if (szNewCapacity < pstVector->szNumItems)
+	szNewCapacity = 1U << (32U - __builtin_clz(pstContainer->szNumItems));
+	if (szNewCapacity < pstContainer->szNumItems)
 	{
 		szNewCapacity <<= 1;
 	}
@@ -197,10 +176,10 @@ void stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, siz
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
-	pstVector->szNumItems += szNumItems;
-	stdlib_vector_reserve(pstContainer, pstVector->szNumItems);
+	pstContainer->szNumItems += szNumItems;
+	stdlib_vector_reserve(pstContainer, pstContainer->szNumItems);
 
-	std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, szNumItems), stdlib_vector_at(pstContainer, 0), (pstVector->szNumItems - szNumItems) * pstContainer->szSizeofItem);
+	std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, szNumItems), stdlib_vector_at(pstContainer, 0), (pstContainer->szNumItems - szNumItems) * pstContainer->szSizeofItem);
 	memcpy(stdlib_vector_at(pstContainer, 0), pvBase, szNumItems * pstContainer->szSizeofItem);
 
 	if (pstContainer->eHas & std_container_has_itemhandler)
@@ -218,13 +197,13 @@ void stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
-	pstVector->szNumItems += szNumItems;
-	stdlib_vector_reserve( pstContainer, pstVector->szNumItems );
-	memcpy(stdlib_vector_at(pstContainer, pstVector->szNumItems - szNumItems), pvBase, szNumItems * pstContainer->szSizeofItem);
+	pstContainer->szNumItems += szNumItems;
+	stdlib_vector_reserve( pstContainer, pstContainer->szNumItems );
+	memcpy(stdlib_vector_at(pstContainer, pstContainer->szNumItems - szNumItems), pvBase, szNumItems * pstContainer->szSizeofItem);
 
 	if (pstContainer->eHas & std_container_has_itemhandler)
 	{
-		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, pstVector->szNumItems - szNumItems), szNumItems);
+		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, pstContainer->szNumItems - szNumItems), szNumItems);
 	}
 }
 
@@ -242,16 +221,16 @@ size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, 
 	void * pvItem;
 	size_t i;
 
-	if (szMaxItems > pstVector->szNumItems)
+	if (szMaxItems > pstContainer->szNumItems)
 	{
-		szMaxItems = pstVector->szNumItems;
+		szMaxItems = pstContainer->szNumItems;
 	}
 
 	for (i = 0; i < szMaxItems; i++)
 	{
-		pvItem = stdlib_vector_at(pstContainer, pstVector->szNumItems - 1U);
+		pvItem = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
-		pstVector->szNumItems--;
+		pstContainer->szNumItems--;
 	}
 
 	return szMaxItems;

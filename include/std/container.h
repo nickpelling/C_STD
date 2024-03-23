@@ -61,7 +61,6 @@ typedef struct
 	void	(* const pfn_range) 		(std_container_t * pstContainer, void * pvBegin, void * pvEnd, std_iterator_t * pstIterator);
 	void	(* const pfn_ranged_sort)	(std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 	void *	(* const pfn_at)			(std_container_t * pstContainer, int32_t iIndex);
-	bool	(* const pfn_empty)			(std_container_t * pstContainer);
 	bool	(* const pfn_destruct)		(std_container_t * pstContainer);
 
 	std_container_iterate_jumptable_t	astIterators[std_iterator_enum_MAX];
@@ -220,14 +219,6 @@ inline void* std_container_call_at(std_container_t* pstContainer, std_container_
 	return pvPtr;
 }
 
-inline bool std_container_call_empty(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
-{
-	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
-	bool bResult = STD_CONTAINER_CALL(eContainer, pfn_empty)(pstContainer);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return bResult;
-}
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 inline void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
@@ -274,22 +265,20 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 
 #define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET_AND_CHECK(V,name), STD_CONTAINER_IMPLEMENTS_GET(V))
 
+#define std_size(V)				V.stBody.stContainer.szNumItems
+#define std_empty(V)			(std_size(V) == 0U)
+
 #define std_at(V,INDEX)			STD_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer,  	 STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))[0]
-#define std_front(V)			STD_ITEM_PTR_CAST(V, std_container_call_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,front), STD_CONTAINER_HAS_GET(V)))
-#define std_back(V)				STD_ITEM_PTR_CAST(V, std_container_call_back((&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,back), STD_CONTAINER_HAS_GET(V)))
-#define std_data(V)				std_front(V)[0]
+#define std_front(V)			std_at(V, 0)
+#define std_back(V)				std_at(V, std_size(V) - 1U)
 
-#define std_const_at(V,INDEX)	STD_CONST_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))[0]
-#define std_const_front(V)		STD_CONST_ITEM_PTR_CAST(V, std_container_call_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,front), STD_CONTAINER_HAS_GET(V)))
-#define std_const_back(V)		STD_CONST_ITEM_PTR_CAST(V, std_container_call_back(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,back), STD_CONTAINER_HAS_GET(V)))
-#define std_const_data(V)		std_const_front(V)[0]
-
-#define std_read_front(V,RESULT)	(RESULT)[0] = std_const_front(V)[0]
-#define std_read_back(V,RESULT)		(RESULT)[0] = std_const_back(V)[0]
+#define std_at_const(V,INDEX)	STD_CONST_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))[0]
+#define std_front_const(V)		std_at_const(V, 0)
+#define std_back_const(V)		std_at_const(V, std_size(V) - 1U)
 
 #define std_construct(V,...)	\
 			std_container_call_construct(\
-				& V.stBody.stContainer,	\
+				&V.stBody.stContainer,	\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V, construct), \
 				STD_CONTAINER_HAS_GET(V), \
 				STD_ITEM_SIZEOF(V), \
@@ -305,7 +294,6 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 
 #define std_reserve(V,N)		std_container_call_reserve(   &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve), STD_CONTAINER_HAS_GET(V), N)
 #define std_fit(V)				std_container_call_fit(       &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), STD_CONTAINER_HAS_GET(V))
-#define std_empty(V)			std_container_call_empty(     &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,empty), STD_CONTAINER_HAS_GET(V))
 
 #define std_push_front(V,...)	std_container_call_push_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), STD_CONTAINER_HAS_GET(V), \
 									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
@@ -344,7 +332,7 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 
 #define std_range(V,FIRST,LAST,IT)		std_container_call_range(&V.stBody, STD_CONTAINER_ENUM_GET_AND_CHECK(V,range), STD_CONTAINER_HAS_GET(V), FIRST(V), LAST(V), &IT)
 
-#define std_sort(V,COMPARE)				std_container_call_ranged_sort( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort), STD_CONTAINER_HAS_GET(V), 0, V.stBody.szNumItems - 1,	\
+#define std_sort(V,COMPARE)				std_container_call_ranged_sort( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort), STD_CONTAINER_HAS_GET(V), 0, std_size(V) - 1,	\
 		(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE))
 
 #define std_ranged_sort(V,A,B,COMPARE)	std_container_call_ranged_sort(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort), STD_CONTAINER_HAS_GET(V), A, B, 	\

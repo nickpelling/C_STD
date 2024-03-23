@@ -40,7 +40,6 @@ typedef struct
 {
 	std_container_t stContainer;
 
-	size_t szNumItems;
 	size_t szNumAlloced;
 	void * pvStartAddr;
 } std_vector_t;
@@ -91,7 +90,6 @@ enum
 		| std_container_implements_destruct
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
-		| std_container_implements_empty
 		| std_container_implements_reserve
 		| std_container_implements_fit
 		| std_container_implements_ranged_sort
@@ -108,7 +106,6 @@ enum
 	.pfn_push_back		= &stdlib_vector_push_back,		\
 	.pfn_pop_back		= &stdlib_vector_pop_back,		\
 	.pfn_at				= &stdlib_vector_at,			\
-	.pfn_empty			= &stdlib_vector_empty,			\
 	.pfn_reserve		= &stdlib_vector_reserve,		\
 	.pfn_fit			= &stdlib_vector_fit,			\
 	.pfn_ranged_sort	= &stdlib_vector_ranged_sort,	\

@@ -53,9 +53,6 @@ typedef struct
 
     // Starting offset within the deque's first bucket
     size_t szStartOffset;
-
-    // Number of items in the entire deque
-    size_t szNumItems;
 } std_deque_t;
 
 typedef struct
@@ -107,7 +104,6 @@ enum
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
-		| std_container_implements_empty
 		| std_container_implements_forward_constructnextprev
 		| std_container_implements_reverse_constructnextprev)
 };
@@ -121,7 +117,6 @@ enum
 	.pfn_pop_front		= &stdlib_deque_pop_front,		\
 	.pfn_pop_back		= &stdlib_deque_pop_back,		\
 	.pfn_at				= &stdlib_deque_at,				\
-	.pfn_empty			= &stdlib_deque_empty,			\
 	.astIterators =										\
 	{													\
 		[std_iterator_enum_forward] =					\
