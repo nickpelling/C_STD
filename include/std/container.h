@@ -287,10 +287,16 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 #define std_read_front(V,RESULT)	(RESULT)[0] = std_const_front(V)[0]
 #define std_read_back(V,RESULT)		(RESULT)[0] = std_const_back(V)[0]
 
-#define std_construct(V,...)	std_container_call_construct(&V.stBody.stContainer, \
-									STD_CONTAINER_ENUM_GET_AND_CHECK(V,construct), STD_CONTAINER_HAS_GET(V), \
-									STD_ITEM_SIZEOF(V), STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V), STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
-									&(std_container_handlers_t){ __VA_ARGS__ })
+#define std_construct(V,...)	\
+			std_container_call_construct(\
+				& V.stBody.stContainer,	\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V, construct), \
+				STD_CONTAINER_HAS_GET(V), \
+				STD_ITEM_SIZEOF(V), \
+				STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V), \
+				STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
+				& (std_container_handlers_t) { __VA_ARGS__ }	\
+			)
 
 #define std_item_new(V)			std_container_item_construct(&V.stBody.stContainer, STD_CONTAINER_HAS_GET(V), STD_ITEM_SIZEOF(V))
 #define std_item_delete(V)		std_container_item_destruct( &V.stBody.stContainer, STD_CONTAINER_HAS_GET(V), STD_ITEM_SIZEOF(V))
