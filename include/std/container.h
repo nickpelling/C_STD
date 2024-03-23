@@ -96,32 +96,41 @@ inline bool std_container_call_construct(std_container_t* pstContainer, std_cont
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-inline std_lock_state_t std_container_lock_for_writing(std_container_t* pstContainer, std_container_has_t eHas)
+inline std_lock_state_t std_container_lock(std_container_t* pstContainer, std_container_has_t eHas, bool bReadOnly)
 {
 	if (eHas & std_container_has_lockhandler)
 	{
-		return std_lock_for_writing(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
+		return (bReadOnly)
+			? std_lock_for_reading(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT)
+			: std_lock_for_writing(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
 	}
 	return e_std_lock_NoRestoreNeeded;
 }
 
-inline std_lock_state_t std_container_lock_for_reading(std_container_t* pstContainer, std_container_has_t eHas)
-{
-	if (eHas & std_container_has_lockhandler)
-	{
-		return std_lock_for_reading(pstContainer->pstLockHandler, pstContainer->phLock, CONTAINER_TIMEOUT_DEFAULT);
-	}
-	return e_std_lock_NoRestoreNeeded;
-}
+#define std_container_lock_for_reading(CONTAINER,HAS)	std_container_lock(CONTAINER,HAS,true)
+#define std_container_lock_for_writing(CONTAINER,HAS)	std_container_lock(CONTAINER,HAS,false)
 
-inline void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState)
+inline bool std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState)
 {
 	if (	(eHas & std_container_has_lockhandler)
 		&&	(eOldState != e_std_lock_NoRestoreNeeded)	)
 	{
 		std_lock_update(pstContainer->pstLockHandler, pstContainer->phLock, eOldState, CONTAINER_TIMEOUT_DEFAULT);
 	}
+	return true;	// Only included to make the for-loop easier to implement!
 }
+
+// Wrap an untyped container lock/unlock for-loop around the actions that follow
+// Note: this must be preceded by a for instruction!
+#define STD_CONTAINER_LOCK_WRAPPER(CONTAINER,HAS,READONLY,COUNT)	\
+	std_lock_state_t eLockState_##COUNT = std_container_lock(CONTAINER, HAS, READONLY);	\
+		eLockState_##COUNT != e_std_lock_Invalid;	\
+		eLockState_##COUNT = (std_container_lock_restore(CONTAINER, HAS, eLockState_##COUNT), e_std_lock_Invalid)
+
+// Wrap a typed container lock/unlock for-loop around the actions that follow
+// Note: this must be preceded by a for instruction!
+#define std_container_lock_wrapper(CONTAINER,READONLY)	\
+	STD_CONTAINER_LOCK_WRAPPER(&CONTAINER.stBody.stContainer, STD_CONTAINER_HAS_GET(CONTAINER), READONLY, __COUNTER__)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -222,16 +231,18 @@ inline bool std_container_call_empty(std_container_t* pstContainer, std_containe
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-inline void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
+inline bool std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
 {
 	pstIterator->pstContainer = pstContainer;
 	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
+	return true;
 }
 
-inline void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
+inline bool std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
 {
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_range)(pstContainer, pstIterator, pvBegin, pvEnd);
+	return true;
 }
 
 inline void std_iterator_call_next(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)

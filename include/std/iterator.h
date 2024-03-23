@@ -86,56 +86,38 @@ struct std_iterator_s
 #define std_iterator_done(IT)		IT.stItBody.stIterator.bDone
 #define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)[0]
 
-// Lock a typed iterator specifically for reading
-#define std_iterator_lock_for_reading(IT,LOCKPTR)	\
-	std_container_lock_for_reading(pstIterator->pstContainer, STD_CONTAINER_HAS_GET(IT))
-
-// Lock a typed iterator specifically for writing
-#define std_iterator_lock_for_writing(IT, LOCKPTR)	\
-	std_container_lock_for_writing(pstIterator->pstContainer, STD_CONTAINER_HAS_GET(IT))
-
-// Lock a typed iterator for reading if const, else for writing
-#define std_iterator_lock(IT)	\
-	(STD_CONTAINER_IS_CONST_GET(IT) ? std_iterator_lock_for_reading(IT) : std_iterator_lock_for_writing(IT))
-
-// Restore the previous locked state of a typed iterator
-#define std_iterator_lock_restore(IT,OLDLOCKSTATE)	\
-	std_container_lock_restore(pstIterator->pstContainer, STD_CONTAINER_HAS_GET(IT), OLDLOCKSTATE)
-
-#if 0
-std_lock_state_t eOldState;
-bool bWasLocked = std_iterator_lock(IT);
-do stuff here
-std_iterator_lock_restore(IT, eOldState, bWasLocked);
-#endif
 
 
 // The generic std_for() macro
+//	- locks the container (if the container has a lockhandler)
 //	- instantiates a named iterator within the for-loop scope
 //	- initialises that named iterator's fields
 //	- steps the named iterator
 //	- terminates the iterating when complete
-#define std_for(CONTAINER, IT, IT_TYPE)	\
-	for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_construct(CONTAINER,IT),NULL); \
-		!std_iterator_done(IT); \
-		std_iterator_next(IT))
+//	- unlocks the container (if the container has a lockhandler)
+#define std_for(CONTAINER, IT, IS_CONST, IT_TYPE)	\
+	for (std_container_lock_wrapper(CONTAINER, IS_CONST))	\
+		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_construct(CONTAINER,IT),NULL); \
+			!std_iterator_done(IT); \
+			std_iterator_next(IT))
 
-#define std_for_range(CONTAINER, IT, IT_TYPE, BEGIN, END)	\
-	for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
-		!iterator_done(IT); \
-		std_iterator_next(IT))
+#define std_for_range(CONTAINER, IT, IS_CONST, IT_TYPE, BEGIN, END)	\
+	for std_container_lock_wrapper(CONTAINER, IS_CONST)	\
+		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
+			!iterator_done(IT); \
+			std_iterator_next(IT))
 
-#define for_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, std_forward_iterator)
-#define for_each_const_forward(CONTAINER, IT)	std_for(CONTAINER, IT, std_forward_const_iterator)
-#define for_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, std_reverse_iterator)
-#define for_each_const_reverse(CONTAINER, IT)	std_for(CONTAINER, IT, std_reverse_const_iterator)
+#define for_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
+#define for_each_const_forward(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
+#define for_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_reverse_iterator)
+#define for_each_const_reverse(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_reverse_const_iterator)
 
 #define for_each(CONTAINER, IT)			for_each_forward(CONTAINER, IT)
 #define for_each_const(CONTAINER, IT)	for_each_const_forward(CONTAINER, IT)
 
-#define for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, std_forward_iterator,			BEGIN, END)
-#define for_range_const_forward(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, std_forward_const_iterator,	BEGIN, END)
-#define for_range_reverse(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, std_reverse_iterator,			BEGIN, END)
-#define for_range_const_reverse(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, std_reverse_const_iterator,	BEGIN, END)
+#define for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_forward_iterator,		BEGIN, END)
+#define for_range_const_forward(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_forward_const_iterator,	BEGIN, END)
+#define for_range_reverse(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_reverse_iterator,		BEGIN, END)
+#define for_range_const_reverse(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_reverse_const_iterator,	BEGIN, END)
 
 #endif /* STD_ITERATOR_H_ */

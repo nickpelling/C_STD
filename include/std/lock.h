@@ -29,6 +29,10 @@ typedef enum
 	// Enumeration value used to signal that no lock action was required, so should not be persisted!
 	e_std_lock_NoRestoreNeeded,
 
+	// Enumeration value used to signal that lock state was invalid, so should not be persisted!
+	// This is used to support iterator loops
+	e_std_lock_Invalid,
+
 	e_std_lock_MAX
 } std_lock_state_t;
 
