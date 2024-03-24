@@ -23,7 +23,7 @@ Creating and using a container is as simple as this:
         std_construct(v);
 
         // Push 1 to the back of the container, then 2, 3, 4, 5
-        std_push_back(v, 1, 2, 3, 3, 5);
+        std_push_back(v, 1, 2, 3, 4, 5);
 
         std_for_each(v, it)
         {
@@ -32,8 +32,9 @@ Creating and using a container is as simple as this:
         printf("\r\n");
 
         // Pop up to 10 items from the container into an array
+        // We only pushed 5 items to it, so szNum will end up set to 5
         szNum = std_pop_back(v, aiArray, 10);
-        for (int i = 0; i < szNum; i++)
+        for (size_t i = 0; i < szNum; i++)
             printf("%d ", aiNum[i]);
         printf("\r\n");
 
