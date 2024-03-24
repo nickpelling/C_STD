@@ -58,9 +58,9 @@
 #endif
 
 // Command-based static assert - can be used inside or outside functions
-#if (__STDC_VERSION__ >= 201112L) && 0 /* test for C11 */
+#if __STDC_VERSION__ >= 201112L /* test for C11 */
 #include <assert.h>
-#define STD_STATIC_ASSERT(COND,MSG) _Static_assert(COND,#MSG)
+#define STD_STATIC_ASSERT(COND,MSG) { _Static_assert(COND,#MSG); }
 #else
 #define STD_STATIC_ASSERT(COND,MSG)	sizeof(struct MSG { int MSG : ((COND) ? 1 : -1); })
 #endif
