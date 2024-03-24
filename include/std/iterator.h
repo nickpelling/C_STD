@@ -48,7 +48,7 @@ struct std_iterator_s
 #define STD_ITERATOR_IS_CONST_SET(BOOL)		uint8_t (*pau8IteratorConst)[1U + (BOOL)]
 #define STD_ITERATOR_IS_CONST_GET(ITERATOR)	((bool)(sizeof(ITERATOR.pau8IteratorConst[0]) - 1U))
 
-// The STD_ITERATOR macro creates a union of five separate things
+// The STD_ITERATOR macro creates a union of many separate things
 //	- an untyped base class, that gets passed down to library-side shared calls
 //		- Note that this should always contain a std_iterator_t called "stIterator"!
 //	- a type smuggle, used to give easy access to an item (TYPE *) cast
@@ -99,15 +99,16 @@ inline void stdlib_iterator_construct(std_iterator_t* pstIterator, std_container
 #define std_iterator_done(IT)		IT.stItBody.stIterator.bDone
 #define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)
 
-
-
-// The generic std_for() macro
+// The container library's generic std_for() macro
 //	- locks the container (if the container has a lockhandler)
-//	- instantiates a named iterator within the for-loop scope
+//	- instantiates a named iterator in the inner for-loop scope
 //	- initialises that named iterator's fields
-//	- steps the named iterator
+//	- steps the named iterator through the container
 //	- terminates the iterating when complete
 //	- unlocks the container (if the container has a lockhandler)
+// Note: this allows break commands in the innermost (iterator) loop,
+// BUT the container will stay locked if you execute a return command
+// inside the inner loop. So don't do this!
 #define std_for(CONTAINER, IT, IS_CONST, IT_TYPE)	\
 	for (std_container_lock_wrapper(CONTAINER, IS_CONST))	\
 		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_construct(CONTAINER,IT),NULL); \
@@ -115,9 +116,9 @@ inline void stdlib_iterator_construct(std_iterator_t* pstIterator, std_container
 			std_iterator_next(IT))
 
 #define std_for_range(CONTAINER, IT, IS_CONST, IT_TYPE, BEGIN, END)	\
-	for std_container_lock_wrapper(CONTAINER, IS_CONST)	\
+	for (std_container_lock_wrapper(CONTAINER, IS_CONST))	\
 		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
-			!iterator_done(IT); \
+			!std_iterator_done(IT); \
 			std_iterator_next(IT))
 
 #define std_for_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
@@ -126,7 +127,7 @@ inline void stdlib_iterator_construct(std_iterator_t* pstIterator, std_container
 #define std_for_each_reverse_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_reverse_const_iterator)
 
 #define std_for_each(CONTAINER, IT)			std_for_each_forward(CONTAINER, IT)
-#define std_for_each_const(CONTAINER, IT)	std_for_each_const_forward(CONTAINER, IT)
+#define std_for_each_const(CONTAINER, IT)	std_for_each_forward_const(CONTAINER, IT)
 
 #define std_for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_forward_iterator,		BEGIN, END)
 #define std_for_range_forward_const(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_forward_const_iterator,	BEGIN, END)

@@ -243,6 +243,8 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_prev)(pstIterator);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 inline void* std_container_item_construct(std_container_t* pstContainer, std_container_has_t eHas, size_t szSize)
 {
 	void * pvPtr = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, eHas, szSize);
@@ -261,11 +263,14 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 	}
 	std_memoryhandler_free(pstContainer->pstMemoryHandler, eHas, pvPtr);
 }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 // Client-side (typed) methods
 
 #define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET_AND_CHECK(V,name), STD_CONTAINER_IMPLEMENTS_GET(V))
 
-#define std_size(V)				V.stBody.stContainer.szNumItems
+#define std_size(V)				(V.stBody.stContainer.szNumItems)
 #define std_empty(V)			(std_size(V) == 0U)
 
 #define std_at(V,INDEX)			STD_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer,  	 STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))

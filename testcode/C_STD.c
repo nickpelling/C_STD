@@ -136,12 +136,13 @@ void vector_of_lists_test(void)
 	std_push_back(list2, 4, 3, 2, 1);
 	std_push_back(v, list2);
 
-	std_for_each_forward(v, it)
+	printf("veclist sizes =");
+	std_for_each_forward_const(v, it)
 	{
-		list_int_t* list3 = std_iterator_at(it);
-		int num = std_size(list3[0]);
-		printf("veclist#0 size = %d" CRLF, num);
+		const list_int_t* list3 = std_iterator_at(it);
+		printf(" %d", (int)std_size(list3[0]));
 	}
+	printf(CRLF);
 
 	std_destruct(v);	// FIXME: the contained lists will need an item handler with a destructor!
 }
