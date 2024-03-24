@@ -17,6 +17,10 @@
 #define STD_INLINE  inline
 #endif
 
+#ifndef STD_EXTERN
+#define STD_EXTERN  extern
+#endif
+
 // These macros should be customised to match the compiler you're using
 #ifndef STD_EVAL
 #define STD_EVAL(X)			X

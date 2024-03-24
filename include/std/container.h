@@ -71,7 +71,7 @@ typedef struct
 
 } std_container_jumptable_t;
 
-const std_container_jumptable_t std_container_jumptable_array[std_container_enum_MAX] =
+STD_EXTERN const std_container_jumptable_t std_container_jumptable_array[std_container_enum_MAX] =
 {
 	[std_container_enum_deque]			= { STD_DEQUE_JUMPTABLE },
 	[std_container_enum_list]			= { STD_LIST_JUMPTABLE },
