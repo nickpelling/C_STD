@@ -23,7 +23,7 @@ struct std_memoryhandler_s
 	void   (*pfn_Free)(		const std_memoryhandler_t * pstMemoryHandler, void * pvData);
 };
 
-STD_INLINE void * std_memoryhandler_malloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, size_t szSize)
+inline void * std_memoryhandler_malloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, size_t szSize)
 {
 	if (eHas & std_container_has_memoryhandler)
 	{
@@ -32,7 +32,7 @@ STD_INLINE void * std_memoryhandler_malloc(const std_memoryhandler_t * pstMemory
 	return malloc(szSize);
 }
 
-STD_INLINE void * std_memoryhandler_realloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, void * pvData, size_t szSize)
+inline void * std_memoryhandler_realloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, void * pvData, size_t szSize)
 {
 	if (eHas & std_container_has_memoryhandler)
 	{
@@ -41,7 +41,7 @@ STD_INLINE void * std_memoryhandler_realloc(const std_memoryhandler_t * pstMemor
 	return realloc(pvData, szSize);
 }
 
-STD_INLINE void std_memoryhandler_free(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, void * pvData)
+inline void std_memoryhandler_free(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, void * pvData)
 {
 	if (eHas & std_container_has_memoryhandler)
 	{
