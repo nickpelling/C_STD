@@ -1,6 +1,6 @@
 # C Implementation of Standard Container Library
 
-This library implements a C-style version of the standard container library. The aim is not to duplicate C++'s templates, but rather to create familiar-feeling container helpers, that can easily and safely be used in production code.
+This library is a C version of the standard container library. The aim is not to duplicate C++'s templates, but rather to create familiar-feeling container helpers, that can easily and safely be used in production code.
 
 # Using this container library
 
@@ -8,7 +8,8 @@ Creating and using a container is as simple as this:
 
     #include <stdio.h>
 	
-    #include "std/container.h"				// Include a single container header file
+    // Include a single container header file
+    #include "std/container.h"
 
     int main(int argc, char * argv[])
     {
