@@ -90,7 +90,7 @@ const std_container_jumptable_t std_container_jumptable_array[std_container_enum
  * 
  * @return Name of the container
  */
-inline const char* std_container_name_get(std_container_enum_t eContainer, std_container_implements_t eImplements)
+STD_INLINE const char* std_container_name_get(std_container_enum_t eContainer, std_container_implements_t eImplements)
 {
 	if (eImplements & std_container_implements_name)
 	{
@@ -112,7 +112,7 @@ inline const char* std_container_name_get(std_container_enum_t eContainer, std_c
  *
  * @return True if successful, else false
  */
-inline bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
+STD_INLINE bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
 				size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, const std_container_handlers_t * pstHandlers)
 {
 	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas, pstHandlers);
@@ -129,7 +129,7 @@ inline bool std_container_call_construct(std_container_t* pstContainer, std_cont
  *
  * @return e_std_lock_NoRestoreNeeded if no lock restore needed, else the lock state to restore to
  */
-inline std_lock_state_t std_container_lock(std_container_t* pstContainer, std_container_has_t eHas, bool bReadOnly)
+STD_INLINE std_lock_state_t std_container_lock(std_container_t* pstContainer, std_container_has_t eHas, bool bReadOnly)
 {
 	if (eHas & std_container_has_lockhandler)
 	{
@@ -151,7 +151,7 @@ inline std_lock_state_t std_container_lock(std_container_t* pstContainer, std_co
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	eOldState		Previous lock state to restore
  */
-inline void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState)
+STD_INLINE void std_container_lock_restore(std_container_t* pstContainer, std_container_has_t eHas, std_lock_state_t eOldState)
 {
 	if (	(eHas & std_container_has_lockhandler)
 		&&	(eOldState != e_std_lock_NoRestoreNeeded)	)
@@ -181,7 +181,7 @@ inline void std_container_lock_restore(std_container_t* pstContainer, std_contai
  * @param[in]	eContainer		The container type index
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  */
-inline bool std_container_call_destruct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
+STD_INLINE bool std_container_call_destruct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	return STD_CONTAINER_CALL(eContainer, pfn_destruct)(pstContainer);
@@ -195,7 +195,7 @@ inline bool std_container_call_destruct(std_container_t* pstContainer, std_conta
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	szNewSize		New number of items to allocate in the container
  */
-inline void std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
+STD_INLINE void std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_reserve)(pstContainer, szNewSize);
@@ -209,7 +209,7 @@ inline void std_container_call_reserve(std_container_t* pstContainer, std_contai
  * @param[in]	eContainer		The container type index
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  */
-inline void std_container_call_fit(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
+STD_INLINE void std_container_call_fit(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_fit)(pstContainer);
@@ -225,7 +225,7 @@ inline void std_container_call_fit(std_container_t* pstContainer, std_container_
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
  */
-inline void std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+STD_INLINE void std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
@@ -241,7 +241,7 @@ inline void std_container_call_push_front(std_container_t* pstContainer, std_con
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
  */
-inline void std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
+STD_INLINE void std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
@@ -257,7 +257,7 @@ inline void std_container_call_push_back(std_container_t* pstContainer, std_cont
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
  */
-inline void std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+STD_INLINE void std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
@@ -275,7 +275,7 @@ inline void std_container_call_push(std_container_t* pstContainer, std_container
  * 
  * @return Number of items actually popped from the container
  */
-inline size_t std_container_call_pop_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
+STD_INLINE size_t std_container_call_pop_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	size_t szNum = STD_CONTAINER_CALL(eContainer, pfn_pop_front)(pstContainer, pvResult, szMaxItems);
@@ -294,7 +294,7 @@ inline size_t std_container_call_pop_front(std_container_t* pstContainer, std_co
  *
  * @return Number of items actually popped from the container
  */
-inline size_t std_container_call_pop_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
+STD_INLINE size_t std_container_call_pop_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	size_t szNum = STD_CONTAINER_CALL(eContainer, pfn_pop_back)(pstContainer, pvResult, szMaxItems);
@@ -313,7 +313,7 @@ inline size_t std_container_call_pop_back(std_container_t* pstContainer, std_con
  * 
  * @return Number of items actually popped from the container
  */
-inline size_t std_container_call_pop(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
+STD_INLINE size_t std_container_call_pop(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	size_t szNum = STD_CONTAINER_CALL(eContainer, pfn_pop)(pstContainer, pvResult, szMaxItems);
@@ -331,7 +331,7 @@ inline size_t std_container_call_pop(std_container_t* pstContainer, std_containe
  * @param[in]	pvEnd			Entry after the final entry in range
  * @param[out]	pstIterator		Iterator to construct
  */
-inline void std_container_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvBegin, void* pvEnd, std_iterator_t* pstIterator)
+STD_INLINE void std_container_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvBegin, void* pvEnd, std_iterator_t* pstIterator)
 {
 	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_range)(pstContainer, pvBegin, pvEnd, pstIterator);
@@ -348,7 +348,7 @@ inline void std_container_call_range(std_container_t* pstContainer, std_containe
  * @param[in]	szLast			Last index
  * @param[in]	pfn_Compare		Comparison callback function
  */
-inline void std_container_call_ranged_sort(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare)
+STD_INLINE void std_container_call_ranged_sort(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
 	STD_CONTAINER_CALL(eContainer, pfn_ranged_sort)(pstContainer, szFirst, szLast, pfn_Compare);
@@ -363,7 +363,7 @@ inline void std_container_call_ranged_sort(std_container_t* pstContainer, std_co
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	szIndex			Index of entry
  */
-inline void* std_container_call_at(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szIndex)
+STD_INLINE void* std_container_call_at(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szIndex)
 {
 	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
 	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_at)(pstContainer, szIndex);
@@ -382,7 +382,7 @@ inline void* std_container_call_at(std_container_t* pstContainer, std_container_
  * @param[in]	eIterator		Which iterator type to use
  * @param[in]	pstIterator		Iterator to construct
  */
-inline void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
+STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
 {
 	pstIterator->pstContainer = pstContainer;
 	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
@@ -400,7 +400,7 @@ inline void std_iterator_call_construct(std_container_t* pstContainer, std_conta
  * @param[in]	pvBegin			First item in the range
  * @param[in]	pvEnd			Item immediately after the last item in the range
  */
-inline void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
+STD_INLINE void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
 {
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_range)(pstContainer, pstIterator, pvBegin, pvEnd);
 }
@@ -413,7 +413,7 @@ inline void std_iterator_call_range(std_container_t* pstContainer, std_container
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
  */
-inline void std_iterator_call_next(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
+STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
 {
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_next)(pstIterator);
 }
@@ -426,7 +426,7 @@ inline void std_iterator_call_next(std_iterator_t* pstIterator, std_container_en
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
  */
-inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
+STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
 {
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_prev)(pstIterator);
 }
@@ -442,7 +442,7 @@ inline void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_en
  * 
  * @return Pointer to the constructed item
  */
-inline void* std_container_item_construct(std_container_t* pstContainer, std_container_has_t eHas, size_t szSize)
+STD_INLINE void* std_container_item_construct(std_container_t* pstContainer, std_container_has_t eHas, size_t szSize)
 {
 	void * pvPtr = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, eHas, szSize);
 	if (eHas & std_container_has_itemhandler)
@@ -459,7 +459,7 @@ inline void* std_container_item_construct(std_container_t* pstContainer, std_con
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	pvPtr			The item to destruct
  */
-inline void std_container_item_destruct(std_container_t* pstContainer, std_container_has_t eHas, void *pvPtr)
+STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_container_has_t eHas, void *pvPtr)
 {
 	if (eHas & std_container_has_itemhandler)
 	{

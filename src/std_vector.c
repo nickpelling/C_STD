@@ -56,6 +56,9 @@ inline void * stdlib_vector_at(std_container_t * pstContainer, size_t szIndex)
 	return STD_LINEAR_ADD(pstVector->pvStartAddr, pstVector->stContainer.szSizeofItem * szIndex);
 }
 
+// Force the compiler to emit a non-inline version
+void* stdlib_vector_at(std_container_t* pstContainer, size_t szIndex);
+
 /**
  * Construct a vector container
  *

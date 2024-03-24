@@ -13,6 +13,10 @@
 #include "std/support/ctz_clz.h"
 #endif
 
+#ifndef STD_INLINE
+#define STD_INLINE  inline
+#endif
+
 // These macros should be customised to match the compiler you're using
 #ifndef STD_EVAL
 #define STD_EVAL(X)			X

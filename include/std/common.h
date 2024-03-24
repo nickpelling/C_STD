@@ -43,7 +43,7 @@ typedef struct
 	std_lock_handle_t			  phLock;			// Opaque handle to a lock instance
 } std_container_t;
 
-inline bool std_container_constructor(std_container_t * pstContainer, size_t szSizeofItem, std_container_has_t eHas, const std_container_handlers_t * pstHandlers)
+STD_INLINE bool std_container_constructor(std_container_t * pstContainer, size_t szSizeofItem, std_container_has_t eHas, const std_container_handlers_t * pstHandlers)
 {
 	bool bResult;
 

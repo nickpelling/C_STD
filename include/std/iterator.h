@@ -68,12 +68,12 @@ struct std_iterator_s
 	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, false, TYPE)		*	pstReverseIterator;			\
 	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
 
-inline void stdlib_iterator_construct_done(std_iterator_t* pstIterator)
+STD_INLINE void stdlib_iterator_construct_done(std_iterator_t* pstIterator)
 {
 	pstIterator->bDone = true;
 }
 
-inline void stdlib_iterator_construct(std_iterator_t* pstIterator, std_container_t* pstContainer, void* pvRef)
+STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_container_t* pstContainer, void* pvRef)
 {
 	pstIterator->pstContainer	= pstContainer;
 	pstIterator->szSizeofItem	= pstContainer->szSizeofItem;

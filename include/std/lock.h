@@ -47,7 +47,7 @@ typedef struct
 	std_lock_state_t (*pfnLock_Update)(std_lock_handle_t pstvLock, std_lock_state_t eNewState, uint32_t u32Timeout_msec);
 } std_lock_handler_t;
 
-inline bool std_lock_construct(const std_lock_handler_t* pstLockHandler, std_lock_handle_t* ppstvLock)
+STD_INLINE bool std_lock_construct(const std_lock_handler_t* pstLockHandler, std_lock_handle_t* ppstvLock)
 {
 	if (pstLockHandler)
 	{
@@ -57,7 +57,7 @@ inline bool std_lock_construct(const std_lock_handler_t* pstLockHandler, std_loc
 	return false;
 }
 
-inline bool std_lock_destruct(const std_lock_handler_t* pstLockHandler, std_lock_handle_t* ppstvLock)
+STD_INLINE bool std_lock_destruct(const std_lock_handler_t* pstLockHandler, std_lock_handle_t* ppstvLock)
 {
 	if (pstLockHandler)
 	{
@@ -67,7 +67,7 @@ inline bool std_lock_destruct(const std_lock_handler_t* pstLockHandler, std_lock
 	return false;
 }
 
-inline std_lock_state_t std_lock_update(const std_lock_handler_t* pstLockHandler, std_lock_handle_t pstvLock, std_lock_state_t eNewState, uint32_t u32Timeout_msec)
+STD_INLINE std_lock_state_t std_lock_update(const std_lock_handler_t* pstLockHandler, std_lock_handle_t pstvLock, std_lock_state_t eNewState, uint32_t u32Timeout_msec)
 {
 	if (pstLockHandler)
 	{
@@ -76,12 +76,12 @@ inline std_lock_state_t std_lock_update(const std_lock_handler_t* pstLockHandler
 	return e_std_lock_NoRestoreNeeded;
 }
 
-inline std_lock_state_t std_lock_for_reading(const std_lock_handler_t* pstLockHandler, std_lock_handle_t pstvLock, uint32_t u32Timeout_msec)
+STD_INLINE std_lock_state_t std_lock_for_reading(const std_lock_handler_t* pstLockHandler, std_lock_handle_t pstvLock, uint32_t u32Timeout_msec)
 {
 	return std_lock_update(pstLockHandler, pstvLock, e_std_lock_ReadLocked, u32Timeout_msec);
 }
 
-inline std_lock_state_t std_lock_for_writing(const std_lock_handler_t* pstLockHandler, std_lock_handle_t pstvLock, uint32_t u32Timeout_msec)
+STD_INLINE std_lock_state_t std_lock_for_writing(const std_lock_handler_t* pstLockHandler, std_lock_handle_t pstvLock, uint32_t u32Timeout_msec)
 {
 	return std_lock_update(pstLockHandler, pstvLock, e_std_lock_WriteLocked, u32Timeout_msec);
 }
