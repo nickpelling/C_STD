@@ -15,6 +15,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: cmake
       run: cmake -S ./ -B ./build
-    - name: make all
-      run: make all
+    - name: make
+      run: cd build && make all
     
