@@ -14,7 +14,7 @@
 #endif
 
 #ifndef STD_INLINE
-#define STD_INLINE  inline
+#define STD_INLINE  static inline
 #endif
 
 #ifndef STD_STATIC
