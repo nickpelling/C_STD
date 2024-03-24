@@ -6,33 +6,41 @@ This library implements a C-style version of the standard container library. The
 
 Creating and using a container is as simple as this:
 
-	#include <stdio.h>
-
-	#include "std/container.h"				// Include a single container header file
-
-	int main(int argc, char * argv[])
-	{
-		int aiArray[10];
-		size_t szNum;
-
-		std_vector(int) v;					// Declare a container v containing ints
-		std_construct(v);					// Construct (initialise) the container
-
-		std_push_back(v, 1, 2, 3, 3, 5);	// Push 1 to the back of the container, then 2, 3, 4, 5
-
-		std_for_each(v, it)
-			printf("%d ", std_iterator_at(it)[0]);
-		printf("\r\n");
-
-		szNum = std_pop_back(v, aiArray, 10);	// Pop up to 10 items from the container into an array
-		for (int i = 0; i < szNum; i++)
-			printf("%d ", aiNum[i]);
-		printf("\r\n");
-
-		std_destruct(v);					// Destruct the container
+    #include <stdio.h>
 	
-		return 0;
-	}
+    #include "std/container.h"				// Include a single container header file
+
+    int main(int argc, char * argv[])
+    {
+        int aiArray[10];
+        size_t szNum;
+
+        // Declare a container v containing ints
+        std_vector(int) v;					
+
+        // Construct (initialise) the container
+        std_construct(v);
+
+        // Push 1 to the back of the container, then 2, 3, 4, 5
+        std_push_back(v, 1, 2, 3, 3, 5);
+
+        std_for_each(v, it)
+        {
+            printf("%d ", std_iterator_at(it)[0]);
+        }
+        printf("\r\n");
+
+        // Pop up to 10 items from the container into an array
+        szNum = std_pop_back(v, aiArray, 10);
+        for (int i = 0; i < szNum; i++)
+            printf("%d ", aiNum[i]);
+        printf("\r\n");
+
+        // Destruct (destroy) the container
+        std_destruct(v);
+	
+        return 0;
+    }
 
 # Licence
 
