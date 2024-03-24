@@ -32,35 +32,16 @@ inline void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex)
 	return STD_LINEAR_ADD(pstVector->pvStartAddr, pstVector->stContainer.szSizeofItem * (iIndex));
 }
 
-inline void * stdlib_vector_begin(std_container_t * pstContainer)
-{
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return pstVector->pvStartAddr;
-}
-
-inline void * stdlib_vector_end(std_container_t * pstContainer)
-{
-	return stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems));
-}
-
-inline void * stdlib_vector_rbegin(std_container_t * pstContainer)
-{
-	return stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems) - 1U);
-}
-
-inline void * stdlib_vector_rend(std_container_t * pstContainer)
-{
-	return stdlib_vector_at(pstContainer, -1);
-}
-
 /**
- * Construct a vector
+ * Construct a vector container
  *
  * @param[in]	pstContainer	Vector to initialise
  * @param[in]	szFullSizeof	Size of a (possibly wrapped) item
  * @param[in]	szPayloadOffset	Offset to the payload within the (possibly wrapped) item
  * @param[in]	eHas			Enumeration saying which handlers to expect
  * @param[in]	pstHandlers		Struct holding handlers declared
+ *
+ * @return True if construction was successful, else false
  */
 bool stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
 {
@@ -72,6 +53,13 @@ bool stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, siz
 	return bResult;
 }
 
+/**
+ * Destruct a vector container
+ *
+ * @param[in]	pstContainer	Vector container to destruct
+ * 
+ * @return True if destruction was successful, else false
+ */
 bool stdlib_vector_destruct(std_container_t * pstContainer)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
@@ -103,10 +91,10 @@ bool stdlib_vector_destruct(std_container_t * pstContainer)
 	return true;
 }
 /**
- * Reserve space within a vector for a number of items
+ * Reserve space within a vector container for a number of items
  *
- * @param[in]	pstContainer	Vector to reserve space for
- * @param[in]	szNewSize
+ * @param[in]	pstContainer	Vector container to reserve space for
+ * @param[in]	szNewSize		New number of items
  */
 void stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 {
@@ -139,7 +127,7 @@ void stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 /**
  * Shrink an over-allocated block to exactly fit the number of elements in it
  *
- * @param[in]	pstContainer	Vector to shrink
+ * @param[in]	pstContainer	Vector container to shrink
  */
 void stdlib_vector_fit(std_container_t * pstContainer)
 {
@@ -168,11 +156,13 @@ void stdlib_vector_fit(std_container_t * pstContainer)
 }
 
 /**
- * Create a new item at the very front of a vector
+ * Push a series of items onto the front of a vector
  *
- * @param[in]	pstContainer	Vector to add an item to
+ * @param[in]	pstContainer	Vector container to push the series of items onto
+ * @param[in]	pvBase			Pointer to start of array of items
+ * @param[in]	szNumItems		Number of items in the array
  */
-void stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
@@ -189,11 +179,13 @@ void stdlib_vector_push_front(std_container_t * pstContainer, const* pvBase, siz
 }
 
 /**
- * Create a new item at the very back of a vector
+ * Push a series of items onto the back of a vector
  *
- * @param[in]	pstContainer	Vector to add an item to
+ * @param[in]	pstContainer	Vector container to push the series of items onto
+ * @param[in]	pvBase			Pointer to start of array of items
+ * @param[in]	szNumItems		Number of items in the array
  */
-void stdlib_vector_push_back(std_container_t * pstContainer, const *pvBase, size_t szNumItems)
+void stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
@@ -226,11 +218,15 @@ size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, 
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
+	for (i = 0; i < szMaxItems; i++)
 	{
 		pvItem = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
 		pstContainer->szNumItems--;
+		if (pvResult)
+		{
+			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
+		}
 	}
 
 	return szMaxItems;
@@ -302,80 +298,44 @@ void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_ite
 {
 	if (pvBegin == pvEnd)
 	{
-		pstIterator->bDone = true;
+		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
+		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvRef		= pvBegin;
 		pstIterator->pvNext		= next_item(pstIterator, pvBegin);
-		pstIterator->bDone		= false;
 	}
 }
 
 void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
-	stdlib_vector_forwarditerator_range(	pstContainer,
-											pstIterator,
-											stdlib_vector_begin(pstContainer),
-											stdlib_vector_end(pstContainer)		);
+	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	void * pvBegin = pstVector->pvStartAddr;
+	void * pvEnd   = stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems));
+	stdlib_vector_forwarditerator_range( pstContainer, pstIterator, pvBegin, pvEnd);
 }
 
 void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
 {
 	if (pvBegin == pvEnd)
 	{
-		pstIterator->bDone = true;
+		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
+		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvRef		= pvBegin;
 		pstIterator->pvNext		= prev_item(pstIterator, pvBegin);
-		pstIterator->bDone		= false;
 	}
 }
 
 void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
-	stdlib_vector_reverseiterator_range(	pstContainer,
-											pstIterator,
-											stdlib_vector_rbegin(pstContainer),
-											stdlib_vector_rend(pstContainer)		);
+	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	void * pvBegin = stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems) - 1U);
+	void * pvEnd = STD_LINEAR_SUB(pstVector->pvStartAddr, pstContainer->szSizeofItem);
+	stdlib_vector_reverseiterator_range( pstContainer, pstIterator, pvBegin, pvEnd );
 }
-
-#if 0
-/**
- * Compare two vectors for equality using a per-item comparison function
- * 
- * Note: this was just a demo, a more general container comparison is needed
- *
- * @param[in]	pstContainer1	First  vector of items to compare
- * @param[in]	pstContainer2	Second vector of items to compare
- * @param[in]	pfnEqual		Per-item equality comparison function
- */
-bool stdlib_vector_equal(std_container_t * pstContainer1, std_container_t * pstContainer2, pfn_std_equal_t pfnEqual)
-{
-	std_vector_t * pstVector1 = CONTAINER_TO_VECTOR(pstContainer1);
-	std_vector_t * pstVector2 = CONTAINER_TO_VECTOR(pstContainer2);
-	size_t szNum;
-
-	if (	(pstVector1->stContainer.szSizeofItem != pstVector2->stContainer.szSizeofItem)
-		||	(pstVector1->szNumItems != pstVector2->szNumItems)	)
-	{
-		return false;
-	}
-	szNum = pstVector1->szNumItems;
-	for (size_t szIndex = 0; szIndex < szNum; szIndex++)
-	{
-		if (pfnEqual(stdlib_vector_at(pstContainer1, szIndex), stdlib_vector_at(pstContainer2, szIndex)) == false)
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-#endif

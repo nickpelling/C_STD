@@ -62,18 +62,11 @@ extern bool stdlib_vector_construct(	std_container_t * pstContainer, size_t szSi
 extern bool stdlib_vector_destruct(		std_container_t * pstContainer);	
 extern void stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
 extern void stdlib_vector_fit(			std_container_t * pstContainer);
-extern void stdlib_vector_push_front(	std_container_t * pstContainer, const* pvBase, size_t szNumItems);
-extern void stdlib_vector_push_back(	std_container_t * pstContainer, const void* pvBase, size_t szNumElements);
+extern void stdlib_vector_push_front(	std_container_t * pstContainer, const void * pvBase, size_t szNumItems);
+extern void stdlib_vector_push_back(	std_container_t * pstContainer, const void * pvBase, size_t szNumItems);
 extern size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 extern void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex);
-extern void * stdlib_vector_front(std_container_t * pstContainer);
-extern void * stdlib_vector_back(std_container_t * pstContainer);
-extern void * stdlib_vector_begin(std_container_t * pstContainer);
-extern void * stdlib_vector_end(std_container_t * pstContainer);
-extern void * stdlib_vector_rbegin(std_container_t * pstContainer);
-extern void * stdlib_vector_rend(std_container_t * pstContainer);
-extern bool stdlib_vector_empty(std_container_t * pstContainer);
 
 extern void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
 extern void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);

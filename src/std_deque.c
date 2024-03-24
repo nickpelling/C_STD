@@ -4,10 +4,8 @@
  *  Created on: 18 Oct 2022
  *      Author: Nick Pelling
  *
- * The central idea of a deque is to make it a container that keeps nearly
- * all the speed advantages of a linear vector (e.g. when iterating through
- * the contains of an individual bucket) but adds the flexibility of a queue
- * (e.g. when pushing/popping items at the start or end).
+ * The central idea of a deque is to make a container that is largely linear
+ * but that is able to push/pop items at the start or end.
  *
  * It achieves this by allocating blocks of items known as "buckets", and
  * iterating by stepping linearly through the items in each bucket.
@@ -25,21 +23,51 @@
 #define ITERATOR_TO_DEQUEIT(IT)			STD_CONTAINER_OF(IT, std_deque_iterator_t, stIterator)
 #define DEQUEIT_TO_ITERATOR(DEQUEIT)	&DEQUEIT->stIterator
 
+/*
+ * Step a pointer linearly forwards within a bucket of items
+ * 
+ * @param[in]	pstIterator		The iterator context
+ * @param[in]	pvThis			The current pointer
+ * 
+ * @return Pointer to the start of the next linearly sequential item
+ */
 static inline void * next_item(std_iterator_t * pstIterator, void * pvThis)
 {
 	return STD_LINEAR_ADD(pvThis, pstIterator->szSizeofItem);
 }
 
+/*
+ * Step a pointer linearly backwards within a bucket of items
+ *
+ * @param[in]	pstIterator		The iterator context
+ * @param[in]	pvThis			The current pointer
+ *
+ * @return Pointer to the start of the previous linearly sequential item
+ */
 static inline void * prev_item(std_iterator_t * pstIterator, void * pvThis)
 {
 	return STD_LINEAR_SUB(pvThis, pstIterator->szSizeofItem);
 }
 
+/*
+ * Get a pointer to the first item in the current (untyped) deque
+ *
+ * @param[in]	pstContainer	The current container
+ *
+ * @return Pointer to the first item in the current (untyped) deque
+ */
 inline void * stdlib_deque_front(std_container_t * pstContainer)
 {
     return stdlib_deque_at(pstContainer, 0);
 }
 
+/*
+ * Get a pointer to the last item in the current (untyped) deque
+ *
+ * @param[in]	pstContainer	The current container
+ *
+ * @return Pointer to the last item in the current (untyped) deque
+ */
 inline void * stdlib_deque_back(std_container_t * pstContainer)
 {
 	return stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
@@ -222,8 +250,8 @@ void * stdlib_deque_at(std_container_t * pstContainer, int32_t iIndex)
 void stdlib_deque_next(std_iterator_t * pstIterator)
 {
 	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-	std_deque_t* pstDeque = pstDequeIt->pstDeque;
-	std_container_t* pstContainer = DEQUE_TO_CONTAINER(pstDeque);
+	std_container_t* pstContainer = pstDequeIt->stIterator.pstContainer;
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 
 	if (++pstDequeIt->szIndex < pstDequeIt->szRangeLen)
 	{
@@ -241,8 +269,7 @@ void stdlib_deque_next(std_iterator_t * pstIterator)
 void stdlib_deque_prev(std_iterator_t * pstIterator)
 {
 	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-	std_deque_t* pstDeque = pstDequeIt->pstDeque;
-	std_container_t* pstContainer = DEQUE_TO_CONTAINER(pstDeque);
+	std_container_t* pstContainer = pstIterator->pstContainer;
 
 	if (pstDequeIt->szIndex-- != 0U)
 	{
@@ -259,20 +286,15 @@ void stdlib_deque_prev(std_iterator_t * pstIterator)
  */
 void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
-	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
-	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-
 	if (pstContainer->szNumItems == 0)
 	{
-    	pstDequeIt->stIterator.bDone = true;
+		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
-		pstDequeIt->pstDeque = pstDeque;
+		stdlib_iterator_construct(pstIterator, pstContainer, stdlib_deque_at(pstContainer, 0));
 
-		pstDequeIt->stIterator.szSizeofItem	= pstContainer->szSizeofItem;
-		pstDequeIt->stIterator.pvRef		= stdlib_deque_at(pstContainer, 0);
-		pstDequeIt->stIterator.bDone = false;
+		std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 		pstDequeIt->szIndex			= 0U;
 		pstDequeIt->szRangeLen		= pstContainer->szNumItems;
 	}
@@ -283,20 +305,15 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
  */
 void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator)
 {
-	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
-	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-
 	if (pstContainer->szNumItems == 0)
 	{
-		pstDequeIt->stIterator.bDone = true;
+		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
-		pstDequeIt->pstDeque = pstDeque;
+		stdlib_iterator_construct(pstIterator, pstContainer, stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U));
 
-		pstDequeIt->stIterator.szSizeofItem = pstContainer->szSizeofItem;
-		pstDequeIt->stIterator.pvRef = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
-		pstDequeIt->stIterator.bDone = false;
+		std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 		pstDequeIt->szIndex = pstContainer->szNumItems - 1U;
 		pstDequeIt->szRangeLen = pstContainer->szNumItems;
 	}

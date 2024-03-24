@@ -70,6 +70,19 @@ struct std_iterator_s
 	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_reverse, false, TYPE)			*	pstReverseIterator;			\
 	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
 
+inline void stdlib_iterator_construct_done(std_iterator_t* pstIterator)
+{
+	pstIterator->bDone = true;
+}
+
+inline void stdlib_iterator_construct(std_iterator_t* pstIterator, std_container_t* pstContainer, void* pvRef)
+{
+	pstIterator->pstContainer	= pstContainer;
+	pstIterator->szSizeofItem	= pstContainer->szSizeofItem;
+	pstIterator->pvRef			= pvRef;
+	pstIterator->bDone			= false;
+}
+
 // Because containers all use the same type smuggling mechanism for their
 // associated iterators, the following macros work the same for ALL of them:
 #define std_forward_iterator(CONTAINER)			STD_TYPEOF(CONTAINER.pstForwardIterator[0])
@@ -84,7 +97,7 @@ struct std_iterator_s
 
 // Generic operations on a wrapped (and typed) iterator
 #define std_iterator_done(IT)		IT.stItBody.stIterator.bDone
-#define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)[0]
+#define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)
 
 
 

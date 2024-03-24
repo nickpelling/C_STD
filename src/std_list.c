@@ -8,66 +8,28 @@
 #include "std/list.h"
 #include "std/config.h"
 
+// Cast a generic container to a list, and a list to a generic container
 #define CONTAINER_TO_LIST(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_list_t, stContainer)
 #define LIST_TO_CONTAINER(LIST)			&LIST->stContainer
 
+// Cast a generic iterator to a list iterator, and a list iterator to a generic iterator
 #define ITERATOR_TO_LISTIT(IT)			STD_CONTAINER_OF(IT, std_list_iterator_t, stIterator)
 #define LISTIT_TO_ITERATOR(LISTIT)		&LISTIT->stIterator
 
-#define std_list_link_sizeof(LIST)		sizeof(LIST.pstLink[0])
-#define std_list_link_typeof(LIST)		STD_TYPEOF(LIST.pstLink[0])
-#define std_list_link_cast(LIST,X)		((STD_TYPEOF(LIST.pstLink))(X))
-#define std_list_link_offsetof(LIST)	STD_OFFSETOF(std_list_link_typeof(LIST), stPayload)
-
-inline void * stdlib_list_front(std_container_t * pstContainer)
-{
-	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
-    return STD_LINEAR_ADD(pstList->pstHead, pstList->szPayloadOffset);
-}
-
-inline void * stdlib_list_back(std_container_t * pstContainer)
-{
-	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
-    return STD_LINEAR_ADD(pstList->pstTail, pstList->szPayloadOffset);
-}
-
-inline std_list_node_t * stdlib_list_begin(std_container_t * pstContainer)
-{
-	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
-    return pstList->pstHead;
-}
-
-inline std_list_node_t * stdlib_list_end(std_container_t * pstContainer)
-{
-    if (pstContainer) { /* lint - parameter not used */ }
-
-    return NULL;
-}
-
-inline std_list_node_t * stdlib_list_rbegin(std_container_t * pstContainer)
-{
-	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
-    return pstList->pstTail;
-}
-
-inline std_list_node_t * stdlib_list_rend(std_container_t * pstContainer)
-{
-    if (pstContainer) { /* lint - parameter not used */ }
-
-    return NULL;
-}
-
-inline bool stdlib_list_empty(std_container_t * pstContainer)
-{
-    return (pstContainer->szNumItems == 0);
-}
+#define LIST_LINK_SIZEOF(LIST)			sizeof(LIST.pstLink[0])
+#define LIST_LINK_TYPEOF(LIST)			STD_TYPEOF(LIST.pstLink[0])
+#define LIST_LINK_CAST(LIST,X)			((STD_TYPEOF(LIST.pstLink))(X))
+#define LIST_LINK_OFFSETOF(LIST)		STD_OFFSETOF(LIST_LINK_TYPEOF(LIST), stPayload)
 
 // --------------------------------------------------------------------------
 // Private functions
 // --------------------------------------------------------------------------
 
 /**
- *
+ * Disconnect a doubly-linked node from its predecessor and successor nodes
+ * 
+ * @param[in]	pstList		List to update
+ * @param[in]	pstNode		Node to disconnect
  */
 static void node_disconnect(std_list_t * pstList, std_list_node_t * pstNode)
 {
@@ -100,7 +62,7 @@ static void node_disconnect(std_list_t * pstList, std_list_node_t * pstNode)
  */
 static void node_insert_after(std_list_t * pstList, std_list_node_t * pstPosition, std_list_node_t * pstNode)
 {
-	if (stdlib_list_empty(LIST_TO_CONTAINER(pstList)))
+	if (pstList->stContainer.szNumItems == 0)
 	{
 		pstList->pstHead = pstList->pstTail = pstNode;
 		pstNode->pstNext = pstNode->pstPrev = NULL;
@@ -131,7 +93,7 @@ static void node_insert_after(std_list_t * pstList, std_list_node_t * pstPositio
  */
 static void node_insert_before(std_list_t * pstList, std_list_node_t * pstPosition, std_list_node_t * pstNode)
 {
-	if (stdlib_list_empty(LIST_TO_CONTAINER(pstList)))
+	if (pstList->stContainer.szNumItems == 0)
 	{
 		pstList->pstHead = pstList->pstTail = pstNode;
 		pstNode->pstNext = pstNode->pstPrev = NULL;
@@ -160,10 +122,12 @@ static void node_insert_before(std_list_t * pstList, std_list_node_t * pstPositi
 /**
  * Initialise a newly-allocated list
  *
- * @param[in]	pstList			List to initialise
- * @param[in]	pstItemHandler	Allocator this list should use
- * @param[in]	szSizeofItem	Size of an item
- * @param[in]	szAlignofItem	Alignment of an item
+ * @param[in]	pstContainer	List container to initialise
+ * @param[in]	szSizeofItem	Size of a raw (unwrapped) item
+ * @param[in]	szWrappedSizeof	Size of a wrapped item (i.e. including its node header)
+ * @param[in]	szPayloadOffset	Offset of a raw (payload) item inside a wrapped (node) item
+ * @param[in]	eHas			Specifies which kinds of handlers this container uses
+ * @param[in]	pstHandlers		Pointer to handler jumptable
  */
 bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
 {
@@ -176,6 +140,13 @@ bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_
 	return bResult;
 }
 
+/**
+ * Destruct a list container (and all the things inside it)
+ * 
+ * @param[in]	pstContainer		List container to destruct
+ * 
+ * @return		True if list container was able to be destructed, else false
+ */
 bool stdlib_list_destruct(std_container_t* pstContainer)
 {
 	if (pstContainer == NULL)
@@ -189,11 +160,37 @@ bool stdlib_list_destruct(std_container_t* pstContainer)
 }
 
 /**
- * Create a new item and insert it at the front of an existing list
+ * Get a pointer to the item at the front of the list container
+ * 
+ * @param[in]	pstContainer		List container
+ * 
+ * @return		Pointer to the item at the front of the list container
+ */
+void* stdlib_list_front(std_container_t* pstContainer)
+{
+	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
+	return STD_LINEAR_ADD(pstList->pstHead, pstList->szPayloadOffset);
+}
+
+/**
+ * Get a pointer to the item at the back of the list container
  *
- * @param[in]	pstList		List
+ * @param[in]	pstContainer		List container
  *
- * @return Pointer to the newly-created contained item
+ * @return		Pointer to the item at the back of the list container
+ */
+void* stdlib_list_back(std_container_t* pstContainer)
+{
+	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
+	return STD_LINEAR_ADD(pstList->pstTail, pstList->szPayloadOffset);
+}
+
+/**
+ * Push a series of items onto the front of a list container
+ *
+ * @param[in]	pstContainer	List container to push onto
+ * @param[in]	pvBase			Array of items to push onto the list
+ * @param[in]	szNumItems		Number of items in the array
  */
 void stdlib_list_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
@@ -217,11 +214,11 @@ void stdlib_list_push_front(std_container_t * pstContainer, const void * pvBase,
 }
 
 /**
- * Create a new item and insert it at the back of an existing list
+ * Push a series of items onto the back of a list
  *
- * @param[in]	pstList		List
- *
- * @return Pointer to the newly-created contained item
+ * @param[in]	pstContainer	List container to push items onto
+ * @param[in]	pvBase			Array of items to push onto the list
+ * @param[in]	szNumItems		Number of items in the array
  */
 void stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
@@ -245,7 +242,13 @@ void stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, 
 }
 
 /**
+ * Pop a series of items off the front of a list container
  *
+ * @param[in]	pstContainer	List container to pop items off
+ * @param[in]	pvBase			Array of items to push onto the list
+ * @param[in]	szNumItems		Number of items in the array
+ * 
+ * @return Number of items popped off the front of a list container
  */
 size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
@@ -259,7 +262,7 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
+	for (i = 0; i < szMaxItems; i++)
 	{
 		pstNode = pstList->pstHead;
 		node_disconnect(pstList, pstNode);
@@ -267,13 +270,23 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
 		pstContainer->szNumItems--;
+		if (pvResult != NULL)
+		{
+			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
+		}
 	}
 
 	return szMaxItems;
 }
 
 /**
+ * Pop a series of items off the back of a list container
  *
+ * @param[in]	pstContainer	List container to pop items off
+ * @param[in]	pvBase			Array of items to push onto the list
+ * @param[in]	szNumItems		Number of items in the array
+ *
+ * @return Number of items popped off the back of a list container
  */
 size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
@@ -287,7 +300,7 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
+	for (i = 0; i < szMaxItems; i++)
 	{
 		pstNode = pstList->pstTail;
 		node_disconnect(pstList, pstNode);
@@ -295,13 +308,17 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
 		pstContainer->szNumItems--;
+		if (pvResult != NULL)
+		{
+			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
+		}
 	}
 
 	return szMaxItems;
 }
 
 /**
- * Step a list iterator forwards through a list
+ * Step a list iterator forwards through a list container
  *
  * @param[in]	pstIterator	List iterator
  */
@@ -321,7 +338,7 @@ void stdlib_list_next(std_iterator_t * pstIterator)
 }
 
 /**
- * Step a list iterator backwards through a list
+ * Step a list iterator backwards through a list container
  *
  * @param[in]	pstIterator	List iterator
  */
@@ -343,63 +360,59 @@ void stdlib_list_prev(std_iterator_t * pstIterator)
 /**
  * Set up a list iterator to step forwards through a list
  *
- * @param[in]	pstContainer	List
+ * @param[in]	pstContainer	List container
  * @param[in]	pstIterator		List iterator
  */
 void stdlib_list_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
-	std_list_node_t *pstNode;
 
 	if (pstList->pstHead == NULL)
 	{
-		pstListIt->stIterator.bDone = true;
+		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
+		std_list_node_t * pstNode = pstList->pstHead;
+		void * pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		stdlib_iterator_construct(pstIterator, pstContainer, pvItem);
+
 		pstListIt->szLinkSize = pstList->szLinkSize;
 		pstListIt->szPayloadOffset = pstList->szPayloadOffset;
-
-		pstNode = stdlib_list_begin(pstContainer);
 		pstListIt->pstBegin = pstNode;
-		pstListIt->pstEnd   = stdlib_list_end(pstContainer);
+		pstListIt->pstEnd   = NULL;
 		pstListIt->pstNext	= pstNode->pstNext;
 		pstListIt->pstNode	= pstNode;
-
-		pstListIt->stIterator.bDone = false;
-		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstNode, pstListIt->szPayloadOffset);
     }
 }
 
 /**
- * Set up a list iterator to step backwards through a list
+ * Set up a list iterator to step backwards through a list container
  *
- * @param[in]	pstContainer	List
+ * @param[in]	pstContainer	List container
  * @param[in]	pstIterator		List iterator
  */
 void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
-	std_list_node_t *pstNode;
 
-	if (pstList->pstHead == NULL)
+	if (pstList->pstTail == NULL)
 	{
-		pstListIt->stIterator.bDone = true;
+		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
+		std_list_node_t * pstNode = pstList->pstTail;
+		void * pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		stdlib_iterator_construct(pstIterator, pstContainer, pvItem);
+
 		pstListIt->szLinkSize = pstList->szLinkSize;
 		pstListIt->szPayloadOffset = pstList->szPayloadOffset;
-
-		pstNode = stdlib_list_rbegin(pstContainer);
 		pstListIt->pstBegin = pstNode;
-		pstListIt->pstEnd   = stdlib_list_rend(pstContainer);
+		pstListIt->pstEnd   = NULL;
 		pstListIt->pstNext	= pstNode->pstPrev;
 		pstListIt->pstNode	= pstNode;
-
-		pstListIt->stIterator.bDone = false;
-		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstNode, pstListIt->szPayloadOffset);
     }
 }
