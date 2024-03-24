@@ -19,15 +19,15 @@
 //	- an iterator smuggle, used to give easy access to an associated iterator
 //	- a typed comparison function (for sorting)
 //	- a typed equals function
-#define STD_VECTOR(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS)	\
-	union										\
+#define STD_VECTOR(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME)	\
+	union TEMPNAME								\
 	{											\
 		BASE 	   			 stBody;			\
 		TYPE			*	pstType;			\
 		TYPE const		*	pstConstType;		\
 		STD_COMPARE(const TYPE, pfnCompare);	\
 		\
-		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
+		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
@@ -51,7 +51,7 @@ typedef	struct
 
 // Client-side declaration code
 
-#define STD_VECTOR_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, std_vector_implements)
+#define STD_VECTOR_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, std_vector_implements, STD_FAKEVAR())
 
 #define std_vector(T)					STD_VECTOR_DECLARE(T,std_container_has_no_handlers)
 #define std_vector_handlers(T,HAS_ENUM)	STD_VECTOR_DECLARE(T,HAS_ENUM)

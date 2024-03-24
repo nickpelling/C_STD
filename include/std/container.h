@@ -34,11 +34,15 @@
 #define STD_CONTAINER_ENUM_GET_AND_CHECK(V,IMPLEMENTS)	\
 	(STD_CONTAINER_CALL_EXISTS(V,IMPLEMENTS), STD_CONTAINER_ENUM_GET(V))
 
+#define STD_ITERATOR_PARENT_ENUM_GET(IT)		STD_CONTAINER_ENUM_GET(IT.puParent[0])
+#define STD_ITERATOR_PARENT_HAS_GET(IT)			STD_CONTAINER_HAS_GET(IT.puParent[0])
+#define STD_ITERATOR_PARENT_IMPLEMENTS_GET(IT)	STD_CONTAINER_IMPLEMENTS_GET(IT.puParent[0])
+
 #define STD_ITERATOR_IMPLEMENTS_GET(INDEX,IMPLEMENTS)	\
 			((INDEX == std_iterator_enum_forward) ? std_container_implements_forward_ ## IMPLEMENTS : std_container_implements_reverse_ ## IMPLEMENTS)
 
 #define STD_ITERATOR_CALL_EXISTS(IT, IMPLEMENTS) \
-			STD_EXPR_ASSERT(STD_CONTAINER_IMPLEMENTS_GET(IT) & STD_ITERATOR_IMPLEMENTS_GET(STD_ITERATOR_ENUM_GET(IT),IMPLEMENTS), \
+			STD_EXPR_ASSERT(STD_ITERATOR_PARENT_IMPLEMENTS_GET(IT) & STD_ITERATOR_IMPLEMENTS_GET(STD_ITERATOR_ENUM_GET(IT),IMPLEMENTS), \
 					STD_CONCAT(IMPLEMENTS ## _is_not_implemented_for_this_type_of_iterator_,__COUNTER__) )
 
 #define STD_ITERATOR_ENUM_GET_AND_CHECK(IT,IMPLEMENTS) \
@@ -344,12 +348,12 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 		(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE))
 
 #define std_iterator_construct(V, IT)			\
-		std_iterator_call_construct(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(V), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct), &IT.stItBody.stIterator)
+		std_iterator_call_construct(&V.stBody.stContainer, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct), &IT.stItBody.stIterator)
 #define std_iterator_range(IT,BEGIN,END)	\
-		std_iterator_call_range(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,range), BEGIN, END)
+		std_iterator_call_range(&IT.stItBody.stIterator, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,range), BEGIN, END)
 #define std_iterator_next(IT)				\
-		std_iterator_call_next(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next))
+		std_iterator_call_next(&IT.stItBody.stIterator, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next))
 #define std_iterator_prev(IT)				\
-		std_iterator_call_prev(&IT.stItBody.stIterator, STD_CONTAINER_ENUM_GET(IT), STD_CONTAINER_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev))
+		std_iterator_call_prev(&IT.stItBody.stIterator, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev))
 
 #endif /* STD_CONTAINER_H_ */

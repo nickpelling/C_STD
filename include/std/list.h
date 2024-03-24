@@ -26,8 +26,8 @@
 //	- an iterator smuggle, used to give easy access to an associated iterator
 //	- a typed comparison function (for sorting)
 //	- a typed equals function
-#define STD_LIST(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS)		\
-	union										\
+#define STD_LIST(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME)		\
+	union TEMPNAME								\
 	{											\
 		BASE 	   			 stBody;			\
 		TYPE			*	pstType;			\
@@ -36,7 +36,7 @@
 		\
 		STD_LIST_NODE(TYPE,) * pstLink;			\
 		\
-		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
+		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
@@ -73,7 +73,7 @@ typedef	struct
 	std_list_node_t * pstEnd;
 } std_list_iterator_t;
 
-#define STD_LIST_DECLARE(T,HAS_ENUM)	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, std_list_implements)
+#define STD_LIST_DECLARE(T,HAS_ENUM)	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, std_list_implements, STD_FAKEVAR())
 
 #define std_list(T)						STD_LIST_DECLARE(T,std_container_has_no_handlers)
 #define std_list_handlers(T,HAS_ENUM)	STD_VECTOR_DECLARE(T,HAS_ENUM)

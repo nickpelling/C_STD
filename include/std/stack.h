@@ -10,7 +10,7 @@
 
 #include "std/deque.h"
 
-#define STD_STACK_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_stack, HAS_ENUM, std_stack_implements)
+#define STD_STACK_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_stack, HAS_ENUM, std_stack_implements, STD_FAKEVAR())
 
 #define std_stack(T)					STD_STACK_DECLARE(T,std_container_has_no_handlers)
 #define std_stack_handlers(T,HAS_ENUM)	STD_STACK_DECLARE(T,HAS_ENUM)

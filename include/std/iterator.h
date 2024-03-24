@@ -52,23 +52,21 @@ struct std_iterator_s
 //	- an untyped base class, that gets passed down to library-side shared calls
 //		- Note that this should always contain a std_iterator_t called "stIterator"!
 //	- a type smuggle, used to give easy access to an item (TYPE *) cast
-#define STD_ITERATOR(BASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, ITERATOR_ENUM, IS_CONST, TYPE)	\
+#define STD_ITERATOR(BASE, PARENT, ITERATOR_ENUM, IS_CONST, TYPE)	\
 	union										\
 	{											\
 		BASE 	   		stItBody;				\
 		TYPE		*	pstType;				\
-		STD_CONTAINER_ENUM_SET(CONTAINER_ENUM);	\
-		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
-		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS_ENUM); \
+		union PARENT *	puParent;				\
 		STD_ITERATOR_ENUM_SET(ITERATOR_ENUM);	\
 		STD_ITERATOR_IS_CONST_SET(IS_CONST);	\
 	}
 
-#define STD_ITERATORS(ITBASE, TYPE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM)	\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_forward, false, TYPE)			*	pstForwardIterator;			\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_forward, true,  TYPE const)	*	pstForwardConstIterator;	\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_reverse, false, TYPE)			*	pstReverseIterator;			\
-	STD_ITERATOR(ITBASE, CONTAINER_ENUM, HAS_ENUM, IMPLEMENTS_ENUM, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
+#define STD_ITERATORS(ITBASE, TYPE, PARENT)	\
+	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_forward, false, TYPE)		*	pstForwardIterator;			\
+	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_forward, true,  TYPE const)	*	pstForwardConstIterator;	\
+	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, false, TYPE)		*	pstReverseIterator;			\
+	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
 
 inline void stdlib_iterator_construct_done(std_iterator_t* pstIterator)
 {

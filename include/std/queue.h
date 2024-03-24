@@ -10,7 +10,7 @@
 
 #include "std/deque.h"
 
-#define STD_QUEUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_queue, HAS_ENUM, std_queue_implements)
+#define STD_QUEUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_queue, HAS_ENUM, std_queue_implements, STD_FAKEVAR())
 
 #define std_queue(T)					STD_QUEUE_DECLARE(T,std_container_has_no_handlers)
 #define std_queue_handlers(T,HAS_ENUM)	STD_QUEUE_DECLARE(T,HAS_ENUM)

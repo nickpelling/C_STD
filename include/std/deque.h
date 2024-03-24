@@ -21,15 +21,15 @@
 //	- an iterator smuggle, used to give easy access to an associated iterator
 //	- a typed comparison function (for sorting)
 //	- a typed equals function
-#define STD_DEQUE(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS)	\
-	union										\
+#define STD_DEQUE(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME)	\
+	union TEMPNAME								\
 	{											\
 		BASE 	   			 stBody;			\
 		TYPE			*	pstType;			\
 		TYPE const		*	pstConstType;		\
 		STD_COMPARE(TYPE const, pfnCompare);	\
 		\
-		STD_ITERATORS(ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS);	\
+		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
@@ -63,7 +63,7 @@ typedef struct
     size_t szRangeLen;
 } std_deque_iterator_t;
 
-#define STD_DEQUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, std_deque_implements)
+#define STD_DEQUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, std_deque_implements, STD_FAKEVAR())
 
 #define std_deque(T)					STD_DEQUE_DECLARE(T,std_container_has_no_handlers)
 #define std_deque_handlers(T,HAS_ENUM)	STD_DEQUE_DECLARE(T,HAS_ENUM)
