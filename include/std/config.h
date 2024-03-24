@@ -17,8 +17,8 @@
 #define STD_INLINE  inline
 #endif
 
-#ifndef STD_EXTERN
-#define STD_EXTERN  extern
+#ifndef STD_STATIC
+#define STD_STATIC  static
 #endif
 
 // These macros should be customised to match the compiler you're using
