@@ -78,7 +78,7 @@ extern void stdlib_deque_push_back(std_container_t * pstContainer, const void* p
 extern size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 
-extern void * stdlib_deque_at(std_container_t * pstContainer, int32_t iIndex);
+extern void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex);
 
 extern void * stdlib_deque_begin(std_container_t * pstContainer);
 extern void * stdlib_deque_end(std_container_t * pstContainer);

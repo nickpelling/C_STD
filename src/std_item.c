@@ -10,6 +10,15 @@
 
 #include "std/item.h"
 
+/**
+ * Support code to pop an item (destructing it or relocating as appropriate)
+ * 
+ * @param[in]	eHas			Flags controlling which handlers are attached to a container
+ * @param[in]	pstItemHandler	Item handler jumptable (NULL if not needed)
+ * @param[out]	pvResult		Empty area of memory to pop item into (can be NULL)
+ * @param[in]	pvItem			Item
+ * @param[in]	szSize			Size of the item
+ */
 void std_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHandler, void* pvResult, void* pvItem, size_t szSize)
 {
 	if (pvResult != NULL)
@@ -29,6 +38,13 @@ void std_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHan
 	}
 }
 
+/**
+ * Construct one or more items using an item handler
+ * 
+ * @param[in]	pstItemHandler		Item handler
+ * @param[in]	pvData				Pre-allocated area of memory for item(s)
+ * @param[in]	szNumElements		Number of items to construct
+ */
 void std_item_construct(const std_item_handler_t* pstItemHandler, void * pvData, size_t szNumElements)
 {
 	if (pstItemHandler && pstItemHandler->pfn_Constructor && pvData && (szNumElements != 0U))
@@ -42,6 +58,13 @@ void std_item_construct(const std_item_handler_t* pstItemHandler, void * pvData,
 	}
 }
 
+/**
+ * Destruct one or more items using an item handler
+ *
+ * @param[in]	pstItemHandler		Item handler
+ * @param[in]	pvData				Pre-allocated area of memory holding item(s)
+ * @param[in]	szNumElements		Number of items to destruct
+ */
 void std_item_destruct(const std_item_handler_t* pstItemHandler, void* pvData, size_t szNumElements)
 {
 	if (pstItemHandler && pstItemHandler->pfn_Destructor && pvData && (szNumElements != 0U))
@@ -55,6 +78,14 @@ void std_item_destruct(const std_item_handler_t* pstItemHandler, void* pvData, s
 	}
 }
 
+/**
+ * Relocate one or more items using an item handler (note: items have already been moved!)
+ *
+ * @param[in]	pstItemHandler		Item handler
+ * @param[in]	pvNewAddr			Address of memory now holding item(s)
+ * @param[in]	pvOldAddr			Address of memory that used to hold item(s)
+ * @param[in]	szNumElements		Number of items to relocate
+ */
 void std_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewAddr, const void* pvOldAddr, size_t szTotalSize)
 {
 	if ((pvNewAddr != pvOldAddr) && pstItemHandler && pstItemHandler->pfn_Relocator)
@@ -62,19 +93,9 @@ void std_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewAddr
 		size_t szSize = pstItemHandler->szElementSize;
 		uint8_t* pau8NewAddr = pvNewAddr;
 		const uint8_t* pau8OldAddr = pvOldAddr;
-		size_t szElementSize = pstItemHandler->szElementSize;
-		int iStep = szElementSize;
-		if (pau8NewAddr > pau8OldAddr)
+		for (size_t i = 0; i < szTotalSize; i += szSize)
 		{
-			pau8NewAddr += szSize - iStep;
-			pau8OldAddr += szSize - iStep;
-			iStep = -iStep;
-		}
-		for (size_t i = 0; i < szSize; i += szElementSize)
-		{
-			(*pstItemHandler->pfn_Relocator)(pstItemHandler, pau8NewAddr, pau8OldAddr);
-			pau8OldAddr += iStep;
-			pau8NewAddr += iStep;
+			(*pstItemHandler->pfn_Relocator)(pstItemHandler, &pau8NewAddr[i], &pau8OldAddr[i]);
 		}
 	}
 }

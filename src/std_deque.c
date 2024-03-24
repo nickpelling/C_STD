@@ -225,21 +225,21 @@ void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketS
 /**
  *
  */
-void * stdlib_deque_at(std_container_t * pstContainer, int32_t iIndex)
+void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvBucket;
 	size_t szQuotient;
 	size_t szRemainder;
 
-	if (iIndex >= pstContainer->szNumItems)
+	if (szIndex >= pstContainer->szNumItems)
 	{
 		return NULL;
 	}
 
-	iIndex += pstDeque->szStartOffset;
-	szQuotient  = iIndex / pstDeque->szItemsPerBucket;
-	szRemainder = iIndex % pstDeque->szItemsPerBucket;
+	szIndex += pstDeque->szStartOffset;
+	szQuotient  = szIndex / pstDeque->szItemsPerBucket;
+	szRemainder = szIndex % pstDeque->szItemsPerBucket;
 	pvBucket = pstDeque->papvBuckets[szQuotient];
 	return bucket_at(pvBucket, szRemainder, pstContainer->szSizeofItem);
 }

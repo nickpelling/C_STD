@@ -16,18 +16,18 @@ static int int_compare(const int* a, const int* b)
     return (*b < *a);
 }
 
-#define PRINT_ALL(CONTAINER, MSG, ITERATOR)	\
-	printf("%s:", MSG);						\
-	ITERATOR(CONTAINER, it)					\
+#define PRINT_ALL(CONTAINER, MSG, ITERATOR)		\
+	printf("%s:", MSG);							\
+	ITERATOR(CONTAINER, it)						\
 		printf(" %d", std_iterator_at(it)[0]);	\
 	printf(CRLF)
 
 #define POP_ALL(CONTAINER, MSG, POPFUNC, MAXITEMS)	\
-	int aiNum[MAXITEMS];	\
+	int aiNum[MAXITEMS];							\
 	size_t szNum = POPFUNC(CONTAINER, aiNum, STD_NUM_ELEMENTS(aiNum));	\
-	printf("%s:", MSG);		\
-	for (size_t i = 0; i < szNum; i++)	\
-		printf(" %d", aiNum[i]);	\
+	printf("%s:", MSG);								\
+	for (size_t i = 0; i < szNum; i++)				\
+		printf(" %d", aiNum[i]);					\
 	printf(CRLF)
 
 void vector_test(void)

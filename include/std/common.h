@@ -14,6 +14,8 @@
 
 #include "std/config.h"
 #include "std/enums.h"
+
+// Headers for the item handlers
 #include "std/item.h"
 #include "std/lock.h"
 #include "std/memory.h"
@@ -22,12 +24,6 @@ typedef int  (*pfn_std_compare_t)(const void * a, const void * b);
 
 // Field construction helper macros (for making typed version of untyped callbacks)
 #define STD_COMPARE(T, FIELD)	int (*FIELD)(T * a, T * b)
-
-// Most C code concentrates either on the C preprocessor (the macros) or on the C language.
-// However, there's an extra layer between the two, made up of keywords that inform
-// the compilation but which don't contribute to the final code, e.g. sizeof / typeof.
-// We can combine these with "union smuggling" (where additional subsidiary types get
-// "smuggled" into the union into order to link that subsidiary type to the main type).
 
 typedef struct
 {

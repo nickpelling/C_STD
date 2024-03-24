@@ -16,20 +16,44 @@
 #define ITERATOR_TO_VECTORIT(IT)		STD_CONTAINER_OF(IT, std_vector_iterator_t, stIterator)
 #define VECTORIT_TO_ITERATOR(VECTORIT)	&VECTORIT->stIterator
 
+/**
+ * Step a linear pointer forwards by the size of an iterator's item
+ * 
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	pvThis			Pointer
+ * 
+ * @return New pointer value
+ */
 static inline void * next_item(std_iterator_t * pstIterator, void * pvThis)
 {
 	return STD_LINEAR_ADD(pvThis, pstIterator->szSizeofItem);
 }
 
+/**
+ * Step a linear pointer backwards by the size of an iterator's item
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	pvThis			Pointer
+ *
+ * @return New pointer value
+ */
 static inline void * prev_item(std_iterator_t * pstIterator, void * pvThis)
 {
 	return STD_LINEAR_SUB(pvThis, pstIterator->szSizeofItem);
 }
 
-inline void * stdlib_vector_at(std_container_t * pstContainer, int32_t iIndex)
+/**
+ * Calculate the address of an indexed entry in a vector container
+ *
+ * @param[in]	pstContainer	Vector container
+ * @param[in]	szIndex			Index
+ *
+ * @return Address of the indexed entry
+ */
+inline void * stdlib_vector_at(std_container_t * pstContainer, size_t szIndex)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	return STD_LINEAR_ADD(pstVector->pvStartAddr, pstVector->stContainer.szSizeofItem * (iIndex));
+	return STD_LINEAR_ADD(pstVector->pvStartAddr, pstVector->stContainer.szSizeofItem * szIndex);
 }
 
 /**
@@ -90,6 +114,7 @@ bool stdlib_vector_destruct(std_container_t * pstContainer)
 
 	return true;
 }
+
 /**
  * Reserve space within a vector container for a number of items
  *
@@ -104,7 +129,7 @@ void stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 
 	if (szNewSize > pstVector->szNumAlloced)
 	{
-		szNewCapacity = 1U << (32U - __builtin_clz(szNewSize));
+		szNewCapacity = 1U << (64U - __builtin_clzll(szNewSize));
 		if (szNewCapacity < szNewSize)
 		{
 			szNewCapacity <<= 1;
@@ -133,19 +158,14 @@ void stdlib_vector_fit(std_container_t * pstContainer)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvNewPtr;
+	size_t szNumItems;
 	size_t szSize;
-	size_t szNewCapacity;
 
-	szNewCapacity = 1U << (32U - __builtin_clz(pstContainer->szNumItems));
-	if (szNewCapacity < pstContainer->szNumItems)
+	szNumItems = pstContainer->szNumItems;
+	if (pstVector->szNumAlloced != szNumItems)
 	{
-		szNewCapacity <<= 1;
-	}
-
-	if (pstVector->szNumAlloced != szNewCapacity)
-	{
-		pstVector->szNumAlloced = szNewCapacity;
-		szSize = szNewCapacity * pstVector->stContainer.szSizeofItem;
+		pstVector->szNumAlloced = szNumItems;
+		szSize = szNumItems * pstVector->stContainer.szSizeofItem;
 		pvNewPtr = std_memoryhandler_realloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstVector->pvStartAddr, szSize);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
@@ -313,7 +333,7 @@ void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std
 {
 	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvBegin = pstVector->pvStartAddr;
-	void * pvEnd   = stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems));
+	void * pvEnd   = stdlib_vector_at(pstContainer, pstContainer->szNumItems);
 	stdlib_vector_forwarditerator_range( pstContainer, pstIterator, pvBegin, pvEnd);
 }
 
@@ -335,7 +355,7 @@ void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_ite
 void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	void * pvBegin = stdlib_vector_at(pstContainer, (int32_t)(pstContainer->szNumItems) - 1U);
+	void * pvBegin = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U);
 	void * pvEnd = STD_LINEAR_SUB(pstVector->pvStartAddr, pstContainer->szSizeofItem);
 	stdlib_vector_reverseiterator_range( pstContainer, pstIterator, pvBegin, pvEnd );
 }
