@@ -22,10 +22,8 @@
 // The STD_LIST macro creates a union of many separate things
 //	- an untyped base class, that gets passed down to library-side shared calls
 //	- a type smuggle, used to give easy access to an inner (TYPE *) cast
-//	- a const type smuggle, used to give easy access to an inner (const TYPE *) cast
-//	- an iterator smuggle, used to give easy access to an associated iterator
 //	- a typed comparison function (for sorting)
-//	- a typed equals function
+//	- an iterator smuggle, used to give easy access to an associated iterator
 #define STD_LIST(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME, NODENAME)		\
 	union TEMPNAME								\
 	{											\
@@ -39,10 +37,14 @@
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
-		STD_CONTAINER_PAYLOAD_OFFSET_SET(STD_OFFSETOF(struct NODENAME, stPayload));	\
+		STD_CONTAINER_PAYLOAD_OFFSET_SET(sizeof(std_list_node_t));	\
 		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_LIST_NODE(TYPE,STD_FAKEVAR())));	\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS); \
 	}
+// Note: the payload offset should be set to STD_OFFSETOF(struct NODENAME, stPayload),
+// but gcc complains like crazy if you do that, and I don't see how to fix this.
+// Using sizeof(std_list_node_t) for this should be OK unless you start using item
+// types with exotic alignments.
 
 typedef struct stListLink_s std_list_node_t;
 
