@@ -31,7 +31,6 @@
 	{											\
 		BASE 	   			 stBody;			\
 		TYPE			*	pstType;			\
-		TYPE const		*	pstConstType;		\
 		STD_COMPARE(const TYPE, pfnCompare);	\
 		\
 		STD_LIST_NODE(TYPE,) * pstLink;			\

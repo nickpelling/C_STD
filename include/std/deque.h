@@ -26,7 +26,6 @@
 	{											\
 		BASE 	   			 stBody;			\
 		TYPE			*	pstType;			\
-		TYPE const		*	pstConstType;		\
 		STD_COMPARE(TYPE const, pfnCompare);	\
 		\
 		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\

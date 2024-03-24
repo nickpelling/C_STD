@@ -15,16 +15,13 @@
 // The STD_VECTOR macro creates a union of many separate things
 //	- an untyped base class, that gets passed down to library-side shared calls
 //	- a type smuggle, used to give easy access to an inner (TYPE *) cast
-//	- a const type smuggle, used to give easy access to an inner (const TYPE *) cast
-//	- an iterator smuggle, used to give easy access to an associated iterator
-//	- a typed comparison function (for sorting)
-//	- a typed equals function
+//	- a typed comparison function type (e.g. for sorting)
+//	- an iterator smuggle, used to give easy access to associated iterators
 #define STD_VECTOR(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME)	\
 	union TEMPNAME								\
 	{											\
 		BASE 	   			 stBody;			\
 		TYPE			*	pstType;			\
-		TYPE const		*	pstConstType;		\
 		STD_COMPARE(const TYPE, pfnCompare);	\
 		\
 		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\
