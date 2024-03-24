@@ -322,7 +322,7 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 /**
  *
  */
-void stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
@@ -353,7 +353,7 @@ void stdlib_deque_push_front(std_container_t * pstContainer, const* pvBase, size
 /**
  *
  */
-void stdlib_deque_push_back(std_container_t * pstContainer, const* pvBase, size_t szNumItems)
+void stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;

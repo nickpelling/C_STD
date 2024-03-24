@@ -9,6 +9,7 @@
 #define STD_MEMORY_H_
 
 #include <stddef.h>		// for size_t
+#include <stdlib.h>		// for malloc/realloc/free
 
 #include "std/enums.h"	// for std_container_has_t
 
