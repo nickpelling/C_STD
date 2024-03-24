@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
 project(C_STD)
 include_directories( include )
-set(CMAKE_C_FLAGS, "/std\:clatest")
-add_executable ( C_STD src/std_deque.c "src/std_item.c" src/std_list.c  src/std_vector.c testcode/C_STD.c testcode/memory_counter.c )
+set(CMAKE_C_FLAGS, "/std\:clatest -std=c11")
+add_executable ( C_STD src/std_deque.c src/std_item.c src/std_list.c  src/std_vector.c testcode/C_STD.c testcode/memory_counter.c )
