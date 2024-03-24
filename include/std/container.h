@@ -28,7 +28,7 @@
 		(*std_container_jumptable_array[CONTAINER_INDEX].astIterators[ITERATOR_INDEX].PTRFUNC)
 
 #define STD_CONTAINER_CALL_EXISTS(V,IMPLEMENTS)	\
-			STD_EXPR_ASSERT(STD_CONTAINER_IMPLEMENTS_GET(V) & std_container_implements_ ## IMPLEMENTS, \
+			STD_STATIC_ASSERT(STD_CONTAINER_IMPLEMENTS_GET(V) & std_container_implements_ ## IMPLEMENTS, \
 					STD_CONCAT(IMPLEMENTS ## _is_not_implemented_for_this_type_of_container_,__COUNTER__) )
 
 #define STD_CONTAINER_ENUM_GET_AND_CHECK(V,IMPLEMENTS)	\
@@ -42,7 +42,7 @@
 			((INDEX == std_iterator_enum_forward) ? std_container_implements_forward_ ## IMPLEMENTS : std_container_implements_reverse_ ## IMPLEMENTS)
 
 #define STD_ITERATOR_CALL_EXISTS(IT, IMPLEMENTS) \
-			STD_EXPR_ASSERT(STD_ITERATOR_PARENT_IMPLEMENTS_GET(IT) & STD_ITERATOR_IMPLEMENTS_GET(STD_ITERATOR_ENUM_GET(IT),IMPLEMENTS), \
+			STD_STATIC_ASSERT(STD_ITERATOR_PARENT_IMPLEMENTS_GET(IT) & STD_ITERATOR_IMPLEMENTS_GET(STD_ITERATOR_ENUM_GET(IT),IMPLEMENTS), \
 					STD_CONCAT(IMPLEMENTS ## _is_not_implemented_for_this_type_of_iterator_,__COUNTER__) )
 
 #define STD_ITERATOR_ENUM_GET_AND_CHECK(IT,IMPLEMENTS) \
@@ -515,7 +515,7 @@ inline void std_container_item_destruct(std_container_t* pstContainer, std_conta
 									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
 
 #define STD_CHECK_TYPE(CONTAINER,VAR,PFN)	\
-	STD_EXPR_ASSERT(STD_TYPES_ARE_SAME(STD_ITEM_TYPEOF(CONTAINER),VAR), \
+	STD_STATIC_ASSERT(STD_TYPES_ARE_SAME(STD_ITEM_TYPEOF(CONTAINER),VAR), \
 		PFN##_is_inconsistent_with_type_of_item_held_by_container_##__COUNTER__)
 
 #define std_pop_front(V,RESULT,MAXITEMS)	\

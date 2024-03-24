@@ -58,20 +58,11 @@
 #endif
 
 // Command-based static assert - can be used inside or outside functions
-#if (__STDC_VERSION__ >= 201112L) && 0 /* test for C11 */
+#if __STDC_VERSION__ >= 201112L /* test for C11 */
 #include <assert.h>
 #define STD_STATIC_ASSERT(COND,MSG) _Static_assert(COND,#MSG)
 #else
-#define STD_STATIC_ASSERT(COND,MSG)	typedef char static_assertion_##MSG[(COND)?1:-1]
-#endif
-
-// Expression-based static assert - either halts compilation or returns 0
-#if 1
-#define STD_EXPR_ASSERT(CONDITION,MSG)	\
-    (!sizeof(struct MSG { int MSG : ((CONDITION) ? 1 : -1); }))
-#else
-#define STD_EXPR_ASSERT(CONDITION,MSG)	\
-	(!sizeof(struct MSG { char MSG[1 - 2*!(CONDITION)]; }))
+#define STD_STATIC_ASSERT(COND,MSG)	sizeof(struct MSG { int MSG : ((COND) ? 1 : -1); })
 #endif
 
 /* Create a (fake) instance of a pointer to a given type */
