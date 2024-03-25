@@ -32,6 +32,10 @@ typedef struct
 	std_lock_handler_t* pstLockHandler;
 } std_container_handlers_t;
 
+#define STD_ITEMHANDLER(X)		.pstItemHandler = X
+#define STD_MEMORYHANDLER(X)	.pstMemoryHandler = X
+#define STD_LOCKHANDLER(X)		.pstLockHandler = X
+
 typedef struct
 {
 	size_t						szSizeofItem;

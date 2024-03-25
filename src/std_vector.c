@@ -301,8 +301,6 @@ void stdlib_vector_iterator_prev(std_iterator_t * pstIterator)
  */
 void stdlib_vector_ranged_sort(std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfnCompare)
 {
-	const std_item_handler_t * pstItemHandler;
-
 	if (	(pstContainer->eHas & std_container_has_itemhandler)
 		&&	(pstContainer->pstItemHandler->pfn_Relocator != NULL)	)
 	{
