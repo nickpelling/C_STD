@@ -77,7 +77,7 @@ typedef	struct
 #define STD_LIST_DECLARE(T,HAS_ENUM)	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, std_list_implements, STD_FAKEVAR(), STD_FAKEVAR())
 
 #define std_list(T)						STD_LIST_DECLARE(T,std_container_has_no_handlers)
-#define std_list_handlers(T,HAS_ENUM)	STD_VECTOR_DECLARE(T,HAS_ENUM)
+#define std_list_handlers(T,HAS_ENUM)	STD_LIST_DECLARE(T,HAS_ENUM)
 
 extern bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
 extern bool stdlib_list_destruct(std_container_t* pstContainer);

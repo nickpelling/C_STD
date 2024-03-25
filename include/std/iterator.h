@@ -10,14 +10,6 @@
 
 #include "std/common.h"
 
-typedef enum
-{
-	std_iterator_enum_forward,	// i.e. this is a forward iterator
-	std_iterator_enum_reverse,	// i.e. this is a reverse iterator
-
-	std_iterator_enum_MAX
-} std_iterator_enum_t;
-
 typedef struct std_iterator_s std_iterator_t;
 
 typedef struct
@@ -41,12 +33,12 @@ struct std_iterator_s
 };
 
 // Macro accessors to store & retrieve the type of an iterator inside its metadata
-#define STD_ITERATOR_ENUM_SET(ENUM)			uint8_t (*pau8IteratorEnum)[1U + (ENUM)]
-#define STD_ITERATOR_ENUM_GET(ITERATOR)		((std_iterator_enum_t)(sizeof(ITERATOR.pau8IteratorEnum[0]) - 1U))
+#define STD_ITERATOR_ENUM_SET(ENUM)			STD_ENUM_ITERATOR_SET(ENUM) pau8IteratorEnum
+#define STD_ITERATOR_ENUM_GET(ITERATOR)		STD_ENUM_ITERATOR_GET(ITERATOR.pau8IteratorEnum)
 
 // Macro accessors to store & retrieve the constness of an iterator inside its metadata
-#define STD_ITERATOR_IS_CONST_SET(BOOL)		uint8_t (*pau8IteratorConst)[1U + (BOOL)]
-#define STD_ITERATOR_IS_CONST_GET(ITERATOR)	((bool)(sizeof(ITERATOR.pau8IteratorConst[0]) - 1U))
+#define STD_ITERATOR_IS_CONST_SET(BOOL)		STD_ENUM_BOOL_SET(BOOL)	pau8IteratorConst
+#define STD_ITERATOR_IS_CONST_GET(ITERATOR)	STD_ENUM_BOOL_GET(ITERATOR.pau8IteratorConst)
 
 // The STD_ITERATOR macro creates a union of many separate things
 //	- an untyped base class, that gets passed down to library-side shared calls

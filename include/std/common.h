@@ -133,35 +133,11 @@ STD_INLINE bool std_container_constructor(std_container_t * pstContainer, size_t
 #define STD_CONST_COMPARE_TYPEOF(CONTAINER)	  STD_TYPEOF(CONTAINER.pfnCompare)
 #define STD_CONST_COMPARE_CAST(CONTAINER,X)	((STD_TYPEOF(CONTAINER.pfnCompare))(X))
 
-typedef enum
-{
-	std_container_enum_deque,
-	std_container_enum_list,
-	std_container_enum_priority_queue,
-	std_container_enum_queue,
-	std_container_enum_stack,
-	std_container_enum_vector,
-	std_container_enum_bitarray,
+#define STD_CONTAINER_ENUM_SET(ENUM)				STD_ENUM_CONTAINER_SET(ENUM) pau8ContainerEnum
+#define STD_CONTAINER_ENUM_GET(CONTAINER)			STD_ENUM_CONTAINER_GET(CONTAINER.pau8ContainerEnum)
 
-	std_container_enum_set,
-	std_container_enum_unordered_set,
-	std_container_enum_multiset,
-	std_container_enum_map,
-	std_container_enum_unordered_map,
-
-	std_container_enum_pool,
-	std_container_enum_ring,
-	std_container_enum_heap,
-	std_container_enum_graph,
-
-	std_container_enum_MAX
-} std_container_enum_t;
-
-#define STD_CONTAINER_ENUM_SET(ENUM)				uint8_t (*pau8ContainerEnum)[(ENUM) + 1U]
-#define STD_CONTAINER_ENUM_GET(CONTAINER)			((std_container_enum_t)(sizeof(CONTAINER.pau8ContainerEnum[0]) - 1U))
-
-#define STD_CONTAINER_HAS_SET(ENUM)					uint8_t (*pau8HasHandler)[(ENUM) + 1U]
-#define STD_CONTAINER_HAS_GET(CONTAINER)			((std_container_has_t)(sizeof(CONTAINER.pau8HasHandler[0]) - 1U))
+#define STD_CONTAINER_HAS_SET(ENUM)					STD_ENUM_HAS_SET(ENUM) pau8HasHandler
+#define STD_CONTAINER_HAS_GET(CONTAINER)			STD_ENUM_HAS_GET(CONTAINER.pau8HasHandler)
 #define STD_CONTAINER_HAS_ITEMHANDLER(CONTAINER)	(STD_CONTAINER_HAS_GET(CONTAINER) & std_container_has_itemhandler)
 #define STD_CONTAINER_HAS_MEMORYHANDLER(CONTAINER)	(STD_CONTAINER_HAS_GET(CONTAINER) & std_container_has_memoryhandler)
 #define STD_CONTAINER_HAS_LOCKHANDLER(CONTAINER)	(STD_CONTAINER_HAS_GET(CONTAINER) & std_container_has_lockhandler)
