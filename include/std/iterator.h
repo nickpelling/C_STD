@@ -100,24 +100,24 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 // BUT the container will stay locked if you execute a return command
 // inside the inner loop. So don't do this!
 #define std_for(CONTAINER, IT, IS_CONST, IT_TYPE)	\
-	for (std_container_lock_wrapper(CONTAINER, IS_CONST))	\
+	std_container_lock_wrapper(CONTAINER, IS_CONST))	\
 		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_construct(CONTAINER,IT),NULL); \
 			!std_iterator_done(IT); \
-			std_iterator_next(IT))
+			std_iterator_next(IT)
 
 #define std_for_range(CONTAINER, IT, IS_CONST, IT_TYPE, BEGIN, END)	\
-	for (std_container_lock_wrapper(CONTAINER, IS_CONST))	\
+	std_container_lock_wrapper(CONTAINER, IS_CONST))	\
 		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED STD_FAKEVAR() = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
 			!std_iterator_done(IT); \
-			std_iterator_next(IT))
+			std_iterator_next(IT)
 
-#define std_for_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
-#define std_for_each_forward_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
-#define std_for_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_reverse_iterator)
-#define std_for_each_reverse_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_reverse_const_iterator)
+#define std_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
+#define std_each_forward_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
+#define std_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_reverse_iterator)
+#define std_each_reverse_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_reverse_const_iterator)
 
-#define std_for_each(CONTAINER, IT)			std_for_each_forward(CONTAINER, IT)
-#define std_for_each_const(CONTAINER, IT)	std_for_each_forward_const(CONTAINER, IT)
+#define std_each(CONTAINER, IT)			std_each_forward(CONTAINER, IT)
+#define std_each_const(CONTAINER, IT)	std_each_forward_const(CONTAINER, IT)
 
 #define std_for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_forward_iterator,		BEGIN, END)
 #define std_for_range_forward_const(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_forward_const_iterator,	BEGIN, END)

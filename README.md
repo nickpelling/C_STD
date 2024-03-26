@@ -25,7 +25,7 @@ Creating and using a container is as simple as this:
         // Push 1 to the back of the container, then 2, 3, 4, 5
         std_push_back(v, 1, 2, 3, 4, 5);
 
-        std_for_each(v, it)
+        for (std_each(v, it))
         {
             printf("%d ", std_iterator_at(it)[0]);
         }

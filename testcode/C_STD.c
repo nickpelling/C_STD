@@ -18,7 +18,7 @@ static int int_compare(const int* a, const int* b)
 
 #define PRINT_ALL(CONTAINER, MSG, ITERATOR)		\
 	printf("%s:", MSG);							\
-	ITERATOR(CONTAINER, it)						\
+	for (ITERATOR(CONTAINER, it))				\
 		printf(" %d", std_iterator_at(it)[0]);	\
 	printf(CRLF)
 
@@ -40,13 +40,13 @@ void vector_test(void)
 	std_reserve(v, 5);
 	std_push_back(v, 2, 1, 4, 3, 5);
 
-	PRINT_ALL(v, "V1", std_for_each_forward);
-	PRINT_ALL(v, "V2", std_for_each_forward_const);
-	PRINT_ALL(v, "V3", std_for_each_reverse);
-	PRINT_ALL(v, "V4", std_for_each_reverse_const);
+	PRINT_ALL(v, "V1", std_each_forward);
+	PRINT_ALL(v, "V2", std_each_forward_const);
+	PRINT_ALL(v, "V3", std_each_reverse);
+	PRINT_ALL(v, "V4", std_each_reverse_const);
 
 	std_sort(v, &int_compare);
-	PRINT_ALL(v, "V5", std_for_each);
+	PRINT_ALL(v, "V5", std_each);
 
 	POP_ALL(v, "V6", std_pop_back, 5);
 
@@ -62,10 +62,10 @@ void list_test(void)
 	std_construct(list);
 	std_push_back(list, 2, 1, 4, 3, 5);
 
-	PRINT_ALL(list, "L1", std_for_each_forward);
-	PRINT_ALL(list, "L2", std_for_each_forward_const);
-	PRINT_ALL(list, "L3", std_for_each_reverse);
-	PRINT_ALL(list, "L4", std_for_each_reverse_const);
+	PRINT_ALL(list, "L1", std_each_forward);
+	PRINT_ALL(list, "L2", std_each_forward_const);
+	PRINT_ALL(list, "L3", std_each_reverse);
+	PRINT_ALL(list, "L4", std_each_reverse_const);
 
 	POP_ALL(list, "L5", std_pop_back, 5);
 
@@ -81,10 +81,10 @@ void deque_test(void)
 	std_construct(deque);
 	std_push_back(deque, 2, 1, 4, 3, 5);
 
-	PRINT_ALL(deque, "D1", std_for_each_forward);
-	PRINT_ALL(deque, "D2", std_for_each_forward_const);
-	PRINT_ALL(deque, "D3", std_for_each_reverse);
-	PRINT_ALL(deque, "D4", std_for_each_reverse_const);
+	PRINT_ALL(deque, "D1", std_each_forward);
+	PRINT_ALL(deque, "D2", std_each_forward_const);
+	PRINT_ALL(deque, "D3", std_each_reverse);
+	PRINT_ALL(deque, "D4", std_each_reverse_const);
 
 	POP_ALL(deque, "D5", std_pop_back, 5);
 
@@ -137,7 +137,7 @@ void vector_of_lists_test(void)
 	std_push_back(v, list2);
 
 	printf("veclist sizes =");
-	std_for_each_forward_const(v, it)
+	for (std_each_const(v, it))
 	{
 		const list_int_t* list3 = std_iterator_at(it);
 		printf(" %d", (int)std_size(list3[0]));
