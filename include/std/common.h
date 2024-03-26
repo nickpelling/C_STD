@@ -27,9 +27,9 @@ typedef int  (*pfn_std_compare_t)(const void * a, const void * b);
 
 typedef struct
 {
-	std_item_handler_t* pstItemHandler;
-	std_memoryhandler_t* pstMemoryHandler;
-	std_lock_handler_t* pstLockHandler;
+	const std_item_handler_t  * pstItemHandler;
+	const std_memoryhandler_t * pstMemoryHandler;
+	const std_lock_handler_t  * pstLockHandler;
 } std_container_handlers_t;
 
 #define STD_ITEMHANDLER(X)		.pstItemHandler = X

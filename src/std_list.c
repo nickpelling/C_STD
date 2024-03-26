@@ -160,32 +160,6 @@ bool stdlib_list_destruct(std_container_t* pstContainer)
 }
 
 /**
- * Get a pointer to the item at the front of the list container
- * 
- * @param[in]	pstContainer		List container
- * 
- * @return		Pointer to the item at the front of the list container
- */
-void* stdlib_list_front(std_container_t* pstContainer)
-{
-	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
-	return STD_LINEAR_ADD(pstList->pstHead, pstList->szPayloadOffset);
-}
-
-/**
- * Get a pointer to the item at the back of the list container
- *
- * @param[in]	pstContainer		List container
- *
- * @return		Pointer to the item at the back of the list container
- */
-void* stdlib_list_back(std_container_t* pstContainer)
-{
-	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
-	return STD_LINEAR_ADD(pstList->pstTail, pstList->szPayloadOffset);
-}
-
-/**
  * Push a series of items onto the front of a list container
  *
  * @param[in]	pstContainer	List container to push onto
@@ -416,3 +390,20 @@ void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_i
 		pstListIt->pstNode	= pstNode;
     }
 }
+
+// -------------------------------------------------------------------------
+
+static bool list_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
+{
+	return stdlib_list_destruct((std_container_t*)pvData);
+}
+
+typedef std_list(int) list_int_t;
+
+const std_item_handler_t std_list_default_item_handler =
+{
+	.szElementSize = sizeof(list_int_t),
+	.pfn_Constructor = NULL,
+	.pfn_Destructor = &list_default_destruct,
+	.pfn_Relocator = NULL
+};

@@ -19,7 +19,7 @@
 #include "std/set.h"
 #include "std/stack.h"
 
-#define CONTAINER_TIMEOUT_DEFAULT	500		// FIXME (should probably move this inside container!?)
+#define CONTAINER_TIMEOUT_DEFAULT	500		// FIXME (should probably move this into the lock handler?!)
 
 #define STD_CONTAINER_CALL(CONTAINER_INDEX,PTRFUNC)	\
 		(*std_container_jumptable_array[CONTAINER_INDEX].PTRFUNC)
@@ -478,7 +478,7 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 #define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET_AND_CHECK(V,name), STD_CONTAINER_IMPLEMENTS_GET(V))
 
 #define std_size(V)				(V.stBody.stContainer.szNumItems)
-#define std_empty(V)			(std_size(V) == 0U)
+#define std_is_empty(V)			(std_size(V) == 0U)
 
 #define std_at(V,INDEX)			STD_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer,  	 STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))
 #define std_front(V)			std_at(V, 0)

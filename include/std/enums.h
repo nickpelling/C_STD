@@ -43,6 +43,7 @@ typedef enum
 	std_container_implements_reverse_next = 1 << 18,
 	std_container_implements_reverse_prev = 1 << 19,
 	std_container_implements_reverse_range = 1 << 20,
+	std_container_implements_default_itemhandler = 1 << 21,
 
 	std_container_implements_pushpop_front = std_container_implements_push_front | std_container_implements_pop_front,
 	std_container_implements_pushpop_back = std_container_implements_push_back | std_container_implements_pop_back,

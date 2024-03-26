@@ -85,6 +85,8 @@ extern void stdlib_deque_reverseiterator_construct(std_container_t * pstContaine
 extern void stdlib_deque_next(std_iterator_t * pstIterator);
 extern void stdlib_deque_prev(std_iterator_t * pstIterator);
 
+extern const std_item_handler_t std_deque_default_item_handler;
+
 enum
 {
 	std_deque_implements =

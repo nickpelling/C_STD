@@ -92,13 +92,7 @@ extern void stdlib_list_reverseiterator_construct(std_container_t* pstContainer,
 extern void stdlib_list_next(std_iterator_t * pstIterator);
 extern void stdlib_list_prev(std_iterator_t * pstIterator);
 
-extern void * stdlib_list_front(std_container_t * pstContainer);
-extern void * stdlib_list_back(std_container_t * pstContainer);
-extern std_list_node_t * stdlib_list_begin(std_container_t * pstContainer);
-extern std_list_node_t * stdlib_list_end(std_container_t * pstContainer);
-extern std_list_node_t * stdlib_list_rbegin(std_container_t * pstContainer);
-extern std_list_node_t * stdlib_list_rend(std_container_t * pstContainer);
-extern bool stdlib_list_empty(std_container_t * pstContainer);
+extern const std_item_handler_t std_list_default_item_handler;
 
 enum
 {

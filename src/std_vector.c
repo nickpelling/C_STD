@@ -8,6 +8,7 @@
 #include <stdlib.h>		// for qsort
 #include <stdarg.h>		// for variadic args
 
+#include "std/item.h"
 #include "std/vector.h"
 
 #define CONTAINER_TO_VECTOR(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_vector_t, stContainer)
@@ -103,12 +104,13 @@ bool stdlib_vector_destruct(std_container_t * pstContainer)
 	{
 		for (i = 0; i < pstContainer->szNumItems; i++)
 		{
-			(*pstContainer->pstItemHandler->pfn_Destructor)(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, i));
+			void * pvItem = stdlib_vector_at(pstContainer, i);
+			(*pstContainer->pstItemHandler->pfn_Destructor)(pstContainer->pstItemHandler, pvItem);
 		}
 	}
 
 	// Free the memory allocated for this vector
-	free(pstVector->pvStartAddr);
+	std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstVector->pvStartAddr);
 
 	// Clear out all the fields (just to be tidy)
 	pstContainer->szNumItems	= 0;
@@ -360,3 +362,20 @@ void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std
 	void * pvEnd = STD_LINEAR_SUB(pstVector->pvStartAddr, pstContainer->szSizeofItem);
 	stdlib_vector_reverseiterator_range( pstContainer, pstIterator, pvBegin, pvEnd );
 }
+
+// -------------------------------------------------------------------------
+
+static bool vector_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
+{
+	return stdlib_vector_destruct((std_container_t *) pvData);
+}
+
+typedef std_vector(int) vector_int_t;
+
+const std_item_handler_t std_vector_default_item_handler =
+{
+	.szElementSize = sizeof(vector_int_t),
+	.pfn_Constructor = NULL,
+	.pfn_Destructor = &vector_default_destruct,
+	.pfn_Relocator = NULL
+};

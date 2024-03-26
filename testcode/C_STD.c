@@ -123,8 +123,8 @@ typedef std_list(int) list_int_t;
 
 void vector_of_lists_test(void)
 {
-	std_vector(list_int_t) v;
-	std_construct(v);
+	std_vector_itemhandler(list_int_t) v;
+	std_construct(v, STD_ITEMHANDLER(&std_list_default_item_handler));
 
 	list_int_t list1;
 	std_construct(list1);
@@ -144,7 +144,7 @@ void vector_of_lists_test(void)
 	}
 	printf(CRLF);
 
-	std_destruct(v);	// FIXME: the contained lists will need an item handler with a destructor!
+	std_destruct(v);
 }
 
 int main(void)

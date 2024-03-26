@@ -379,3 +379,19 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 	return szMaxItems;
 }
 
+// -------------------------------------------------------------------------
+
+static bool deque_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
+{
+	return stdlib_deque_destruct((std_container_t*)pvData);
+}
+
+typedef std_deque(int) deque_int_t;
+
+const std_item_handler_t std_deque_default_item_handler =
+{
+	.szElementSize = sizeof(deque_int_t),
+	.pfn_Constructor = NULL,
+	.pfn_Destructor = &deque_default_destruct,
+	.pfn_Relocator = NULL
+};

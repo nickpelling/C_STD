@@ -52,6 +52,7 @@ typedef	struct
 
 #define std_vector(T)					STD_VECTOR_DECLARE(T,std_container_has_no_handlers)
 #define std_vector_handlers(T,HAS_ENUM)	STD_VECTOR_DECLARE(T,HAS_ENUM)
+#define std_vector_itemhandler(T)		STD_VECTOR_DECLARE(T,std_container_has_itemhandler)
 
 // Library-side (untyped) methods
 
@@ -72,6 +73,8 @@ extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, 
 extern void stdlib_vector_iterator_next(std_iterator_t * pstIterator);
 extern void stdlib_vector_iterator_prev(std_iterator_t * pstIterator);
 
+extern const std_item_handler_t std_vector_default_item_handler;
+
 enum 
 {
 	std_vector_implements = 
@@ -86,7 +89,8 @@ enum
 		| std_container_implements_forward_constructnextprev
 		| std_container_implements_forward_range
 		| std_container_implements_reverse_constructnextprev
-		| std_container_implements_reverse_range)
+		| std_container_implements_reverse_range
+		| std_container_implements_default_itemhandler)
 };
 
 #define STD_VECTOR_JUMPTABLE \
