@@ -125,8 +125,10 @@ bool stdlib_vector_destruct(std_container_t * pstContainer)
  *
  * @param[in]	pstContainer	Vector container to reserve space for
  * @param[in]	szNewSize		New number of items
+ * 
+ * @return True if was able to reserve the memory OK, else false
  */
-void stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
+bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	size_t szNewCapacity;
@@ -152,6 +154,8 @@ void stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 			pstVector->pvStartAddr = pvNewStart;
 		}
 	}
+
+	return true;
 }
 
 /**
@@ -186,8 +190,10 @@ void stdlib_vector_fit(std_container_t * pstContainer)
  * @param[in]	pstContainer	Vector container to push the series of items onto
  * @param[in]	pvBase			Pointer to start of array of items
  * @param[in]	szNumItems		Number of items in the array
+ * 
+ * @return Number of items pushed onto the vector
  */
-void stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
@@ -201,6 +207,8 @@ void stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBas
 	{
 		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, 0), szNumItems);
 	}
+
+	return szNumItems;
 }
 
 /**
@@ -209,8 +217,10 @@ void stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBas
  * @param[in]	pstContainer	Vector container to push the series of items onto
  * @param[in]	pvBase			Pointer to start of array of items
  * @param[in]	szNumItems		Number of items in the array
+ *
+ * @return Number of items pushed onto the vector
  */
-void stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase, size_t szNumItems)
+size_t stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 
@@ -222,6 +232,8 @@ void stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase,
 	{
 		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, pstContainer->szNumItems - szNumItems), szNumItems);
 	}
+
+	return szNumItems;
 }
 
 /**

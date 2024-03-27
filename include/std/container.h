@@ -54,11 +54,11 @@ typedef struct
 
 	bool	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
 											std_container_has_t eHas, const std_container_handlers_t * pstHandlers);
-	void	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
+	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);
-	void 	(* const pfn_push_front)	(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-	void 	(* const pfn_push_back)		(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-	void 	(* const pfn_push)			(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	size_t	(* const pfn_push)			(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
 	size_t	(* const pfn_pop_front)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop_back)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop)			(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
@@ -211,12 +211,15 @@ STD_INLINE bool std_container_call_destruct(std_container_t* pstContainer, std_c
  * @param[in]	eContainer		The container type index
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	szNewSize		New number of items to allocate in the container
+ * 
+ * @return True if was able to reserve space for the requested number of items, else false
  */
-STD_INLINE void std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
+STD_INLINE bool std_container_call_reserve(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szNewSize)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	STD_CONTAINER_CALL(eContainer, pfn_reserve)(pstContainer, szNewSize);
+	bool bRetVal = STD_CONTAINER_CALL(eContainer, pfn_reserve)(pstContainer, szNewSize);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return bRetVal;
 }
 
 /**
@@ -241,12 +244,15 @@ STD_INLINE void std_container_call_fit(std_container_t* pstContainer, std_contai
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
+ * 
+ * @return Number of items pushed onto the container
  */
-STD_INLINE void std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNumPushed;
 }
 
 /**
@@ -257,12 +263,15 @@ STD_INLINE void std_container_call_push_front(std_container_t* pstContainer, std
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
+ *
+ * @return Number of items pushed onto the container
  */
-STD_INLINE void std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
+STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNumPushed;
 }
 
 /**
@@ -273,12 +282,15 @@ STD_INLINE void std_container_call_push_back(std_container_t* pstContainer, std_
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
+ *
+ * @return Number of items pushed onto the container
  */
-STD_INLINE void std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNumPushed;
 }
 
 /**
@@ -462,7 +474,8 @@ STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_containe
 STD_INLINE void* std_container_item_construct(std_container_t* pstContainer, std_container_has_t eHas, size_t szSize)
 {
 	void * pvPtr = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, eHas, szSize);
-	if (eHas & std_container_has_itemhandler)
+	if (	(eHas & std_container_has_itemhandler)
+		&&	(pvPtr != NULL)	)
 	{
 		std_item_construct(pstContainer->pstItemHandler, pvPtr, 1U);
 	}

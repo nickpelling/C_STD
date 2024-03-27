@@ -87,21 +87,24 @@ static inline void * bucket_insert_at_start(std_deque_t * pstDeque)
 	size_t szSize;
 	void * pvBucket;
 
-	szNumBuckets = ++(pstDeque->szNumBuckets);
+	szNumBuckets = pstDeque->szNumBuckets + 1U;
 	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
 
 	if (szNumBuckets == 1U)
 	{
 		pstDeque->papvBuckets = (void * *) std_memoryhandler_malloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, szSize);
+		// FIXME: what should happen if this malloc fails?
 	}
 	else
 	{
 		pstDeque->papvBuckets = (void * *) std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
+		// FIXME: what should happen if this realloc fails?
 		memmove(pstDeque->papvBuckets, &pstDeque->papvBuckets[1], (szNumBuckets - 1U) * sizeof(pstDeque->papvBuckets[0]));
 	}
 
 	pvBucket = bucket_alloc(pstDeque);
 	pstDeque->papvBuckets[0] = pvBucket;
+	pstDeque->szNumBuckets = szNumBuckets;
 
 	return pvBucket;
 }
@@ -115,7 +118,7 @@ static inline void * bucket_append_to_end(std_deque_t * pstDeque)
 	void * pvBucket;
 	size_t szSize;
 
-	szNumBuckets = ++(pstDeque->szNumBuckets);
+	szNumBuckets = pstDeque->szNumBuckets + 1U;
 	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
 	if (szNumBuckets == 1U)
 	{
@@ -128,6 +131,7 @@ static inline void * bucket_append_to_end(std_deque_t * pstDeque)
 
 	pvBucket = bucket_alloc(pstDeque);
 	pstDeque->papvBuckets[szNumBuckets - 1U] = pvBucket;
+	pstDeque->szNumBuckets = szNumBuckets;
 
 	return pvBucket;
 }
@@ -274,7 +278,7 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 /**
  *
  */
-void stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
@@ -300,12 +304,14 @@ void stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBase
 			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
 		}
 	}
+
+	return i;
 }
 
 /**
  *
  */
-void stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
@@ -326,6 +332,8 @@ void stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBase,
 			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
 		}
 	}
+
+	return i;
 }
 
 /**
