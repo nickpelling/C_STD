@@ -124,6 +124,7 @@ enum
 			.pfn_next = &stdlib_deque_prev,				\
 			.pfn_prev = &stdlib_deque_next				\
 		}												\
-	}
+	},													\
+	.pstDefaultItemHandler = &std_deque_default_itemhandler
 
 #endif /* STD_DEQUE_H_ */

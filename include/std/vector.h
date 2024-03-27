@@ -119,5 +119,7 @@ enum
 			.pfn_next		= &stdlib_vector_iterator_prev,			\
 			.pfn_prev		= &stdlib_vector_iterator_next			\
 		}												\
-	}
+	},													\
+	.pstDefaultItemHandler = &std_vector_default_itemhandler
+
 #endif /* STD_VECTOR_H_ */

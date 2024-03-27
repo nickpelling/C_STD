@@ -372,7 +372,7 @@ static bool vector_default_destruct(const std_item_handler_t* pstItemHandler, vo
 
 typedef std_vector(int) vector_int_t;
 
-const std_item_handler_t std_vector_default_item_handler =
+const std_item_handler_t std_vector_default_itemhandler =
 {
 	.szElementSize = sizeof(vector_int_t),
 	.pfn_Constructor = NULL,

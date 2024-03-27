@@ -33,6 +33,7 @@ enum
 	.pfn_destruct		= &stdlib_deque_destruct,	\
 	.pfn_push			= &stdlib_deque_push_front,	\
 	.pfn_pop			= &stdlib_deque_pop_back,	\
-	.pfn_at				= &stdlib_deque_at,
+	.pfn_at				= &stdlib_deque_at,			\
+	.pstDefaultItemHandler = &std_deque_default_itemhandler,
 
 #endif /* STD_QUEUE_H_ */

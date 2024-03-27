@@ -88,7 +88,7 @@ void std_item_destruct(const std_item_handler_t* pstItemHandler, void* pvData, s
  */
 void std_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewAddr, const void* pvOldAddr, size_t szTotalSize)
 {
-	if ((pvNewAddr != pvOldAddr) && pstItemHandler && pstItemHandler->pfn_Relocator)
+	if ((pvOldAddr != NULL) && (pvNewAddr != pvOldAddr) && pstItemHandler && pstItemHandler->pfn_Relocator)
 	{
 		size_t szSize = pstItemHandler->szElementSize;
 		uint8_t* pau8NewAddr = pvNewAddr;

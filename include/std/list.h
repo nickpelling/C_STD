@@ -129,6 +129,7 @@ enum
 			.pfn_next = &stdlib_list_prev,			\
 			.pfn_prev = &stdlib_list_next			\
 		}											\
-	}
+	},												\
+	.pstDefaultItemHandler = &std_list_default_itemhandler
 
 #endif /* STD_LIST_H_ */
