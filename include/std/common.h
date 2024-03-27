@@ -123,6 +123,7 @@ STD_INLINE bool std_container_constructor(std_container_t * pstContainer, size_t
 // Note that because all containers AND iterators use the same type / const type
 // smuggling mechanism, the following two groups of macros work exactly the same
 // way for ALL of them.
+#define STD_ITEM(CONTAINER)					CONTAINER.pstType[0]
 #define STD_ITEM_SIZEOF(CONTAINER)			  sizeof(CONTAINER.pstType[0])
 #define STD_ITEM_TYPEOF(CONTAINER)			  STD_TYPEOF(CONTAINER.pstType[0])
 #define STD_ITEM_ALIGNOF(CONTAINER)			  STD_ALIGNOF(CONTAINER.pstType[0])

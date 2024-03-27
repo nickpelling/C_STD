@@ -23,7 +23,8 @@ enum
 		| std_container_implements_destruct
 		| std_container_implements_push
 		| std_container_implements_pop
-		| std_container_implements_at)
+		| std_container_implements_at
+		| std_container_implements_default_itemhandler)
 };
 
 #define STD_QUEUE_JUMPTABLE \

@@ -69,6 +69,7 @@ typedef struct
 
 	std_container_iterate_jumptable_t	astIterators[std_iterator_enum_MAX];
 
+	const std_item_handler_t			* pstDefaultItemHandler;
 } std_container_jumptable_t;
 
 STD_STATIC const std_container_jumptable_t std_container_jumptable_array[std_container_enum_MAX] =
@@ -99,6 +100,22 @@ STD_INLINE const char* std_container_name_get(std_container_enum_t eContainer, s
 	return "(Unnamed container)";
 }
 
+/**
+* Get the default itemhandler for a container (if it implements the itemhandler callback)
+* 
+* @param[in]	eContainer		The container type index
+* @param[in]	eImplements		Bitmask of implementation flags for this container type
+* 
+* @return Default item handler for the container (or NULL if it doesn't implement one)
+*/
+STD_INLINE const std_item_handler_t * std_container_default_itemhandler(std_container_enum_t eContainer, std_container_implements_t eImplements)
+{
+	if (eImplements & std_container_implements_default_itemhandler)
+	{
+		return std_container_jumptable_array[eContainer].pstDefaultItemHandler;
+	}
+	return NULL;
+}
 /**
  * Construct a container
  *
@@ -476,6 +493,8 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 // unpack data from the type metadata and pass them down as auxiliary parameters.
 
 #define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET_AND_CHECK(V,name), STD_CONTAINER_IMPLEMENTS_GET(V))
+
+#define std_container_default_itemhandler(V)	std_container_default_itemhandler(STD_CONTAINER_ENUM_GET_AND_CHECK(V,default_itemhandler), STD_CONTAINER_IMPLEMENTS_GET(V))
 
 #define std_size(V)				(V.stBody.stContainer.szNumItems)
 #define std_is_empty(V)			(std_size(V) == 0U)

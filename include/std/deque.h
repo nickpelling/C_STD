@@ -85,7 +85,7 @@ extern void stdlib_deque_reverseiterator_construct(std_container_t * pstContaine
 extern void stdlib_deque_next(std_iterator_t * pstIterator);
 extern void stdlib_deque_prev(std_iterator_t * pstIterator);
 
-extern const std_item_handler_t std_deque_default_item_handler;
+extern const std_item_handler_t std_deque_default_itemhandler;
 
 enum
 {
@@ -97,7 +97,8 @@ enum
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
 		| std_container_implements_forward_constructnextprev
-		| std_container_implements_reverse_constructnextprev)
+		| std_container_implements_reverse_constructnextprev
+		| std_container_implements_default_itemhandler)
 };
 
 #define STD_DEQUE_JUMPTABLE								\

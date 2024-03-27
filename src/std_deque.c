@@ -388,7 +388,7 @@ static bool deque_default_destruct(const std_item_handler_t* pstItemHandler, voi
 
 typedef std_deque(int) deque_int_t;
 
-const std_item_handler_t std_deque_default_item_handler =
+const std_item_handler_t std_deque_default_itemhandler =
 {
 	.szElementSize = sizeof(deque_int_t),
 	.pfn_Constructor = NULL,

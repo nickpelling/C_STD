@@ -400,7 +400,7 @@ static bool list_default_destruct(const std_item_handler_t* pstItemHandler, void
 
 typedef std_list(int) list_int_t;
 
-const std_item_handler_t std_list_default_item_handler =
+const std_item_handler_t std_list_default_itemhandler =
 {
 	.szElementSize = sizeof(list_int_t),
 	.pfn_Constructor = NULL,

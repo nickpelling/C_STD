@@ -92,7 +92,7 @@ extern void stdlib_list_reverseiterator_construct(std_container_t* pstContainer,
 extern void stdlib_list_next(std_iterator_t * pstIterator);
 extern void stdlib_list_prev(std_iterator_t * pstIterator);
 
-extern const std_item_handler_t std_list_default_item_handler;
+extern const std_item_handler_t std_list_default_itemhandler;
 
 enum
 {
@@ -103,7 +103,8 @@ enum
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_forward_constructnextprev
-		| std_container_implements_reverse_constructnextprev)
+		| std_container_implements_reverse_constructnextprev
+		| std_container_implements_default_itemhandler)
 };
 
 #define STD_LIST_JUMPTABLE \

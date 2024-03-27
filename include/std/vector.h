@@ -73,7 +73,7 @@ extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, 
 extern void stdlib_vector_iterator_next(std_iterator_t * pstIterator);
 extern void stdlib_vector_iterator_prev(std_iterator_t * pstIterator);
 
-extern const std_item_handler_t std_vector_default_item_handler;
+extern const std_item_handler_t std_vector_default_itemhandler;
 
 enum 
 {
