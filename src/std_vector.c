@@ -147,6 +147,10 @@ bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 			pstVector->szNumAlloced = szNewCapacity;
 			size_t szTotalSize = pstVector->szNumAlloced * pstVector->stContainer.szSizeofItem;
 			pvNewStart = std_memoryhandler_realloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstVector->pvStartAddr, szTotalSize);
+			if (pvNewStart == NULL)
+			{
+				return false;
+			}
 			if (pstContainer->eHas & std_container_has_itemhandler)
 			{
 				std_item_relocate(pstContainer->pstItemHandler, pvNewStart, pstVector->pvStartAddr, szTotalSize);

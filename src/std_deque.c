@@ -81,59 +81,50 @@ static inline size_t bucket_count(std_deque_t * pstDeque, size_t szExtraItems)
 /**
  * Insert a new bucket of items at the start of the deque
  */
-static inline void * bucket_insert_at_start(std_deque_t * pstDeque)
+static inline bool bucket_insert_at_start(std_deque_t * pstDeque)
 {
 	size_t szNumBuckets;
 	size_t szSize;
-	void * pvBucket;
+	void * * papvBuckets;
 
 	szNumBuckets = pstDeque->szNumBuckets + 1U;
 	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
-
-	if (szNumBuckets == 1U)
+	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
+	if (papvBuckets == NULL)
 	{
-		pstDeque->papvBuckets = (void * *) std_memoryhandler_malloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, szSize);
-		// FIXME: what should happen if this malloc fails?
-	}
-	else
-	{
-		pstDeque->papvBuckets = (void * *) std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
-		// FIXME: what should happen if this realloc fails?
-		memmove(pstDeque->papvBuckets, &pstDeque->papvBuckets[1], (szNumBuckets - 1U) * sizeof(pstDeque->papvBuckets[0]));
+		return false;
 	}
 
-	pvBucket = bucket_alloc(pstDeque);
-	pstDeque->papvBuckets[0] = pvBucket;
+	memmove(papvBuckets, &papvBuckets[1], (szNumBuckets - 1U) * sizeof(papvBuckets[0]));
+	pstDeque->papvBuckets = papvBuckets;
+	pstDeque->papvBuckets[0] = bucket_alloc(pstDeque);
 	pstDeque->szNumBuckets = szNumBuckets;
 
-	return pvBucket;
+	return true;
 }
 
 /**
  * Append a new bucket of items to the end of the deque's set of buckets
  */
-static inline void * bucket_append_to_end(std_deque_t * pstDeque)
+static inline bool bucket_append_to_end(std_deque_t * pstDeque)
 {
 	size_t szNumBuckets;
-	void * pvBucket;
 	size_t szSize;
+	void** papvBuckets;
 
 	szNumBuckets = pstDeque->szNumBuckets + 1U;
 	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
-	if (szNumBuckets == 1U)
+	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
+	if (papvBuckets == NULL)
 	{
-		pstDeque->papvBuckets = (void * *) std_memoryhandler_malloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, szSize);
-	}
-	else
-	{
-		pstDeque->papvBuckets = (void * *) std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
+		return false;
 	}
 
-	pvBucket = bucket_alloc(pstDeque);
-	pstDeque->papvBuckets[szNumBuckets - 1U] = pvBucket;
+	pstDeque->papvBuckets = papvBuckets;
+	pstDeque->papvBuckets[szNumBuckets - 1U] = bucket_alloc(pstDeque);
 	pstDeque->szNumBuckets = szNumBuckets;
 
-	return pvBucket;
+	return true;
 }
 
 // --------------------------------------------------------------------------
@@ -288,7 +279,10 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBa
 	{
 		if (pstDeque->szStartOffset == 0)
 		{
-			bucket_insert_at_start(pstDeque);
+			if (bucket_insert_at_start(pstDeque) == false)
+			{
+				break;
+			}
 			pstDeque->szStartOffset = pstDeque->szItemsPerBucket - 1;
 		}
 		else
@@ -322,7 +316,10 @@ size_t stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBas
 		pstContainer->szNumItems++;
 		if ((pstDeque->szStartOffset + pstContainer->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
 		{
-			bucket_append_to_end(pstDeque);
+			if (bucket_append_to_end(pstDeque) == false)
+			{
+				break;
+			}
 		}
 
 		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
