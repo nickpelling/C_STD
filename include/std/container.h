@@ -108,7 +108,7 @@ STD_INLINE const char* std_container_name_get(std_container_enum_t eContainer, s
 * 
 * @return Default item handler for the container (or NULL if it doesn't implement one)
 */
-STD_INLINE const std_item_handler_t * std_container_default_itemhandler(std_container_enum_t eContainer, std_container_implements_t eImplements)
+STD_INLINE const std_item_handler_t * std_container_default_itemhandler_get(std_container_enum_t eContainer, std_container_implements_t eImplements)
 {
 	if (eImplements & std_container_implements_default_itemhandler)
 	{
@@ -485,90 +485,199 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 // These are implemented as type wrappers around shared function calls, i.e. they
 // unpack data from the type metadata and pass them down as auxiliary parameters.
 
-#define std_container_name(V)	std_container_name_get(STD_CONTAINER_ENUM_GET_AND_CHECK(V,name), STD_CONTAINER_IMPLEMENTS_GET(V))
-
-#define std_container_default_itemhandler(V)	std_container_default_itemhandler(STD_CONTAINER_ENUM_GET_AND_CHECK(V,default_itemhandler), STD_CONTAINER_IMPLEMENTS_GET(V))
-
 #define std_size(V)				(V.stBody.stContainer.szNumItems)
 #define std_is_empty(V)			(std_size(V) == 0U)
 
-#define std_at(V,INDEX)			STD_ITEM_PTR_CAST(V, std_container_call_at(&V.stBody.stContainer,  	 STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))
 #define std_front(V)			std_at(V, 0)
 #define std_back(V)				std_at(V, std_size(V) - 1U)
 
-#define std_at_const(V,INDEX)	STD_ITEM_PTR_CAST_CONST(V, std_container_call_at(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), STD_CONTAINER_HAS_GET(V), INDEX))
 #define std_front_const(V)		std_at_const(V, 0)
 #define std_back_const(V)		std_at_const(V, std_size(V) - 1U)
 
-#define std_construct(V,...)	\
-			std_container_call_construct(\
-				&V.stBody.stContainer,	\
+#define std_container_name(V)								\
+			std_container_name_get(							\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,name),	\
+				STD_CONTAINER_IMPLEMENTS_GET(V)	)
+
+#define std_container_default_itemhandler(V)				\
+			std_container_default_itemhandler_get(			\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,default_itemhandler), \
+				STD_CONTAINER_IMPLEMENTS_GET(V)		)
+
+#define std_at(V,INDEX)										\
+			STD_ITEM_PTR_CAST(V,							\
+				std_container_call_at(						\
+					&V.stBody.stContainer,					\
+					STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), \
+					STD_CONTAINER_HAS_GET(V),				\
+					INDEX)	)
+
+#define std_at_const(V,INDEX)								\
+			STD_ITEM_PTR_CAST_CONST(V,						\
+				std_container_call_at(						\
+					&V.stBody.stContainer,					\
+					STD_CONTAINER_ENUM_GET_AND_CHECK(V,at),	\
+					STD_CONTAINER_HAS_GET(V),				\
+					INDEX)	)
+
+#define std_construct(V,...)								\
+			std_container_call_construct(					\
+				&V.stBody.stContainer,						\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V, construct), \
-				STD_CONTAINER_HAS_GET(V), \
-				STD_ITEM_SIZEOF(V), \
-				STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V), \
-				STD_CONTAINER_PAYLOAD_OFFSET_GET(V), \
-				& (std_container_handlers_t) { __VA_ARGS__ }	\
-			)
+				STD_CONTAINER_HAS_GET(V),					\
+				STD_ITEM_SIZEOF(V),							\
+				STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V),	\
+				STD_CONTAINER_PAYLOAD_OFFSET_GET(V),		\
+				& (std_container_handlers_t) { __VA_ARGS__ } )
 
-#define std_destruct(V)			std_container_call_destruct( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct), STD_CONTAINER_HAS_GET(V))
+#define std_destruct(V)											\
+			std_container_call_destruct(						\
+				&V.stBody.stContainer,							\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct),	\
+				STD_CONTAINER_HAS_GET(V)	)
 
-#define std_reserve(V,N)		std_container_call_reserve(   &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve), STD_CONTAINER_HAS_GET(V), N)
-#define std_fit(V)				std_container_call_fit(       &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), STD_CONTAINER_HAS_GET(V))
+#define std_reserve(V,N)					\
+			std_container_call_reserve(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve),	\
+				STD_CONTAINER_HAS_GET(V), N)
 
-#define std_push_front(V,...)	std_container_call_push_front(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), STD_CONTAINER_HAS_GET(V), \
-									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
-#define std_push_back(V,...)	std_container_call_push_back( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back), STD_CONTAINER_HAS_GET(V), \
-									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
-#define std_push(V,...)			std_container_call_push(      &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,push), STD_CONTAINER_HAS_GET(V), \
-									&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-									STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ })))
+#define std_fit(V)							\
+			std_container_call_fit(			\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), \
+				STD_CONTAINER_HAS_GET(V)	)
+
+#define std_push_front(V,...)				\
+			std_container_call_push_front(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
+				STD_CONTAINER_HAS_GET(V),						\
+				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },			\
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+
+#define std_push_back(V,...)				\
+			std_container_call_push_back(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+
+#define std_push(V,...)						\
+			std_container_call_push(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },		\
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
 
 #define STD_CHECK_TYPE(CONTAINER,VAR,PFN)	\
-	STD_STATIC_ASSERT(STD_TYPES_ARE_SAME(STD_ITEM_TYPEOF(CONTAINER),VAR), \
-		PFN##_is_inconsistent_with_type_of_item_held_by_container_##__COUNTER__)
+			STD_STATIC_ASSERT(STD_TYPES_ARE_SAME(STD_ITEM_TYPEOF(CONTAINER),VAR), \
+					PFN##_is_inconsistent_with_type_of_item_held_by_container_##__COUNTER__)
 
 #define std_pop_front(V,RESULT,MAXITEMS)	\
-	(	\
+	(										\
 		STD_CHECK_TYPE(V,(RESULT)[0], pop_front_result_parameter), \
-		std_container_call_pop_front(	&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_front), STD_CONTAINER_HAS_GET(V), RESULT, MAXITEMS) \
+		std_container_call_pop_front(		\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_front),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
 	)
 
 #define std_pop_back(V,RESULT,MAXITEMS)		\
-	(	\
+	(										\
 		STD_CHECK_TYPE(V, (RESULT)[0], pop_back_result_parameter), \
-		std_container_call_pop_back(	&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_back), STD_CONTAINER_HAS_GET(V), RESULT, MAXITEMS)	\
+		std_container_call_pop_back(		\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_back),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
 	)
 
 #define std_pop(V,RESULT,MAXITEMS)			\
 	(	\
 		STD_CHECK_TYPE(V, (RESULT)[0], pop_result_parameter), \
-		std_container_call_pop(			&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop), STD_CONTAINER_HAS_GET(V), RESULT, MAXITEMS) \
+		std_container_call_pop(				\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
 	)
 
-#define std_insert(V,ELEMENT)	std_container_call_insert( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,insert), STD_CONTAINER_HAS_GET(V), &ELEMENT)
-#define std_erase(V)			std_container_call_erase( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,erase), STD_CONTAINER_HAS_GET(V))
+#define std_insert(V,ELEMENT)				\
+			std_container_call_insert(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,insert),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				&ELEMENT)
 
-#define std_range(V,FIRST,LAST,IT)		std_container_call_range(&V.stBody, STD_CONTAINER_ENUM_GET_AND_CHECK(V,range), STD_CONTAINER_HAS_GET(V), FIRST(V), LAST(V), &IT)
+#define std_erase(V)						\
+			std_container_call_erase(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,erase),	\
+				STD_CONTAINER_HAS_GET(V)	)
 
-#define std_sort(V,COMPARE)				std_container_call_ranged_sort( &V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort), STD_CONTAINER_HAS_GET(V), 0, std_size(V) - 1,	\
-		(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE))
+#define std_range(V,FIRST,LAST,IT)			\
+			std_container_call_range(		\
+				&V.stBody,					\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,range),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				FIRST(V),					\
+				LAST(V),					\
+				&IT)
 
-#define std_ranged_sort(V,A,B,COMPARE)	std_container_call_ranged_sort(&V.stBody.stContainer, STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort), STD_CONTAINER_HAS_GET(V), A, B, 	\
-		(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE))
+#define std_sort(V,COMPARE)					\
+			std_container_call_ranged_sort(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				0,							\
+				std_size(V) - 1,			\
+				(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE)	)
 
-#define std_item_new(V)			std_container_item_construct(&V.stBody.stContainer, STD_CONTAINER_HAS_GET(V), STD_ITEM_SIZEOF(V))
-#define std_item_delete(V)		std_container_item_destruct( &V.stBody.stContainer, STD_CONTAINER_HAS_GET(V), STD_ITEM_SIZEOF(V))
+#define std_ranged_sort(V,A,B,COMPARE)		\
+			std_container_call_ranged_sort(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,ranged_sort),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				A,							\
+				B,							\
+				(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE)	)
 
-#define std_iterator_construct(V, IT)			\
-		std_iterator_call_construct(&V.stBody.stContainer, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct), &IT.stItBody.stIterator)
-#define std_iterator_range(IT,BEGIN,END)	\
-		std_iterator_call_range(&IT.stItBody.stIterator, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,range), BEGIN, END)
-#define std_iterator_next(IT)				\
-		std_iterator_call_next(&IT.stItBody.stIterator, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next))
-#define std_iterator_prev(IT)				\
-		std_iterator_call_prev(&IT.stItBody.stIterator, STD_ITERATOR_PARENT_ENUM_GET(IT), STD_ITERATOR_PARENT_HAS_GET(IT), STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev))
+#define std_iterator_construct(V, IT)				\
+			std_iterator_call_construct(			\
+				&V.stBody.stContainer,				\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_PARENT_HAS_GET(IT),	\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct),	\
+				&IT.stItBody.stIterator)
+
+#define std_iterator_range(IT,BEGIN,END)			\
+			std_iterator_call_range(				\
+				&IT.stItBody.stIterator,			\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_PARENT_HAS_GET(IT),	\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,range),	\
+				BEGIN,								\
+				END)
+
+#define std_iterator_next(IT)						\
+			std_iterator_call_next(					\
+				&IT.stItBody.stIterator,			\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_PARENT_HAS_GET(IT),	\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next)	)
+
+#define std_iterator_prev(IT)						\
+			std_iterator_call_prev(					\
+				&IT.stItBody.stIterator,			\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_PARENT_HAS_GET(IT),	\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev)	)
 
 #endif /* STD_CONTAINER_H_ */
