@@ -25,6 +25,11 @@ struct std_memoryhandler_s
 
 inline void * std_memoryhandler_malloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, size_t szSize)
 {
+	// Try to sidestep many of the C-library-related issues to do with malloc() and realloc()
+	if (szSize == 0U)
+	{
+		return NULL;
+	}
 	if (eHas & std_container_has_memoryhandler)
 	{
 		return (*pstMemoryHandler->pfn_Malloc)(pstMemoryHandler, szSize);
@@ -32,25 +37,29 @@ inline void * std_memoryhandler_malloc(const std_memoryhandler_t * pstMemoryHand
 	return malloc(szSize);
 }
 
-inline void * std_memoryhandler_realloc(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, void * pvData, size_t szSize)
-{
-	if (eHas & std_container_has_memoryhandler)
-	{
-		return (*pstMemoryHandler->pfn_Realloc)(pstMemoryHandler, pvData, szSize);
-	}
-	return realloc(pvData, szSize);
-}
-
 inline void std_memoryhandler_free(const std_memoryhandler_t * pstMemoryHandler, std_container_has_t eHas, void * pvData)
 {
 	if (eHas & std_container_has_memoryhandler)
 	{
 		(*pstMemoryHandler->pfn_Free)(pstMemoryHandler, pvData);
+		return;
 	}
-	else
+	free(pvData);
+}
+
+inline void* std_memoryhandler_realloc(const std_memoryhandler_t* pstMemoryHandler, std_container_has_t eHas, void* pvData, size_t szSize)
+{
+	// Try to sidestep many of the C-library-related issues to do with malloc() and realloc()
+	if (szSize == 0U)
 	{
-		free(pvData);
+		std_memoryhandler_free(pstMemoryHandler, eHas, pvData);
+		return NULL;
 	}
+	if (eHas & std_container_has_memoryhandler)
+	{
+		return (*pstMemoryHandler->pfn_Realloc)(pstMemoryHandler, pvData, szSize);
+	}
+	return realloc(pvData, szSize);
 }
 
 #endif /* STD_MEMORYHANDLER_H_ */

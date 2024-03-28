@@ -86,18 +86,26 @@ static inline bool bucket_insert_at_start(std_deque_t * pstDeque)
 	size_t szNumBuckets;
 	size_t szSize;
 	void * * papvBuckets;
+	void * pvBucket;
+
+	pvBucket = bucket_alloc(pstDeque);
+	if (pvBucket == NULL)
+	{
+		return false;
+	}
 
 	szNumBuckets = pstDeque->szNumBuckets + 1U;
 	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
 	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
 	if (papvBuckets == NULL)
 	{
+		std_memoryhandler_free(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pvBucket);
 		return false;
 	}
 
 	memmove(papvBuckets, &papvBuckets[1], (szNumBuckets - 1U) * sizeof(papvBuckets[0]));
 	pstDeque->papvBuckets = papvBuckets;
-	pstDeque->papvBuckets[0] = bucket_alloc(pstDeque);
+	pstDeque->papvBuckets[0] = pvBucket;
 	pstDeque->szNumBuckets = szNumBuckets;
 
 	return true;
@@ -111,17 +119,25 @@ static inline bool bucket_append_to_end(std_deque_t * pstDeque)
 	size_t szNumBuckets;
 	size_t szSize;
 	void** papvBuckets;
+	void* pvBucket;
+
+	pvBucket = bucket_alloc(pstDeque);
+	if (pvBucket == NULL)
+	{
+		return false;
+	}
 
 	szNumBuckets = pstDeque->szNumBuckets + 1U;
 	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
 	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
 	if (papvBuckets == NULL)
 	{
+		std_memoryhandler_free(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pvBucket);
 		return false;
 	}
 
 	pstDeque->papvBuckets = papvBuckets;
-	pstDeque->papvBuckets[szNumBuckets - 1U] = bucket_alloc(pstDeque);
+	pstDeque->papvBuckets[szNumBuckets - 1U] = pvBucket;
 	pstDeque->szNumBuckets = szNumBuckets;
 
 	return true;
