@@ -48,6 +48,10 @@
 #define STD_ITERATOR_ENUM_GET_AND_CHECK(IT,IMPLEMENTS) \
 	(STD_ITERATOR_CALL_EXISTS(IT,IMPLEMENTS), STD_ITERATOR_ENUM_GET(IT))
 
+#define STD_CHECK_TYPE(CONTAINER,VAR,PFN)	\
+			STD_STATIC_ASSERT(STD_TYPES_ARE_SAME(STD_ITEM_TYPEOF(CONTAINER),VAR), \
+					PFN##_is_inconsistent_with_type_of_item_held_by_container_##__COUNTER__)
+
 typedef struct
 {
 	const char * const pachContainerName;
@@ -83,8 +87,15 @@ STD_STATIC const std_container_jumptable_t std_container_jumptable_array[std_con
 	[std_container_enum_vector]			= { STD_VECTOR_JUMPTABLE },
 };
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#define std_size(V)				(V.stBody.stContainer.szNumItems)
+#define std_is_empty(V)			(std_size(V) == 0U)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
- * Get the name of a container (if it implements the name callback)
+ * Get the name of a type of container (if it implements the name callback)
  * 
  * @param[in]	eContainer		The container type index
  * @param[in]	eImplements		Bitmask of implementation flags for this container type
@@ -99,6 +110,11 @@ STD_INLINE const char* std_container_name_get(std_container_enum_t eContainer, s
 	}
 	return "(Unnamed container)";
 }
+
+#define std_container_name(V)								\
+			std_container_name_get(							\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,name),	\
+				STD_CONTAINER_IMPLEMENTS_GET(V)	)
 
 /**
 * Get the default itemhandler for a container (if it implements the itemhandler callback)
@@ -116,8 +132,16 @@ STD_INLINE const std_item_handler_t * std_container_default_itemhandler_get(std_
 	}
 	return NULL;
 }
+
+#define std_container_default_itemhandler(V)				\
+			std_container_default_itemhandler_get(			\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,default_itemhandler), \
+				STD_CONTAINER_IMPLEMENTS_GET(V)		)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
- * Construct a container
+ * Construct an untyped container
  *
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
@@ -135,10 +159,21 @@ STD_INLINE bool std_container_call_construct(std_container_t* pstContainer, std_
 	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas, pstHandlers);
 }
 
+// Construct a typed container
+#define std_construct(V,...)								\
+			std_container_call_construct(					\
+				&V.stBody.stContainer,						\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V, construct), \
+				STD_CONTAINER_HAS_GET(V),					\
+				STD_ITEM_SIZEOF(V),							\
+				STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V),	\
+				STD_CONTAINER_PAYLOAD_OFFSET_GET(V),		\
+				& (std_container_handlers_t) { __VA_ARGS__ } )
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * Lock a container
+ * Lock an untyped container
  *
  * @param[in]	pstContainer	The container
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
@@ -157,9 +192,15 @@ STD_INLINE std_lock_state_t std_container_lock(std_container_t* pstContainer, st
 	return e_std_lock_NoRestoreNeeded;
 }
 
-// Helper macros for locking containers
-#define std_container_lock_for_reading(CONTAINER,HAS)	std_container_lock(CONTAINER,HAS,true)
-#define std_container_lock_for_writing(CONTAINER,HAS)	std_container_lock(CONTAINER,HAS,false)
+// Lock a typed container for reading
+#define std_container_lock_for_reading(CONTAINER,HAS)	\
+			std_container_lock(CONTAINER,HAS,true)
+
+// Lock a typed container for writing
+#define std_container_lock_for_writing(CONTAINER,HAS)	\
+			std_container_lock(CONTAINER,HAS,false)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
  * Restore a container's previous lock state
@@ -185,14 +226,17 @@ STD_INLINE void std_container_lock_restore(std_container_t* pstContainer, std_co
 		VARNAME = (std_container_lock_restore(CONTAINER, HAS, VARNAME), e_std_lock_Invalid)
 
 // Wrap a typed container lock/unlock for-loop around the actions that follow
-// Note: this must be wrapped by a for(....)!
 #define std_container_lock_wrapper(CONTAINER,READONLY)	\
-	STD_CONTAINER_LOCK_WRAPPER(&CONTAINER.stBody.stContainer, STD_CONTAINER_HAS_GET(CONTAINER), READONLY, STD_FAKEVAR())
+			STD_CONTAINER_LOCK_WRAPPER(					\
+				&CONTAINER.stBody.stContainer,			\
+				STD_CONTAINER_HAS_GET(CONTAINER),		\
+				READONLY,								\
+				STD_FAKEVAR()	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * Destruct a container
+ * Destruct an untyped container
  *
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
@@ -204,8 +248,17 @@ STD_INLINE bool std_container_call_destruct(std_container_t* pstContainer, std_c
 	return STD_CONTAINER_CALL(eContainer, pfn_destruct)(pstContainer);
 }
 
+// Destruct a typed container
+#define std_destruct(V)											\
+			std_container_call_destruct(						\
+				&V.stBody.stContainer,							\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct),	\
+				STD_CONTAINER_HAS_GET(V)	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
- * Reserve space in a container
+ * Reserve space in an untyped container
  *
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
@@ -222,8 +275,17 @@ STD_INLINE bool std_container_call_reserve(std_container_t* pstContainer, std_co
 	return bRetVal;
 }
 
+// Reserve space in a typed container
+#define std_reserve(V,N)					\
+			std_container_call_reserve(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve),	\
+				STD_CONTAINER_HAS_GET(V), N)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
- * Fit a container to the number of elements previously pushed to it
+ * Fit an untyped container to the number of elements previously pushed to it
  *
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
@@ -236,8 +298,17 @@ STD_INLINE void std_container_call_fit(std_container_t* pstContainer, std_contai
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
+// Fit a typed container to the number of elements previously pushed to it
+#define std_fit(V)							\
+			std_container_call_fit(			\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), \
+				STD_CONTAINER_HAS_GET(V)	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
- * Push a linear series of items to the front of a container
+ * Push a linear series of items to the front of an untyped container
  *
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
@@ -254,6 +325,17 @@ STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, s
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return szNumPushed;
 }
+
+// Push a linear series of items to the front of a typed container
+#define std_push_front(V,...)				\
+			std_container_call_push_front(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
+				STD_CONTAINER_HAS_GET(V),						\
+				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },			\
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
  * Push a linear series of items to the back of a container
@@ -274,6 +356,16 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
 	return szNumPushed;
 }
 
+#define std_push_back(V,...)				\
+			std_container_call_push_back(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
  * Push a linear series of items to a container
  *
@@ -292,6 +384,16 @@ STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_con
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return szNumPushed;
 }
+
+#define std_push(V,...)						\
+			std_container_call_push(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },		\
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
  * Pop a number of items from the front of a container into a linear area of memory
@@ -312,6 +414,19 @@ STD_INLINE size_t std_container_call_pop_front(std_container_t* pstContainer, st
 	return szNum;
 }
 
+#define std_pop_front(V,RESULT,MAXITEMS)	\
+	(										\
+		STD_CHECK_TYPE(V,(RESULT)[0], pop_front_result_parameter), \
+		std_container_call_pop_front(		\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_front),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
+	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
  * Pop a number of items from the back of a container into a linear area of memory
  *
@@ -330,6 +445,19 @@ STD_INLINE size_t std_container_call_pop_back(std_container_t* pstContainer, std
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return szNum;
 }
+
+#define std_pop_back(V,RESULT,MAXITEMS)		\
+	(										\
+		STD_CHECK_TYPE(V, (RESULT)[0], pop_back_result_parameter), \
+		std_container_call_pop_back(		\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_back),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
+	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
  * Pop a number of items from a container into a linear area of memory
@@ -350,6 +478,19 @@ STD_INLINE size_t std_container_call_pop(std_container_t* pstContainer, std_cont
 	return szNum;
 }
 
+#define std_pop(V,RESULT,MAXITEMS)			\
+	(										\
+		STD_CHECK_TYPE(V, (RESULT)[0], pop_result_parameter), \
+		std_container_call_pop(				\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
+	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
  * Construct an iterator to step through a specified range of entries in a container
  *
@@ -367,6 +508,17 @@ STD_INLINE void std_container_call_range(std_container_t* pstContainer, std_cont
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
 
+#define std_range(V,FIRST,LAST,IT)			\
+			std_container_call_range(		\
+				&V.stBody,					\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,range),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				FIRST(V),					\
+				LAST(V),					\
+				&IT)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
  * Destruct a container
  *
@@ -383,253 +535,6 @@ STD_INLINE void std_container_call_ranged_sort(std_container_t* pstContainer, st
 	STD_CONTAINER_CALL(eContainer, pfn_ranged_sort)(pstContainer, szFirst, szLast, pfn_Compare);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 }
-
-/**
- * Calculate a pointer to an indexed entry within a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	szIndex			Index of entry
- */
-STD_INLINE void* std_container_call_at(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szIndex)
-{
-	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
-	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_at)(pstContainer, szIndex);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return pvPtr;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
- * Construct an iterator
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	eIterator		Which iterator type to use
- * @param[in]	pstIterator		Iterator to construct
- */
-STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
-{
-	pstIterator->pstContainer = pstContainer;
-	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
-}
-
-/**
- * Construct an iterator to step through a range of items inside a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	eIterator		Which iterator type to use
- * @param[out]	pstIterator		Iterator to construct
- * @param[in]	pvBegin			First item in the range
- * @param[in]	pvEnd			Item immediately after the last item in the range
- */
-STD_INLINE void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
-{
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_range)(pstContainer, pstIterator, pvBegin, pvEnd);
-}
-
-/**
- * Step an iterator forwards by one
- * 
- * @param[in]	pstIterator		Iterator
- * @param[in]	eContainer		Container type
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
- */
-STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
-{
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_next)(pstIterator);
-}
-
-/**
- * Step an iterator backwards by one
- *
- * @param[in]	pstIterator		Iterator
- * @param[in]	eContainer		Container type
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
- */
-STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
-{
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_prev)(pstIterator);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
- * Destruct a freestanding single item of the type held by a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	pvPtr			The item to destruct
- */
-STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_container_has_t eHas, void *pvPtr)
-{
-	if (eHas & std_container_has_itemhandler)
-	{
-		std_item_destruct(pstContainer->pstItemHandler, pvPtr, 1U);
-	}
-	std_memoryhandler_free(pstContainer->pstMemoryHandler, eHas, pvPtr);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-// Client-side (typed) methods
-//
-// These are implemented as type wrappers around shared function calls, i.e. they
-// unpack data from the type metadata and pass them down as auxiliary parameters.
-
-#define std_size(V)				(V.stBody.stContainer.szNumItems)
-#define std_is_empty(V)			(std_size(V) == 0U)
-
-#define std_front(V)			std_at(V, 0)
-#define std_back(V)				std_at(V, std_size(V) - 1U)
-
-#define std_front_const(V)		std_at_const(V, 0)
-#define std_back_const(V)		std_at_const(V, std_size(V) - 1U)
-
-#define std_container_name(V)								\
-			std_container_name_get(							\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,name),	\
-				STD_CONTAINER_IMPLEMENTS_GET(V)	)
-
-#define std_container_default_itemhandler(V)				\
-			std_container_default_itemhandler_get(			\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,default_itemhandler), \
-				STD_CONTAINER_IMPLEMENTS_GET(V)		)
-
-#define std_at(V,INDEX)										\
-			STD_ITEM_PTR_CAST(V,							\
-				std_container_call_at(						\
-					&V.stBody.stContainer,					\
-					STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), \
-					STD_CONTAINER_HAS_GET(V),				\
-					INDEX)	)
-
-#define std_at_const(V,INDEX)								\
-			STD_ITEM_PTR_CAST_CONST(V,						\
-				std_container_call_at(						\
-					&V.stBody.stContainer,					\
-					STD_CONTAINER_ENUM_GET_AND_CHECK(V,at),	\
-					STD_CONTAINER_HAS_GET(V),				\
-					INDEX)	)
-
-#define std_construct(V,...)								\
-			std_container_call_construct(					\
-				&V.stBody.stContainer,						\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V, construct), \
-				STD_CONTAINER_HAS_GET(V),					\
-				STD_ITEM_SIZEOF(V),							\
-				STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V),	\
-				STD_CONTAINER_PAYLOAD_OFFSET_GET(V),		\
-				& (std_container_handlers_t) { __VA_ARGS__ } )
-
-#define std_destruct(V)											\
-			std_container_call_destruct(						\
-				&V.stBody.stContainer,							\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,destruct),	\
-				STD_CONTAINER_HAS_GET(V)	)
-
-#define std_reserve(V,N)					\
-			std_container_call_reserve(		\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve),	\
-				STD_CONTAINER_HAS_GET(V), N)
-
-#define std_fit(V)							\
-			std_container_call_fit(			\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), \
-				STD_CONTAINER_HAS_GET(V)	)
-
-#define std_push_front(V,...)				\
-			std_container_call_push_front(	\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
-				STD_CONTAINER_HAS_GET(V),						\
-				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },			\
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
-
-#define std_push_back(V,...)				\
-			std_container_call_push_back(	\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
-
-#define std_push(V,...)						\
-			std_container_call_push(		\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },		\
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
-
-#define STD_CHECK_TYPE(CONTAINER,VAR,PFN)	\
-			STD_STATIC_ASSERT(STD_TYPES_ARE_SAME(STD_ITEM_TYPEOF(CONTAINER),VAR), \
-					PFN##_is_inconsistent_with_type_of_item_held_by_container_##__COUNTER__)
-
-#define std_pop_front(V,RESULT,MAXITEMS)	\
-	(										\
-		STD_CHECK_TYPE(V,(RESULT)[0], pop_front_result_parameter), \
-		std_container_call_pop_front(		\
-			&V.stBody.stContainer,			\
-			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_front),	\
-			STD_CONTAINER_HAS_GET(V),		\
-			RESULT,							\
-			MAXITEMS)						\
-	)
-
-#define std_pop_back(V,RESULT,MAXITEMS)		\
-	(										\
-		STD_CHECK_TYPE(V, (RESULT)[0], pop_back_result_parameter), \
-		std_container_call_pop_back(		\
-			&V.stBody.stContainer,			\
-			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_back),	\
-			STD_CONTAINER_HAS_GET(V),		\
-			RESULT,							\
-			MAXITEMS)						\
-	)
-
-#define std_pop(V,RESULT,MAXITEMS)			\
-	(	\
-		STD_CHECK_TYPE(V, (RESULT)[0], pop_result_parameter), \
-		std_container_call_pop(				\
-			&V.stBody.stContainer,			\
-			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop),	\
-			STD_CONTAINER_HAS_GET(V),		\
-			RESULT,							\
-			MAXITEMS)						\
-	)
-
-#define std_insert(V,ELEMENT)				\
-			std_container_call_insert(		\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,insert),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				&ELEMENT)
-
-#define std_erase(V)						\
-			std_container_call_erase(		\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,erase),	\
-				STD_CONTAINER_HAS_GET(V)	)
-
-#define std_range(V,FIRST,LAST,IT)			\
-			std_container_call_range(		\
-				&V.stBody,					\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,range),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				FIRST(V),					\
-				LAST(V),					\
-				&IT)
 
 #define std_sort(V,COMPARE)					\
 			std_container_call_ranged_sort(	\
@@ -649,6 +554,64 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 				B,							\
 				(pfn_std_compare_t)(void (*)(void))STD_CONST_COMPARE_CAST(V,COMPARE)	)
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Calculate a pointer to an indexed entry within a container
+ *
+ * @param[in]	pstContainer	The container
+ * @param[in]	eContainer		The container type index
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	szIndex			Index of entry
+ */
+STD_INLINE void* std_container_call_at(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, size_t szIndex)
+{
+	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
+	void* pvPtr = STD_CONTAINER_CALL(eContainer, pfn_at)(pstContainer, szIndex);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return pvPtr;
+}
+
+#define std_at(V,INDEX)										\
+			STD_ITEM_PTR_CAST(V,							\
+				std_container_call_at(						\
+					&V.stBody.stContainer,					\
+					STD_CONTAINER_ENUM_GET_AND_CHECK(V,at), \
+					STD_CONTAINER_HAS_GET(V),				\
+					INDEX)	)
+
+#define std_at_const(V,INDEX)								\
+			STD_ITEM_PTR_CAST_CONST(V,						\
+				std_container_call_at(						\
+					&V.stBody.stContainer,					\
+					STD_CONTAINER_ENUM_GET_AND_CHECK(V,at),	\
+					STD_CONTAINER_HAS_GET(V),				\
+					INDEX)	)
+
+#define std_front(V)			std_at(V, 0)
+#define std_back(V)				std_at(V, std_size(V) - 1U)
+
+#define std_front_const(V)		std_at_const(V, 0)
+#define std_back_const(V)		std_at_const(V, std_size(V) - 1U)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Construct an iterator
+ *
+ * @param[in]	pstContainer	The container
+ * @param[in]	eContainer		The container type index
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	eIterator		Which iterator type to use
+ * @param[in]	pstIterator		Iterator to construct
+ */
+STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
+{
+	pstIterator->pstContainer = pstContainer;
+	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
+}
+
 #define std_iterator_construct(V, IT)				\
 			std_iterator_call_construct(			\
 				&V.stBody.stContainer,				\
@@ -656,6 +619,24 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 				STD_ITERATOR_PARENT_HAS_GET(IT),	\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct),	\
 				&IT.stItBody.stIterator)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Construct an iterator to step through a range of items inside a container
+ *
+ * @param[in]	pstContainer	The container
+ * @param[in]	eContainer		The container type index
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	eIterator		Which iterator type to use
+ * @param[out]	pstIterator		Iterator to construct
+ * @param[in]	pvBegin			First item in the range
+ * @param[in]	pvEnd			Item immediately after the last item in the range
+ */
+STD_INLINE void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
+{
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_range)(pstContainer, pstIterator, pvBegin, pvEnd);
+}
 
 #define std_iterator_range(IT,BEGIN,END)			\
 			std_iterator_call_range(				\
@@ -666,6 +647,21 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 				BEGIN,								\
 				END)
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Step an iterator forwards by one
+ * 
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	eContainer		Container type
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ */
+STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
+{
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_next)(pstIterator);
+}
+
 #define std_iterator_next(IT)						\
 			std_iterator_call_next(					\
 				&IT.stItBody.stIterator,			\
@@ -673,11 +669,41 @@ STD_INLINE void std_container_item_destruct(std_container_t* pstContainer, std_c
 				STD_ITERATOR_PARENT_HAS_GET(IT),	\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next)	)
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Step an iterator backwards by one
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	eContainer		Container type
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ */
+STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
+{
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_prev)(pstIterator);
+}
+
 #define std_iterator_prev(IT)						\
 			std_iterator_call_prev(					\
 				&IT.stItBody.stIterator,			\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
 				STD_ITERATOR_PARENT_HAS_GET(IT),	\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev)	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#define std_insert(V,ELEMENT)				\
+			std_container_call_insert(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,insert),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				&ELEMENT)
+
+#define std_erase(V)						\
+			std_container_call_erase(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,erase),	\
+				STD_CONTAINER_HAS_GET(V)	)
 
 #endif /* STD_CONTAINER_H_ */
