@@ -22,9 +22,6 @@ struct std_item_handler_s
 	// Size of an individual element
 	size_t szElementSize;
 
-	// In-place constructor (optional)
-	bool (*pfn_Constructor)(const std_item_handler_t * pstItemHandler, void * pvData);
-
 	// In-place destructor (optional)
 	bool (*pfn_Destructor)(const std_item_handler_t * pstItemHandler, void * pvData);
 
@@ -32,7 +29,6 @@ struct std_item_handler_s
 	void (*pfn_Relocator)(const std_item_handler_t * pstItemHandler, void * pvNewAddr, const void * pvOldAddr);
 };
 
-extern void std_item_construct(const std_item_handler_t* pstItemHandler, void* pvData, size_t szNumElements);
 extern void std_item_destruct(const std_item_handler_t* pstItemHandler, void* pvData, size_t szNumElements);
 extern void std_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewAddr, const void* pvOldAddr, size_t szTotalSize);
 

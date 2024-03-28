@@ -39,26 +39,6 @@ void std_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHan
 }
 
 /**
- * Construct one or more items using an item handler
- * 
- * @param[in]	pstItemHandler		Item handler
- * @param[in]	pvData				Pre-allocated area of memory for item(s)
- * @param[in]	szNumElements		Number of items to construct
- */
-void std_item_construct(const std_item_handler_t* pstItemHandler, void * pvData, size_t szNumElements)
-{
-	if (pstItemHandler && pstItemHandler->pfn_Constructor && pvData && (szNumElements != 0U))
-	{
-		uint8_t * pau8Data = pvData;
-		for (size_t i = 0U; i < szNumElements; i++)
-		{
-			(*pstItemHandler->pfn_Constructor)(pstItemHandler, pau8Data);
-			pau8Data += pstItemHandler->szElementSize;
-		}
-	}
-}
-
-/**
  * Destruct one or more items using an item handler
  *
  * @param[in]	pstItemHandler		Item handler

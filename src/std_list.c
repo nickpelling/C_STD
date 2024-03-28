@@ -188,7 +188,7 @@ size_t stdlib_list_push_front(std_container_t * pstContainer, const void * pvBas
 		memcpy(pvItem, pvBase, pstList->stContainer.szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
 		}
 	}
 
@@ -222,7 +222,7 @@ size_t stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
 		}
 	}
 
@@ -417,7 +417,6 @@ typedef std_list(int) list_int_t;
 const std_item_handler_t std_list_default_itemhandler =
 {
 	.szElementSize = sizeof(list_int_t),
-	.pfn_Constructor = NULL,
 	.pfn_Destructor = &list_default_destruct,
 	.pfn_Relocator = NULL
 };

@@ -311,7 +311,7 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBa
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstContainer->szSizeofItem);
 		}
 	}
 
@@ -342,7 +342,7 @@ size_t stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBas
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_construct(pstContainer->pstItemHandler, pvItem, 1U);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstContainer->szSizeofItem);
 		}
 	}
 
@@ -412,7 +412,6 @@ typedef std_deque(int) deque_int_t;
 const std_item_handler_t std_deque_default_itemhandler =
 {
 	.szElementSize = sizeof(deque_int_t),
-	.pfn_Constructor = NULL,
 	.pfn_Destructor = &deque_default_destruct,
 	.pfn_Relocator = NULL
 };

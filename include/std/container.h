@@ -463,26 +463,6 @@ STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_containe
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * Construct a freestanding single item of the type held by a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	szSize			Size of an item
- * 
- * @return Pointer to the constructed item
- */
-STD_INLINE void* std_container_item_construct(std_container_t* pstContainer, std_container_has_t eHas, size_t szSize)
-{
-	void * pvPtr = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, eHas, szSize);
-	if (	(eHas & std_container_has_itemhandler)
-		&&	(pvPtr != NULL)	)
-	{
-		std_item_construct(pstContainer->pstItemHandler, pvPtr, 1U);
-	}
-	return pvPtr;
-}
-
-/**
  * Destruct a freestanding single item of the type held by a container
  *
  * @param[in]	pstContainer	The container

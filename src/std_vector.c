@@ -200,16 +200,27 @@ void stdlib_vector_fit(std_container_t * pstContainer)
 size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	void * pvItems;
+	size_t szTotalSize;
 
+	// Try to reserve space, exit early if that didn't succeed
+	if (stdlib_vector_reserve(pstContainer, pstContainer->szNumItems + szNumItems) == false)
+	{
+		return 0;
+	}
+
+	// Update the number of items
 	pstContainer->szNumItems += szNumItems;
-	stdlib_vector_reserve(pstContainer, pstContainer->szNumItems);
 
-	std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, szNumItems), stdlib_vector_at(pstContainer, 0), (pstContainer->szNumItems - szNumItems) * pstContainer->szSizeofItem);
-	memcpy(stdlib_vector_at(pstContainer, 0), pvBase, szNumItems * pstContainer->szSizeofItem);
+	pvItems = stdlib_vector_at(pstContainer, 0);
+	szTotalSize = pstContainer->szNumItems * pstContainer->szSizeofItem;
+	memmove(stdlib_vector_at(pstContainer, szNumItems), pvItems, szNumItems * pstContainer->szSizeofItem);
+	memcpy(pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
 
 	if (pstContainer->eHas & std_container_has_itemhandler)
 	{
-		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, 0), szNumItems);
+		std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, szNumItems), pvItems, szTotalSize - pstContainer->szSizeofItem);
+		std_item_relocate(pstContainer->pstItemHandler, pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
 	}
 
 	return szNumItems;
@@ -227,14 +238,23 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvB
 size_t stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase, size_t szNumItems)
 {
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	void * pvItems;
 
+	// Try to reserve space, exit early if that didn't succeed
+	if (stdlib_vector_reserve(pstContainer, pstContainer->szNumItems + szNumItems) == false)
+	{
+		return 0;
+	}
+
+	pvItems = stdlib_vector_at(pstContainer, pstContainer->szNumItems);
+
+	// Update the number of items
 	pstContainer->szNumItems += szNumItems;
-	stdlib_vector_reserve( pstContainer, pstContainer->szNumItems );
-	memcpy(stdlib_vector_at(pstContainer, pstContainer->szNumItems - szNumItems), pvBase, szNumItems * pstContainer->szSizeofItem);
 
+	memcpy(pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
 	if (pstContainer->eHas & std_container_has_itemhandler)
 	{
-		std_item_construct(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, pstContainer->szNumItems - szNumItems), szNumItems);
+		std_item_relocate(pstContainer->pstItemHandler, pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
 	}
 
 	return szNumItems;
@@ -391,7 +411,6 @@ typedef std_vector(int) vector_int_t;
 const std_item_handler_t std_vector_default_itemhandler =
 {
 	.szElementSize = sizeof(vector_int_t),
-	.pfn_Constructor = NULL,
 	.pfn_Destructor = &vector_default_destruct,
 	.pfn_Relocator = NULL
 };
