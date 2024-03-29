@@ -149,13 +149,11 @@ STD_INLINE const std_item_handler_t * std_container_default_itemhandler_get(std_
  * @param[in]	szSizeof		Size of the contained item
  * @param[in]	szWrappedSizeof	Size of the wrapped item (e.g. including linked list pointers)
  * @param[in]	szPayloadOffset	Offset to the start of the item payload (e.g. past the linked list pointers)
- *
- * @return True if successful, else false
  */
-STD_INLINE bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
+STD_INLINE void std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
 				size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset)
 {
-	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas);
+	STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas);
 }
 
 // Construct a typed container
