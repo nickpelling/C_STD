@@ -12,8 +12,14 @@
 
 #define STD_QUEUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_queue, HAS_ENUM, std_queue_implements, STD_FAKEVAR())
 
-#define std_queue(T)					STD_QUEUE_DECLARE(T,std_container_has_no_handlers)
-#define std_queue_handlers(T,HAS_ENUM)	STD_QUEUE_DECLARE(T,HAS_ENUM)
+#define std_queue(T)											STD_QUEUE_DECLARE(T,std_container_has_no_handlers)
+#define std_queue_itemhandler(T)								STD_QUEUE_DECLARE(T,std_container_has_itemhandler)
+#define std_queue_memoryhandler(T)								STD_QUEUE_DECLARE(T,std_container_has_memoryhandler)
+#define std_queue_memoryhandler_itemhandler(T)					STD_QUEUE_DECLARE(T,std_container_has_memoryhandler_itemhandler)
+#define std_queue_lockhandler(T)								STD_QUEUE_DECLARE(T,std_container_has_lockhandler)
+#define std_queue_lockhandler_itemhandler(T)					STD_QUEUE_DECLARE(T,std_container_has_lockhandler_itemhandler)
+#define std_queue_lockhandler_memoryhandler(T)					STD_QUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler)
+#define std_queue_lockhandler_memoryhandler_itemhandler(T)		STD_QUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
 
 enum
 {

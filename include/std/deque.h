@@ -64,8 +64,14 @@ typedef struct
 
 #define STD_DEQUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, std_deque_implements, STD_FAKEVAR())
 
-#define std_deque(T)					STD_DEQUE_DECLARE(T,std_container_has_no_handlers)
-#define std_deque_handlers(T,HAS_ENUM)	STD_DEQUE_DECLARE(T,HAS_ENUM)
+#define std_deque(T)											STD_DEQUE_DECLARE(T,std_container_has_no_handlers)
+#define std_deque_itemhandler(T)								STD_DEQUE_DECLARE(T,std_container_has_itemhandler)
+#define std_deque_memoryhandler(T)								STD_DEQUE_DECLARE(T,std_container_has_memoryhandler)
+#define std_deque_memoryhandler_itemhandler(T)					STD_DEQUE_DECLARE(T,std_container_has_memoryhandler_itemhandler)
+#define std_deque_lockhandler(T)								STD_DEQUE_DECLARE(T,std_container_has_lockhandler)
+#define std_deque_lockhandler_itemhandler(T)					STD_DEQUE_DECLARE(T,std_container_has_lockhandler_itemhandler)
+#define std_deque_lockhandler_memoryhandler(T)					STD_DEQUE_DECLARE(T,std_container_has_lockhandler_memoryhandler)
+#define std_deque_lockhandler_memoryhandler_itemhandler(T)		STD_DEQUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
 
 extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize);
 
