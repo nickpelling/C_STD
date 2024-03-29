@@ -71,6 +71,8 @@ typedef struct
 	void *	(* const pfn_at)			(std_container_t * pstContainer, size_t szIndex);
 	bool	(* const pfn_destruct)		(std_container_t * pstContainer);
 
+	void	(* const pfn_erase)			(std_iterator_t * pstIterator);
+
 	std_container_iterate_jumptable_t	astIterators[std_iterator_enum_MAX];
 
 	const std_item_handler_t			* pstDefaultItemHandler;
@@ -726,17 +728,72 @@ STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_containe
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#define std_insert(V,ELEMENT)				\
-			std_container_call_insert(		\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,insert),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				&ELEMENT)
+/**
+ * Insert a linear series of items after the current iterator
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	eContainer		The container type index
+ * @param[in]	pvBase			Start of a linear series of items
+ * @param[in]	szNumElements	Number of items in the linear series
+ * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ *
+ * @return Number of items inserted
+ */
+STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumItems)
+{
+	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_after)(pstIterator, pvBase, szNumItems);
+}
 
-#define std_erase(V)						\
-			std_container_call_erase(		\
+#define std_insert_after(IT,...)							\
+			std_iterator_call_insert_after(					\
+				&IT.stItBody.stIterator,					\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
+				&(STD_ITEM_TYPEOF(IT)[]){ __VA_ARGS__ },	\
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(IT)[]) { __VA_ARGS__ }))	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Insert a linear series of items before the current iterator
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	eContainer		The container type index
+ * @param[in]	pvBase			Start of a linear series of items
+ * @param[in]	szNumElements	Number of items in the linear series
+ * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ *
+ * @return Number of items inserted
+ */
+STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumItems)
+{
+	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_before)(pstIterator, pvBase, szNumItems);
+}
+
+#define std_insert_before(IT,...)							\
+			std_iterator_call_insert_before(				\
+				&IT.stItBody.stIterator,					\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
+				&(STD_ITEM_TYPEOF(IT)[]){ __VA_ARGS__ },	\
+				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(IT)[]) { __VA_ARGS__ }))	)
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Erase the item currently pointed to by an iterator
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	eContainer		The container type index
+ */
+STD_INLINE void std_iterator_call_erase(std_iterator_t* pstIterator, std_container_enum_t eContainer)
+{
+	STD_CONTAINER_CALL(eContainer, pfn_erase)(pstIterator);
+}
+
+#define std_erase(IT)						\
+			std_iterator_call_erase(		\
 				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,erase),	\
-				STD_CONTAINER_HAS_GET(V)	)
+				STD_ITERATOR_PARENT_ENUM_GET(IT,erase)	)	// FIXME: should be ..._AND_CHECK(
 
 #endif /* STD_CONTAINER_H_ */

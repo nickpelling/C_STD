@@ -20,7 +20,6 @@ typedef struct
 	void (*pfn_prev)(	std_iterator_t  * pstIterator);
 	size_t (*pfn_insert_after)(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems);
 	size_t (*pfn_insert_before)(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems);
-	void (*pfn_erase)(std_iterator_t* pstIterator);
 } std_container_iterate_jumptable_t;
 
 // Shared base class for all iterators

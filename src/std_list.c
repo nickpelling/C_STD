@@ -417,8 +417,11 @@ size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const void* pvBase,
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t* pstNode;
+	std_list_node_t* pstItNode;
 	void* pvItem;
 	size_t i;
+
+	pstItNode = STD_LINEAR_SUB(pstIterator->pvRef, pstList->szPayloadOffset);
 
 	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
 	{
@@ -427,7 +430,7 @@ size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const void* pvBase,
 		{
 			break;
 		}
-		node_insert_after(pstList, pstIterator->pvRef, pstNode);
+		node_insert_after(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
@@ -454,8 +457,11 @@ size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const void* pvBase
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t* pstNode;
+	std_list_node_t* pstItNode;
 	void* pvItem;
 	size_t i;
+
+	pstItNode = STD_LINEAR_SUB(pstIterator->pvRef, pstList->szPayloadOffset);
 
 	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
 	{
@@ -464,7 +470,7 @@ size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const void* pvBase
 		{
 			break;
 		}
-		node_insert_before(pstList, pstIterator->pvRef, pstNode);
+		node_insert_before(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);

@@ -108,11 +108,10 @@ enum
 		| std_container_implements_forward_constructnextprev
 		| std_container_implements_forward_insert_after
 		| std_container_implements_forward_insert_before
-		| std_container_implements_forward_erase
 		| std_container_implements_reverse_constructnextprev
 		| std_container_implements_reverse_insert_after
 		| std_container_implements_reverse_insert_before
-		| std_container_implements_reverse_erase
+		| std_container_implements_erase
 		| std_container_implements_default_itemhandler)
 };
 
@@ -124,6 +123,7 @@ enum
 	.pfn_push_back		= &stdlib_list_push_back,	\
 	.pfn_pop_front		= &stdlib_list_pop_front,	\
 	.pfn_pop_back		= &stdlib_list_pop_back,	\
+	.pfn_erase = &stdlib_list_erase,				\
 	.astIterators =									\
 	{												\
 		[std_iterator_enum_forward] =				\
@@ -133,7 +133,6 @@ enum
 			.pfn_prev = &stdlib_list_prev,			\
 			.pfn_insert_after = &stdlib_list_insert_after,		\
 			.pfn_insert_before = &stdlib_list_insert_before,	\
-			.pfn_erase = &stdlib_list_erase,			\
 		},											\
 		[std_iterator_enum_reverse] =				\
 		{											\
@@ -142,7 +141,6 @@ enum
 			.pfn_prev = &stdlib_list_next,			\
 			.pfn_insert_after = &stdlib_list_insert_before,	\
 			.pfn_insert_before = &stdlib_list_insert_after,	\
-			.pfn_erase = &stdlib_list_erase			\
 		}											\
 	},												\
 	.pstDefaultItemHandler = &std_list_default_itemhandler

@@ -67,7 +67,17 @@ void list_test(void)
 	PRINT_ALL(list, "L3", std_each_reverse);
 	PRINT_ALL(list, "L4", std_each_reverse_const);
 
-	POP_ALL(list, "L5", std_pop_back, 5);
+	for (std_each(list, it))
+	{
+		if (std_iterator_at(it)[0] == 4)
+		{
+			std_insert_before(it, -3);
+			std_insert_after(it, 6);
+			break;
+		}
+	}
+
+	POP_ALL(list, "L5", std_pop_back, 10);
 
 	std_destruct(list);
 }
