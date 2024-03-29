@@ -127,11 +127,10 @@ static void node_insert_before(std_list_t * pstList, std_list_node_t * pstPositi
  * @param[in]	szWrappedSizeof	Size of a wrapped item (i.e. including its node header)
  * @param[in]	szPayloadOffset	Offset of a raw (payload) item inside a wrapped (node) item
  * @param[in]	eHas			Specifies which kinds of handlers this container uses
- * @param[in]	pstHandlers		Pointer to handler jumptable
  */
-bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers)
+bool stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas)
 {
-	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas, pstHandlers);
+	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas);
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
 	pstList->szLinkSize			= szWrappedSizeof;
 	pstList->szPayloadOffset	= szPayloadOffset;

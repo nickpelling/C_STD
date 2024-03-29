@@ -38,7 +38,7 @@ typedef struct
 
 typedef struct
 {
-	size_t						szSizeofItem;
+	size_t						szSizeofItem;		// Size of each item in the container
 	size_t						szNumItems;			// Number of items currently in the container
 	std_container_has_t			eHas;
 	const std_item_handler_t	* pstItemHandler;
@@ -47,74 +47,11 @@ typedef struct
 	std_lock_handle_t			  phLock;			// Opaque handle to a lock instance
 } std_container_t;
 
-STD_INLINE bool std_container_constructor(std_container_t * pstContainer, size_t szSizeofItem, std_container_has_t eHas, const std_container_handlers_t * pstHandlers)
+STD_INLINE void std_container_constructor(std_container_t * pstContainer, size_t szSizeofItem, std_container_has_t eHas)
 {
-	bool bResult;
-
-	bResult = true;
 	pstContainer->szNumItems = 0;
 	pstContainer->szSizeofItem = szSizeofItem;
 	pstContainer->eHas = eHas;
-
-	if (eHas & std_container_has_itemhandler)
-	{
-		if (pstHandlers->pstItemHandler == NULL)
-		{
-			bResult = false;
-		}
-		else
-		{
-			pstContainer->pstItemHandler = pstHandlers->pstItemHandler;
-		}
-	}
-	else
-	{
-		if (pstHandlers->pstItemHandler != NULL)
-		{
-			bResult = false;
-		}
-	}
-
-	if (eHas & std_container_has_memoryhandler)
-	{
-		if (pstHandlers->pstMemoryHandler == NULL)
-		{
-			bResult = false;
-		}
-		else
-		{
-			pstContainer->pstMemoryHandler = pstHandlers->pstMemoryHandler;
-		}
-	}
-	else
-	{
-		if (pstHandlers->pstMemoryHandler != NULL)
-		{
-			bResult = false;
-		}
-	}
-
-	if (eHas & std_container_has_lockhandler)
-	{
-		if (pstHandlers->pstLockHandler == NULL)
-		{
-			bResult = false;
-		}
-		else
-		{
-			pstContainer->pstLockHandler = pstHandlers->pstLockHandler;
-			std_lock_construct(pstContainer->pstLockHandler, &pstContainer->phLock);
-		}
-	}
-	else
-	{
-		if (pstHandlers->pstLockHandler != NULL)
-		{
-			bResult = false;
-		}
-	}
-
-	return bResult;
 }
 
 // Note: every base class should include an std_item_handler_t

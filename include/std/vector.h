@@ -56,7 +56,7 @@ typedef	struct
 
 // Library-side (untyped) methods
 
-extern bool stdlib_vector_construct(	std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas, const std_container_handlers_t* pstHandlers);
+extern bool stdlib_vector_construct(	std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_vector_destruct(		std_container_t * pstContainer);	
 extern bool stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
 extern void stdlib_vector_fit(			std_container_t * pstContainer);

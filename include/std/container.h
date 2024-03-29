@@ -57,7 +57,7 @@ typedef struct
 	const char * const pachContainerName;
 
 	bool	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
-											std_container_has_t eHas, const std_container_handlers_t * pstHandlers);
+											std_container_has_t eHas);
 	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);
 	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
@@ -117,7 +117,7 @@ STD_INLINE const char* std_container_name_get(std_container_enum_t eContainer, s
 				STD_CONTAINER_IMPLEMENTS_GET(V)	)
 
 /**
-* Get the default itemhandler for a container (if it implements the itemhandler callback)
+* Get the default itemhandler for a type of container
 * 
 * @param[in]	eContainer		The container type index
 * @param[in]	eImplements		Bitmask of implementation flags for this container type
@@ -149,26 +149,61 @@ STD_INLINE const std_item_handler_t * std_container_default_itemhandler_get(std_
  * @param[in]	szSizeof		Size of the contained item
  * @param[in]	szWrappedSizeof	Size of the wrapped item (e.g. including linked list pointers)
  * @param[in]	szPayloadOffset	Offset to the start of the item payload (e.g. past the linked list pointers)
- * @param[in]	pstHandlers		Pointer to handler jumptable to use
  *
  * @return True if successful, else false
  */
 STD_INLINE bool std_container_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas,
-				size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, const std_container_handlers_t * pstHandlers)
+				size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset)
 {
-	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas, pstHandlers);
+	return STD_CONTAINER_CALL(eContainer, pfn_construct)(pstContainer, szSizeof, szWrappedSizeof, szPayloadOffset, eHas);
 }
 
 // Construct a typed container
-#define std_construct(V,...)								\
+#define std_construct_common(V,HAS)							\
+			STD_STATIC_ASSERT(STD_CONTAINER_HAS_GET(V) == HAS, STD_CONCAT(container_declaration_and_instantiation_are_inconsistent_,__COUNTER__));	\
 			std_container_call_construct(					\
 				&V.stBody.stContainer,						\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V, construct), \
-				STD_CONTAINER_HAS_GET(V),					\
+				HAS,										\
 				STD_ITEM_SIZEOF(V),							\
 				STD_CONTAINER_WRAPPEDITEM_SIZEOF_GET(V),	\
-				STD_CONTAINER_PAYLOAD_OFFSET_GET(V),		\
-				& (std_container_handlers_t) { __VA_ARGS__ } )
+				STD_CONTAINER_PAYLOAD_OFFSET_GET(V)		)
+
+#define std_construct(V)	\
+			std_construct_common(V, std_container_has_no_handlers)
+
+#define std_construct_itemhandler(V,ITEMHANDLER)	\
+			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
+			std_construct_common(V, std_container_has_itemhandler)
+
+#define std_construct_memoryhandler(V,MEMORYHANDLER)	\
+			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
+			std_construct_common(V, std_container_has_memoryhandler)
+
+#define std_construct_memoryhandler_itemhandler(V,MEMORYHANDLER,ITEMHANDLER)	\
+			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
+			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
+			std_construct_common(V, std_container_has_memoryhandler_itemhandler)
+
+#define std_construct_lockhandler(V,LOCKHANDLER)	\
+			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
+			std_construct_common(V, std_container_has_lockhandler)
+
+#define std_construct_lockhandler_itemhandler(V,LOCKHANDLER,ITEMHANDLER)	\
+			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
+			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
+			std_construct_common(V, std_container_has_lockhandler_itemhandler)
+
+#define std_construct_lockhandler_memoryhandler(V,LOCKHANDLER,MEMORYHANDLER)	\
+			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
+			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
+			std_construct_common(V, std_container_has_lockhandler_memoryhandler)
+
+#define std_construct_lockhandler_memoryhandler_itemhandler(V,LOCKHANDLER,MEMORYHANDLER,ITEMHANDLER)	\
+			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
+			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
+			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
+			std_construct_common(V, std_container_has_lockhandler_memoryhandler_itemhandler)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

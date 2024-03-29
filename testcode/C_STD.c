@@ -125,7 +125,7 @@ static list_int_t listint;
 void vector_of_lists_test(void)
 {
 	std_vector_itemhandler(list_int_t) v;
-	std_construct(v, std_container_default_itemhandler(STD_ITEM(v)));
+	std_construct_itemhandler(v, std_container_default_itemhandler(STD_ITEM(v)));
 
 	list_int_t list1;
 	std_construct(list1);
