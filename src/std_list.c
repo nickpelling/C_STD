@@ -403,6 +403,93 @@ void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_i
     }
 }
 
+/**
+ * Insert a linear series of items immediately after the current iterator item
+ *
+ * @param[in]	pstIterator		List iterator
+ * @param[in]	pvBase			Start of the linear series of items
+ * @param[in]	szNumItems		Number of items in the linear series
+ * 
+ * @return Number of items successfully inserted
+ */
+size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems)
+{
+	std_container_t* pstContainer = pstIterator->pstContainer;
+	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
+	std_list_node_t* pstNode;
+	void* pvItem;
+	size_t i;
+
+	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
+	{
+		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
+		if (pstNode == NULL)
+		{
+			break;
+		}
+		node_insert_after(pstList, pstIterator->pvRef, pstNode);
+
+		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
+		}
+	}
+
+	return i;
+}
+
+/**
+ * Insert a linear series of items immediately before the current iterator item
+ *
+ * @param[in]	pstIterator		List iterator
+ * @param[in]	pvBase			Start of the linear series of items
+ * @param[in]	szNumItems		Number of items in the linear series
+ *
+ * @return Number of items successfully inserted
+ */
+size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems)
+{
+	std_container_t* pstContainer = pstIterator->pstContainer;
+	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
+	std_list_node_t* pstNode;
+	void* pvItem;
+	size_t i;
+
+	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
+	{
+		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
+		if (pstNode == NULL)
+		{
+			break;
+		}
+		node_insert_before(pstList, pstIterator->pvRef, pstNode);
+
+		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
+		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
+		}
+	}
+
+	return i;
+}
+
+/**
+ * Erase a single item at the current iterator item
+ *
+ * @param[in]	pstIterator		List iterator
+ */
+void stdlib_list_erase(std_iterator_t* pstIterator)
+{
+	std_container_t* pstContainer = pstIterator->pstContainer;
+	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
+
+	node_disconnect(pstList, pstIterator->pvRef);
+}
+
 // -------------------------------------------------------------------------
 
 static bool list_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
