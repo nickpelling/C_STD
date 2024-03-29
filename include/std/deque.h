@@ -69,7 +69,7 @@ typedef struct
 
 extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize);
 
-extern bool stdlib_deque_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
+extern void stdlib_deque_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_deque_destruct(std_container_t* pstContainer);
 
 extern size_t stdlib_deque_push_front(std_container_t * pstContainer, const void* pvBase, size_t szNumItems);

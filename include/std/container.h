@@ -56,7 +56,7 @@ typedef struct
 {
 	const char * const pachContainerName;
 
-	bool	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
+	void	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
 											std_container_has_t eHas);
 	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);

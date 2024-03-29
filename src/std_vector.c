@@ -67,17 +67,13 @@ void* stdlib_vector_at(std_container_t* pstContainer, size_t szIndex);
  * @param[in]	szFullSizeof	Size of a (possibly wrapped) item
  * @param[in]	szPayloadOffset	Offset to the payload within the (possibly wrapped) item
  * @param[in]	eHas			Enumeration saying which handlers to expect
- *
- * @return True if construction was successful, else false
  */
-bool stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas)
+void stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas)
 {
-	bool bResult = std_container_constructor(pstContainer, szSizeof, eHas);
+	std_container_constructor(pstContainer, szSizeof, eHas);
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	pstVector->szNumAlloced	= 0;
 	pstVector->pvStartAddr	= NULL;
-
-	return bResult;
 }
 
 /**
