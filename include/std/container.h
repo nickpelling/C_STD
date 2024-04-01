@@ -39,7 +39,7 @@
 #define STD_ITERATOR_PARENT_IMPLEMENTS_GET(IT)	STD_CONTAINER_IMPLEMENTS_GET(IT.puParent[0])
 
 #define STD_ITERATOR_IMPLEMENTS_GET(INDEX,IMPLEMENTS)	\
-			((INDEX == std_iterator_enum_forward) ? std_container_implements_forward_ ## IMPLEMENTS : std_container_implements_reverse_ ## IMPLEMENTS)
+			((INDEX == (int) std_iterator_enum_forward) ? std_container_implements_forward_ ## IMPLEMENTS : std_container_implements_reverse_ ## IMPLEMENTS)
 
 #define STD_ITERATOR_CALL_EXISTS(IT, IMPLEMENTS, IMPVAR, GETVAR) \
 			STD_STATIC_ASSERT(IMPVAR & STD_ITERATOR_IMPLEMENTS_GET(GETVAR,IMPLEMENTS), \
