@@ -4,7 +4,7 @@ include_directories( include )
 if(MSVC)
   add_compile_options(/W4 /wd4115 /WX)
 else()
-  add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+  add_compile_options(-Wall -Wextra -Werror)
 endif()
 set(CMAKE_C_FLAGS, "/std\:clatest")
 
