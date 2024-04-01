@@ -65,12 +65,21 @@
 #define STD_NUM_ELEMENTS(ARRAY)	(sizeof(ARRAY)/sizeof(ARRAY[0]))
 #endif
 
+#ifndef STD_USE_ASSERTNAME
+#ifdef _MSC_VER
+#define STD_USE_ASSERTNAME  STD_FAKEVAR()
+#else
+#define STD_USE_ASSERTNAME
+#endif
+#endif
+
 // Command-based static assert - can be used inside or outside functions
 #if (__STDC_VERSION__ >= 201112L) && 0     /* test for C11 */
 #include <assert.h>
 #define STD_STATIC_ASSERT(COND,MSG) ({ _Static_assert(COND,#MSG); })
 #else
-#define STD_STATIC_ASSERT(COND,MSG)	(void) sizeof(struct STD_FAKEVAR() { int MSG : ((COND) ? 1 : -1); })
+
+#define STD_STATIC_ASSERT(COND,MSG)	(void) sizeof(struct STD_USE_ASSERTNAME { int MSG : ((COND) ? 1 : -1); })
 #endif
 
 /* Create a (fake) instance of a pointer to a given type */
