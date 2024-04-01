@@ -40,6 +40,44 @@ void vector_test(void)
 	std_reserve(v, 5);
 	std_push_back(v, 2, 1, 4, 3, 5);
 
+	printf("%s:", "V1");
+	for (std_lock_state_t _fakevar_2141 = std_container_lock(
+		&v.stBody.stContainer,
+		((std_container_has_t)(sizeof(v.pau8HasHandler[0]) - 1U)),
+		0);
+		_fakevar_2141 != e_std_lock_Invalid;
+		_fakevar_2141 = (std_container_lock_restore(
+			&v.stBody.stContainer,
+			((std_container_has_t)(sizeof(v.pau8HasHandler[0]) - 1U)),
+			_fakevar_2141),
+		e_std_lock_Invalid))
+		
+		for (__typeof__(v.pstForwardIterator[0]) it, *_fakevar_2142 = (std_iterator_call_construct(
+			&v.stBody.stContainer,
+			((std_container_enum_t)(sizeof(it.puParent[0].pau8ContainerEnum[0]) - 1U)),
+			((std_container_has_t)(sizeof(it.puParent[0].pau8HasHandler[0]) - 1U)),
+			((void)sizeof(struct _fakevar_2144 {
+				int construct_is_not_implemented_for_this_type_of_iterator_2143 : ((((std_container_implements_t)(sizeof(it.puParent[0].pau8Implements[0]) - 1U))& ((((std_iterator_enum_t)(sizeof(it.pau8IteratorEnum[0]) - 1U)) == std_iterator_enum_forward) ? std_container_implements_forward_construct : std_container_implements_reverse_construct)) ? 1 : -1);
+			}),
+			((std_iterator_enum_t)(sizeof(it.pau8IteratorEnum[0]) - 1U))),
+			&it.stItBody.stIterator),
+			((void*)0));
+			!it.stItBody.stIterator.bDone;
+			(void)_fakevar_2142,
+			std_iterator_call_next(
+					&it.stItBody.stIterator,
+					((std_container_enum_t)(sizeof(it.puParent[0].pau8ContainerEnum[0]) - 1U)),
+					((std_container_has_t)(sizeof(it.puParent[0].pau8HasHandler[0]) - 1U)),
+					((void)sizeof(struct _fakevar_2146
+					{
+						int next_is_not_implemented_for_this_type_of_iterator_2145 : ((((std_container_implements_t)(sizeof(it.puParent[0].pau8Implements[0]) - 1U))& ((((std_iterator_enum_t)(sizeof(it.pau8IteratorEnum[0]) - 1U)) == std_iterator_enum_forward) ? std_container_implements_forward_next : std_container_implements_reverse_next)) ? 1 : -1);
+					}),
+					((std_iterator_enum_t)(sizeof(it.pau8IteratorEnum[0]) - 1U)))))
+			
+			printf(" %d", ((__typeof__(it.pstType[0])*)(it.stItBody.stIterator.pvRef))[0]);
+	
+	printf("\r\n");
+
 	PRINT_ALL(v, "V1", std_each_forward);
 	PRINT_ALL(v, "V2", std_each_forward_const);
 	PRINT_ALL(v, "V3", std_each_reverse);
