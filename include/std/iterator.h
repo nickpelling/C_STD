@@ -92,14 +92,14 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 #define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)
 
 #define STD_FOR_LOOP(CONTAINER,IT,IT_TYPE,TEMPVAR)	\
-		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_construct(CONTAINER,IT),NULL); \
+			IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_construct(CONTAINER,IT),NULL); \
 			!std_iterator_done(IT); \
-			((void)TEMPVAR, std_iterator_next(IT))
+			(void)TEMPVAR, std_iterator_next(IT)
 
 #define STD_FOR_RANGE_LOOP(CONTAINER,IT,IT_TYPE,BEGIN,END,TEMPVAR)	\
-		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
+			IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
 			!std_iterator_done(IT); \
-			((void)TEMPVAR, std_iterator_next(IT))
+			(void)TEMPVAR, std_iterator_next(IT)
 
 // The container library's generic std_for() macro
 //	- locks the container (if the container has a lockhandler)
@@ -110,14 +110,14 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 //	- unlocks the container (if the container has a lockhandler)
 // Note: this allows break commands in the innermost (iterator) loop,
 // BUT the container will stay locked if you execute a return command
-// inside the inner loop. So don't do this!
+// inside the inner loop. So don't do that!
 #define std_for(CONTAINER, IT, IS_CONST, IT_TYPE)		\
 	std_container_lock_wrapper(CONTAINER, IS_CONST))	\
-		STD_FOR_LOOP(CONTAINER,IT,IT_TYPE,STD_FAKEVAR())
+		for (STD_FOR_LOOP(CONTAINER,IT,IT_TYPE,STD_FAKEVAR())
 
 #define std_for_range(CONTAINER, IT, IS_CONST, IT_TYPE, BEGIN, END)	\
 	std_container_lock_wrapper(CONTAINER, IS_CONST))				\
-		STD_FOR_RANGE_LOOP(CONTAINER, IT, IT_TYPE, BEGIN, END, STD_FAKEVAR())
+		for (STD_FOR_RANGE_LOOP(CONTAINER, IT, IT_TYPE, BEGIN, END, STD_FAKEVAR())
 
 #define std_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
 #define std_each_forward_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
