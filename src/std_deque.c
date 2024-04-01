@@ -157,6 +157,7 @@ static inline bool bucket_append_to_end(std_deque_t * pstDeque)
  */
 void stdlib_deque_construct(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas)
 {
+	if (szWrappedSizeof || szPayloadOffset) { /* Unused parameters */ }
 	std_container_constructor(pstContainer, szSizeof, eHas);
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	pstDeque->szItemsPerBucket	= DEFAULT_BUCKET_SIZE;
@@ -213,7 +214,6 @@ void stdlib_deque_next(std_iterator_t * pstIterator)
 {
 	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 	std_container_t* pstContainer = pstDequeIt->stIterator.pstContainer;
-	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 
 	if (++pstDequeIt->szIndex < pstDequeIt->szRangeLen)
 	{
@@ -379,7 +379,6 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
  */
 size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
-	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
 	size_t i;
 
@@ -403,6 +402,7 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 
 static bool deque_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
 {
+	if (pstItemHandler) { /* Unused parameter */ }
 	return stdlib_deque_destruct((std_container_t*)pvData);
 }
 

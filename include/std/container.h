@@ -279,7 +279,7 @@ STD_INLINE void std_container_lock_restore(std_container_t* pstContainer, std_co
  */
 STD_INLINE bool std_container_call_destruct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
 {
-	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
+	/* std_lock_state_t eOldState = */ std_container_lock_for_writing(pstContainer, eHas);
 	return STD_CONTAINER_CALL(eContainer, pfn_destruct)(pstContainer);
 }
 
@@ -642,6 +642,7 @@ STD_INLINE void* std_container_call_at(std_container_t* pstContainer, std_contai
  */
 STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
 {
+	if (eHas) { /* Unused parameter */ }
 	pstIterator->pstContainer = pstContainer;
 	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
@@ -670,6 +671,7 @@ STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_c
  */
 STD_INLINE void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
 {
+	if (eHas) { /* Unused parameter */ }
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_range)(pstContainer, pstIterator, pvBegin, pvEnd);
 }
 
@@ -694,6 +696,7 @@ STD_INLINE void std_iterator_call_range(std_container_t* pstContainer, std_conta
  */
 STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
 {
+	if (eHas) { /* Unused parameter */ }
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_next)(pstIterator);
 }
 
@@ -716,6 +719,7 @@ STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_containe
  */
 STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
 {
+	if (eHas) { /* Unused parameter */ }
 	STD_ITERATOR_CALL(eContainer, eIterator, pfn_prev)(pstIterator);
 }
 

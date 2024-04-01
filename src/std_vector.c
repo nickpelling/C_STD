@@ -70,6 +70,7 @@ void* stdlib_vector_at(std_container_t* pstContainer, size_t szIndex);
  */
 void stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas)
 {
+	if (szWrappedSizeof || szPayloadOffset) { /* Unused parameters */ }
 	std_container_constructor(pstContainer, szSizeof, eHas);
 	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	pstVector->szNumAlloced	= 0;
@@ -131,7 +132,7 @@ bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 
 	if (szNewSize > pstVector->szNumAlloced)
 	{
-		szNewCapacity = 1U << (64U - __builtin_clzll(szNewSize));
+		szNewCapacity = 1ULL << (64U - __builtin_clzll(szNewSize));
 		if (szNewCapacity < szNewSize)
 		{
 			szNewCapacity <<= 1;
@@ -194,7 +195,6 @@ void stdlib_vector_fit(std_container_t * pstContainer)
  */
 size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvItems;
 	size_t szTotalSize;
 
@@ -232,7 +232,6 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvB
  */
 size_t stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase, size_t szNumItems)
 {
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
 	void * pvItems;
 
 	// Try to reserve space, exit early if that didn't succeed
@@ -398,6 +397,7 @@ void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std
 
 static bool vector_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
 {
+	if (pstItemHandler) { /* Unused parameter */ }
 	return stdlib_vector_destruct((std_container_t *) pvData);
 }
 

@@ -500,6 +500,7 @@ void stdlib_list_erase(std_iterator_t* pstIterator)
 
 static bool list_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
 {
+	if (pstItemHandler) { /* Unused parameter */ }
 	return stdlib_list_destruct((std_container_t*)pvData);
 }
 

@@ -15,25 +15,28 @@ void memorycounter_reset(void)
 
 void memorycounter_grab(int *piMallocs, int *piReallocs, int *piFrees)
 {
-	iMallocs_count = 0;
-	iReallocs_count = 0;
-	iFrees_count = 0;
+	*piMallocs = iMallocs_count;
+	*piReallocs = iReallocs_count;
+	*piFrees = iFrees_count;
 }
 
 static void* counter_malloc(const std_memoryhandler_t* pstMemoryHandler, size_t szSize)
 {
+	if (pstMemoryHandler) { /* Unused parameter */ }
 	iMallocs_count++;
 	return malloc(szSize);
 }
 
 static void* counter_realloc(const std_memoryhandler_t* pstMemoryHandler, void* pvOldPtr, size_t szSize)
 {
+	if (pstMemoryHandler) { /* Unused parameter */ }
 	iReallocs_count++;
 	return realloc(pvOldPtr, szSize);
 }
 
 static void counter_free(const std_memoryhandler_t* pstMemoryHandler, void* pvPtr)
 {
+	if (pstMemoryHandler) { /* Unused parameter */ }
 	iFrees_count++;
 	free(pvPtr);
 }
