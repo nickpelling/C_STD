@@ -130,7 +130,6 @@ void stack_test(void)
 }
 
 typedef std_list(int) list_int_t;
-static list_int_t listint;
 
 void vector_of_lists_test(void)
 {
