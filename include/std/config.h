@@ -65,6 +65,9 @@
 #define STD_NUM_ELEMENTS(ARRAY)	(sizeof(ARRAY)/sizeof(ARRAY[0]))
 #endif
 
+// MSVC complains about static asserts that use an anonymous struct
+// (whereas gcc doesn't mind). So, we use this macro solely for MSVC
+// to give static asserts a unique name
 #ifndef STD_USE_ASSERTNAME
 #ifdef _MSC_VER
 #define STD_USE_ASSERTNAME  STD_FAKEVAR()
@@ -74,13 +77,9 @@
 #endif
 
 // Command-based static assert - can be used inside or outside functions
-#if (__STDC_VERSION__ >= 201112L) && 0     /* test for C11 */
-#include <assert.h>
-#define STD_STATIC_ASSERT(COND,MSG) ({ _Static_assert(COND,#MSG); })
-#else
-
+// Note: we don't use _Static_assert() for metaprogramming because of compiler
+// difficulties to do with using static asserts within expressions.
 #define STD_STATIC_ASSERT(COND,MSG)	(void) sizeof(struct STD_USE_ASSERTNAME { int MSG : ((COND) ? 1 : -1); })
-#endif
 
 /* Create a (fake) instance of a pointer to a given type */
 #define STD_TYPE_TO_FAKE_INSTANCE(T)    ((STD_TYPEOF(T) *)1024U)
