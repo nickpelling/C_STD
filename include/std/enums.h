@@ -16,7 +16,7 @@ STD_TYPE_MAKE_PREFIX(std_bool, true);
 #define std_bool_0_t	std_bool_false_t
 #define std_bool_1_t	std_bool_true_t
 #define STD_ENUM_BOOL_SET(BOOL)		std_bool_##BOOL##_t
-#define STD_ENUM_BOOL_GET(FIELD)	((bool)(sizeof(*FIELD) - 1U))
+#define STD_ENUM_BOOL_GET(FIELD)	((bool)(sizeof(FIELD[0]) - 1U))
 
 // -----------------------------------------------------------------
 
@@ -90,7 +90,7 @@ typedef enum
 STD_CONTAINER_XMACRO(STD_XMACRO_ENUM_TO_TYPE)
 
 #define STD_ENUM_CONTAINER_SET(ENUM)	ENUM##_t
-#define STD_ENUM_CONTAINER_GET(FIELD)	((std_container_enum_t)(sizeof(*FIELD) - 1U))
+#define STD_ENUM_CONTAINER_GET(FIELD)	((std_container_enum_t)(sizeof(FIELD[0]) - 1U))
 
 // -----------------------------------------------------------------
 
@@ -114,7 +114,7 @@ typedef enum
 STD_HAS_XMACRO(STD_XMACRO_ENUM_TO_TYPE)
 
 #define STD_ENUM_HAS_SET(ENUM)			ENUM##_t
-#define STD_ENUM_HAS_GET(FIELD)			((std_container_has_t)(sizeof(*FIELD) - 1U))
+#define STD_ENUM_HAS_GET(FIELD)			((std_container_has_t)(sizeof(FIELD[0]) - 1U))
 
 // -----------------------------------------------------------------
 
@@ -132,7 +132,7 @@ typedef enum
 STD_ITERATOR_XMACRO(STD_XMACRO_ENUM_TO_TYPE)
 
 #define STD_ENUM_ITERATOR_SET(ENUM)		ENUM##_t
-#define STD_ENUM_ITERATOR_GET(FIELD)	((std_iterator_enum_t)(sizeof(*FIELD) - 1U))
+#define STD_ENUM_ITERATOR_GET(FIELD)	((std_iterator_enum_t)(sizeof(FIELD[0]) - 1U))
 
 // -----------------------------------------------------------------
 
