@@ -18,5 +18,5 @@ jobs:
     - name: make
       run: cd build && make all && cd ..
     - name: ctest
-      run: cd build && ctest -N && ctest -j8 && cd .. 
+      run: cd build && ctest -j8 && cd .. 
     
