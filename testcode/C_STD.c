@@ -30,7 +30,7 @@ static int int_compare(const int* a, const int* b)
 		printf(" %d", aiNum[i]);					\
 	printf(CRLF)
 
-void vector_test(void)
+static int vector_test(void)
 {
 	std_vector(int) v;
 
@@ -51,9 +51,11 @@ void vector_test(void)
 	POP_ALL(v, "V6", std_pop_back, 5);
 
 	std_destruct(v);
+
+	return EXIT_SUCCESS;
 }
 
-void list_test(void)
+static int list_test(void)
 {
 	std_list(int) list;
 
@@ -80,9 +82,11 @@ void list_test(void)
 	POP_ALL(list, "L5", std_pop_back, 10);
 
 	std_destruct(list);
+
+	return EXIT_SUCCESS;
 }
 
-void deque_test(void)
+static int deque_test(void)
 {
 	std_deque(int) deque;
 
@@ -99,9 +103,11 @@ void deque_test(void)
 	POP_ALL(deque, "D5", std_pop_back, 5);
 
 	std_destruct(deque);
+
+	return EXIT_SUCCESS;
 }
 
-void queue_test(void)
+static int queue_test(void)
 {
 	std_queue(int) queue;
 
@@ -113,9 +119,11 @@ void queue_test(void)
 	POP_ALL(queue, "Q1", std_pop, 5);
 
 	std_destruct(queue);
+
+	return EXIT_SUCCESS;
 }
 
-void stack_test(void)
+static int stack_test(void)
 {
 	std_stack(int) stack;
 
@@ -127,11 +135,13 @@ void stack_test(void)
 	POP_ALL(stack, "S1", std_pop, 5);
 
 	std_destruct(stack);
+
+	return EXIT_SUCCESS;
 }
 
 typedef std_list(int) list_int_t;
 
-void vector_of_lists_test(void)
+static int vector_of_lists_test(void)
 {
 	std_vector_itemhandler(list_int_t) v;
 	std_construct_itemhandler(v, std_container_default_itemhandler(STD_ITEM(v)));
@@ -155,16 +165,47 @@ void vector_of_lists_test(void)
 	printf(CRLF);
 
 	std_destruct(v);
+
+	return EXIT_SUCCESS;
 }
 
-int main(void)
+// -----------------------------------------------------------------
+
+int main(int argc, char * argv[])
 {
-	vector_test();
-	list_test();
-	deque_test();
-	queue_test();
-	stack_test();
-	vector_of_lists_test();
+	const char * pachArg;
+
+	if (argc < 2)
+	{
+		fprintf(stderr, "Too few arguments on command line" CRLF);
+		return EXIT_FAILURE;
+	}
+
+	pachArg = argv[1];
+	if (strcmp(pachArg, "vector") == 0)
+	{
+		return vector_test();
+	}
+	if (strcmp(pachArg, "list") == 0)
+	{
+		return list_test();
+	}
+	if (strcmp(pachArg, "deque") == 0)
+	{
+		return deque_test();
+	}
+	if (strcmp(pachArg, "queue") == 0)
+	{
+		return queue_test();
+	}
+	if (strcmp(pachArg, "stack") == 0)
+	{
+		return stack_test();
+	}
+	if (strcmp(pachArg, "nested") == 0)
+	{
+		return vector_of_lists_test();
+	}
 
 	return EXIT_SUCCESS;
 }

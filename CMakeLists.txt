@@ -19,3 +19,11 @@ add_library( C_STD STATIC src/std_deque.c src/std_item.c src/std_list.c  src/std
 # Build a test application using testcode and the static library
 add_executable( TestApp testcode/C_STD.c testcode/memory_counter.c) 
 target_link_libraries( TestApp C_STD )
+
+# Enable tests and add test invocations
+enable_testing()
+add_test(NAME vector_test COMMAND $<TARGET_FILE:TestApp> vector)
+add_test(NAME list_test   COMMAND $<TARGET_FILE:TestApp> list)
+add_test(NAME deque_test  COMMAND $<TARGET_FILE:TestApp> deque)
+add_test(NAME queue_test  COMMAND $<TARGET_FILE:TestApp> queue)
+add_test(NAME stack_test  COMMAND $<TARGET_FILE:TestApp> stack)
