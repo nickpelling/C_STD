@@ -34,15 +34,7 @@ void vector_test(void)
 {
 	std_vector(int) v;
 
-	printf("V0: v is a %s" CRLF,
-		std_container_name_get(
-			(STD_UNUSED sizeof(struct _fakevar_5289 {
-				int name_is_not_implemented_for_this_type_of_container_5288 : ((((std_container_implements_t)(sizeof(v.pau8Implements[0]) - 1U))& std_container_implements_name) ? 1 : -1);
-			}),
-			((std_container_enum_t)(sizeof(v.pau8ContainerEnum[0]) - 1U))),
-			((std_container_implements_t)(sizeof(v.pau8Implements[0]) - 1U)))	);
-
-//	printf("V0: v is a %s" CRLF, std_container_name(v));
+	printf("V0: v is a %s" CRLF, std_container_name(v));
 
 	std_construct(v);
 	std_reserve(v, 5);

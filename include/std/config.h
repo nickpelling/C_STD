@@ -70,7 +70,7 @@
 #include <assert.h>
 #define STD_STATIC_ASSERT(COND,MSG) ({ _Static_assert(COND,#MSG); })
 #else
-#define STD_STATIC_ASSERT(COND,MSG)	sizeof(struct STD_FAKEVAR() { int MSG : ((COND) ? 1 : -1); })
+#define STD_STATIC_ASSERT(COND,MSG)	(void) sizeof(struct STD_FAKEVAR() { int MSG : ((COND) ? 1 : -1); })
 #endif
 
 /* Create a (fake) instance of a pointer to a given type */
