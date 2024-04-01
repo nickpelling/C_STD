@@ -94,12 +94,12 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 #define STD_FOR_LOOP(CONTAINER,IT,IT_TYPE,TEMPVAR)	\
 		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_construct(CONTAINER,IT),NULL); \
 			!std_iterator_done(IT); \
-			(TEMPVAR, std_iterator_next(IT))
+			((void)TEMPVAR, std_iterator_next(IT))
 
 #define STD_FOR_RANGE_LOOP(CONTAINER,IT,IT_TYPE,BEGIN,END,TEMPVAR)	\
 		for (IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
 			!std_iterator_done(IT); \
-			(TEMPVAR, std_iterator_next(IT))
+			((void)TEMPVAR, std_iterator_next(IT))
 
 // The container library's generic std_for() macro
 //	- locks the container (if the container has a lockhandler)
