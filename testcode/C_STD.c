@@ -30,15 +30,37 @@ static int int_compare(const int* a, const int* b)
 		printf(" %d", aiNum[i]);					\
 	printf(CRLF)
 
-static int vector_test(void)
+#define TEST_CONTAINER_NAME(CONTAINER,NAME)			\
+	do {											\
+		const char * pachContainerName = std_container_name(CONTAINER);	\
+		if (strcmp(pachContainerName, NAME) != 0)	\
+		{											\
+			printf("Error: %s container name was %s (expected %s)" CRLF, NAME, pachContainerName, NAME);	\
+			return false;							\
+		}											\
+	} while (0)
+
+#define TEST_SIZE(CONTAINER, NUM)					\
+	do {											\
+		if (std_size(CONTAINER) != NUM)				\
+		{											\
+			printf("Error: %s contained %d items (%d expected)" CRLF,					\
+				std_container_name(CONTAINER), (int) std_size(CONTAINER), (int) NUM);	\
+			return false;							\
+		}											\
+	} while (0)
+
+static bool vector_test(void)
 {
 	std_vector(int) v;
 
-	printf("V0: v is a %s" CRLF, std_container_name(v));
-
+	TEST_CONTAINER_NAME(v, "vector");
 	std_construct(v);
+	TEST_SIZE(v, 0);
+
 	std_reserve(v, 5);
 	std_push_back(v, 2, 1, 4, 3, 5);
+	TEST_SIZE(v, 5);
 
 	PRINT_ALL(v, "V1", std_each_forward);
 	PRINT_ALL(v, "V2", std_each_forward_const);
@@ -52,17 +74,19 @@ static int vector_test(void)
 
 	std_destruct(v);
 
-	return EXIT_SUCCESS;
+	return true;
 }
 
-static int list_test(void)
+static bool list_test(void)
 {
 	std_list(int) list;
 
-	printf("L0: list is a %s" CRLF, std_container_name(list));
-
+	TEST_CONTAINER_NAME(list, "list");
 	std_construct(list);
+	TEST_SIZE(list, 0);
+
 	std_push_back(list, 2, 1, 4, 3, 5);
+	TEST_SIZE(list, 5);
 
 	PRINT_ALL(list, "L1", std_each_forward);
 	PRINT_ALL(list, "L2", std_each_forward_const);
@@ -83,17 +107,19 @@ static int list_test(void)
 
 	std_destruct(list);
 
-	return EXIT_SUCCESS;
+	return true;
 }
 
-static int deque_test(void)
+static bool deque_test(void)
 {
 	std_deque(int) deque;
 
-	printf("D0: deque is a %s" CRLF, std_container_name(deque));
-
+	TEST_CONTAINER_NAME(deque, "deque");
 	std_construct(deque);
+	TEST_SIZE(deque, 0);
+
 	std_push_back(deque, 2, 1, 4, 3, 5);
+	TEST_SIZE(deque, 5);
 
 	PRINT_ALL(deque, "D1", std_each_forward);
 	PRINT_ALL(deque, "D2", std_each_forward_const);
@@ -104,44 +130,48 @@ static int deque_test(void)
 
 	std_destruct(deque);
 
-	return EXIT_SUCCESS;
+	return true;
 }
 
-static int queue_test(void)
+static bool queue_test(void)
 {
 	std_queue(int) queue;
 
-	printf("Q0: queue is a %s" CRLF, std_container_name(queue));
-
+	TEST_CONTAINER_NAME(queue, "queue");
 	std_construct(queue);
+	TEST_SIZE(queue, 0);
+
 	std_push(queue, 2, 1, 4, 3, 5);
+	TEST_SIZE(queue, 5);
 
 	POP_ALL(queue, "Q1", std_pop, 5);
 
 	std_destruct(queue);
 
-	return EXIT_SUCCESS;
+	return true;
 }
 
-static int stack_test(void)
+static bool stack_test(void)
 {
 	std_stack(int) stack;
 
-	printf("S0: stack is a %s" CRLF, std_container_name(stack));
-
+	TEST_CONTAINER_NAME(stack, "stack");
 	std_construct(stack);
+	TEST_SIZE(stack, 0);
+
 	std_push(stack, 2, 1, 4, 3, 5);
+	TEST_SIZE(stack, 5);
 
 	POP_ALL(stack, "S1", std_pop, 5);
 
 	std_destruct(stack);
 
-	return EXIT_SUCCESS;
+	return true;
 }
 
 typedef std_list(int) list_int_t;
 
-static int vector_of_lists_test(void)
+static bool vector_of_lists_test(void)
 {
 	std_vector_itemhandler(list_int_t) v;
 	std_construct_itemhandler(v, std_container_default_itemhandler(STD_ITEM(v)));
@@ -166,7 +196,7 @@ static int vector_of_lists_test(void)
 
 	std_destruct(v);
 
-	return EXIT_SUCCESS;
+	return true;
 }
 
 // -----------------------------------------------------------------
@@ -174,6 +204,7 @@ static int vector_of_lists_test(void)
 int main(int argc, char * argv[])
 {
 	const char * pachArg;
+	bool bStatus;
 
 	if (argc < 2)
 	{
@@ -184,28 +215,32 @@ int main(int argc, char * argv[])
 	pachArg = argv[1];
 	if (strcmp(pachArg, "vector") == 0)
 	{
-		return vector_test();
+		bStatus = vector_test();
 	}
-	if (strcmp(pachArg, "list") == 0)
+	else if (strcmp(pachArg, "list") == 0)
 	{
-		return list_test();
+		bStatus = list_test();
 	}
-	if (strcmp(pachArg, "deque") == 0)
+	else if (strcmp(pachArg, "deque") == 0)
 	{
-		return deque_test();
+		bStatus = deque_test();
 	}
-	if (strcmp(pachArg, "queue") == 0)
+	else if (strcmp(pachArg, "queue") == 0)
 	{
-		return queue_test();
+		bStatus = queue_test();
 	}
-	if (strcmp(pachArg, "stack") == 0)
+	else if (strcmp(pachArg, "stack") == 0)
 	{
-		return stack_test();
+		bStatus = stack_test();
 	}
-	if (strcmp(pachArg, "nested") == 0)
+	else if (strcmp(pachArg, "nested") == 0)
 	{
-		return vector_of_lists_test();
+		bStatus = vector_of_lists_test();
+	}
+	else
+	{
+		bStatus = false;
 	}
 
-	return EXIT_SUCCESS;
+	return bStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
