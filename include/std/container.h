@@ -345,6 +345,10 @@ STD_INLINE void std_container_call_fit(std_container_t* pstContainer, std_contai
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+#define STD_PUSH_DATA(CONTAINER,...)	\
+			&(STD_ITEM_TYPEOF(CONTAINER)[]){ __VA_ARGS__ },			\
+			STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(CONTAINER)[]) { __VA_ARGS__ }))
+
 /**
  * Push a linear series of items to the front of an untyped container
  *
@@ -370,8 +374,7 @@ STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, s
 				&V.stBody.stContainer,		\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
 				STD_CONTAINER_HAS_GET(V),						\
-				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },			\
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -399,8 +402,7 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
 				&V.stBody.stContainer,		\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
 				STD_CONTAINER_HAS_GET(V),	\
-				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ }, \
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -428,8 +430,7 @@ STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_con
 				&V.stBody.stContainer,		\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push),	\
 				STD_CONTAINER_HAS_GET(V),	\
-				&(STD_ITEM_TYPEOF(V)[]){ __VA_ARGS__ },		\
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(V)[]) { __VA_ARGS__ }))	)
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

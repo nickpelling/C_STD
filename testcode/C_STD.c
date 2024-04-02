@@ -35,7 +35,8 @@ static int int_compare(const int* a, const int* b)
 		const char * pachContainerName = std_container_name(CONTAINER);	\
 		if (strcmp(pachContainerName, NAME) != 0)	\
 		{											\
-			printf("Error: %s container name was %s (expected %s)" CRLF, NAME, pachContainerName, NAME);	\
+			printf("Error: container name was \"%s\" (expected \"%s\")" CRLF, \
+						pachContainerName, NAME);	\
 			return false;							\
 		}											\
 	} while (0)
