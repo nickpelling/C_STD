@@ -41,6 +41,17 @@ static int int_compare(const int* a, const int* b)
 		}											\
 	} while (0)
 
+#define TEST_SAME(CONTAINER, NUM1, NUM2)			\
+	do {											\
+		if (NUM1 != NUM2)							\
+		{											\
+			printf("Error: %s: %d items encountered (%d expected)" CRLF,	\
+				std_container_name(CONTAINER), (int) NUM1, (int) NUM2);	\
+			return false;							\
+		}											\
+	} while (0)
+
+
 #define TEST_SIZE(CONTAINER, NUM)					\
 	do {											\
 		if (std_size(CONTAINER) != NUM)				\
@@ -51,19 +62,38 @@ static int int_compare(const int* a, const int* b)
 		}											\
 	} while (0)
 
+#define TEST_ARRAY(POPARRAY,CMPARRAY)	\
+	do {	\
+		if (memcmp(POPARRAY, CMPARRAY, sizeof(CMPARRAY)) != 0)	\
+		{	\
+			printf("Popped array didn't contain the expected values" CRLF);	\
+			return false;	\
+		}	\
+	} while (0)
+	
+
+
+static const int ai12345[5] = { 1, 2, 3, 4, 5 };
+static const int ai54321[5] = { 5, 4, 3, 2, 1 };
+
 static bool vector_test(void)
 {
 	std_vector(int) v;
+	int aiPopped[10];
+	size_t szNum1;
 
 	TEST_CONTAINER_NAME(v, "vector");
 	std_construct(v);
 	TEST_SIZE(v, 0);
 
-	std_reserve(v, 5);
-	std_push_back(v, 2, 1, 4, 3, 5);
+	std_push_back(v, 1, 2, 3, 4, 5);
 	TEST_SIZE(v, 5);
 
-	PRINT_ALL(v, "V1", std_each_forward);
+	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
 	PRINT_ALL(v, "V2", std_each_forward_const);
 	PRINT_ALL(v, "V3", std_each_reverse);
 	PRINT_ALL(v, "V4", std_each_reverse_const);
