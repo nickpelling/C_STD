@@ -188,15 +188,23 @@ void stdlib_vector_fit(std_container_t * pstContainer)
  * Push a series of items onto the front of a vector
  *
  * @param[in]	pstContainer	Vector container to push the series of items onto
- * @param[in]	pvBase			Pointer to start of array of items
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pvBase			Pointer to start of series of items
+ * @param[in]	szNumItems		Number of items to push
  * 
  * @return Number of items pushed onto the vector
  */
 size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
 {
+	void * pvStart;
 	void * pvItems;
-	size_t szTotalSize;
+	size_t szOldCount;
+	size_t szNewCount;
+	size_t i;
+
+	if ((szNumItems == 0) || (pvBase == NULL))
+	{
+		return 0;
+	}
 
 	// Try to reserve space, exit early if that didn't succeed
 	if (stdlib_vector_reserve(pstContainer, pstContainer->szNumItems + szNumItems) == false)
@@ -205,17 +213,30 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvB
 	}
 
 	// Update the number of items
-	pstContainer->szNumItems += szNumItems;
+	szOldCount = pstContainer->szNumItems;
+	szNewCount = szOldCount + szNumItems;
+	pstContainer->szNumItems = szNewCount;
 
-	pvItems = stdlib_vector_at(pstContainer, 0);
-	szTotalSize = pstContainer->szNumItems * pstContainer->szSizeofItem;
-	memmove(stdlib_vector_at(pstContainer, szNumItems), pvItems, szNumItems * pstContainer->szSizeofItem);
-	memcpy(pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
-
-	if (pstContainer->eHas & std_container_has_itemhandler)
+	if (szOldCount != 0U)
 	{
-		std_item_relocate(pstContainer->pstItemHandler, stdlib_vector_at(pstContainer, szNumItems), pvItems, szTotalSize - pstContainer->szSizeofItem);
-		std_item_relocate(pstContainer->pstItemHandler, pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
+		pvStart = stdlib_vector_at(pstContainer, 0);
+		pvItems = stdlib_vector_at(pstContainer, szNumItems);
+		memmove(pvItems, pvStart, szOldCount * pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvItems, pvStart, szOldCount * pstContainer->szSizeofItem);
+		}
+	}
+
+	for (i = 0U; i < szNumItems; i++, pvBase=STD_LINEAR_ADD(pvBase,pstContainer->szSizeofItem))
+	{
+		pvItems = stdlib_vector_at(pstContainer, szNumItems - 1U - i);
+		memcpy(pvItems, pvBase, pstContainer->szSizeofItem);
+
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvItems, pvBase, pstContainer->szSizeofItem);
+		}
 	}
 
 	return szNumItems;
@@ -255,12 +276,59 @@ size_t stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBas
 }
 
 /**
- * Pop an item from the very back of a vector
+ * Pop a series of items from the very front of a vector
  *
- * @param[in]	pstContainer	Vector to add an item to
- * @param[out]	pvResult		Where to pop the item to (can be NULL)
+ * @param[in]	pstContainer	Vector to pop a series of items from
+ * @param[out]	pvResult		Where to pop a series of items to (can be NULL)
+ * @param[in]	szMaxItems		Maximum number of items that can be popped
  *
- * @return	Pointer to the newly popped item
+ * @return	Number of items popped
+ */
+size_t stdlib_vector_pop_front(std_container_t* pstContainer, void* pvResult, size_t szMaxItems)
+{
+	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	void* pvBase;
+	void* pvItem;
+	size_t i;
+
+	if (szMaxItems > pstContainer->szNumItems)
+	{
+		szMaxItems = pstContainer->szNumItems;
+	}
+
+	for (i = 0; i < szMaxItems; i++)
+	{
+		pvItem = stdlib_vector_at(pstContainer, i);
+		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
+		if (pvResult)
+		{
+			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
+		}
+	}
+
+	if (pstContainer->szNumItems > szMaxItems)
+	{
+		pvBase = stdlib_vector_at(pstContainer, 0);
+		pvItem = stdlib_vector_at(pstContainer, szMaxItems);
+		memmove(pvBase, pvItem, (pstContainer->szNumItems - szMaxItems) * pstContainer->szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvBase, pvItem, (pstContainer->szNumItems - szMaxItems) * pstContainer->szSizeofItem);
+		}
+	}
+	pstContainer->szNumItems -= szMaxItems;
+
+	return szMaxItems;
+}
+
+/**
+ * Pop a series of items from the very back of a vector
+ *
+ * @param[in]	pstContainer	Vector to pop a series of items from
+ * @param[out]	pvResult		Where to pop a series of items to (can be NULL)
+ * @param[in]	szMaxItems		Maximum number of items that can be popped
+ *
+ * @return	Number of items popped
  */
 size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
@@ -275,14 +343,14 @@ size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, 
 
 	for (i = 0; i < szMaxItems; i++)
 	{
-		pvItem = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U);
+		pvItem = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U - i);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
-		pstContainer->szNumItems--;
 		if (pvResult)
 		{
 			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
 		}
 	}
+	pstContainer->szNumItems -= szMaxItems;
 
 	return szMaxItems;
 }

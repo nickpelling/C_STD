@@ -129,6 +129,16 @@ static bool vector_test(void)
 	TEST_SAME(v, szNum1, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
+	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
+	std_push_front(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
+
+	// Pop 5/4/3/2/1 from the front of the container
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
 	std_push_back(v, 5, 4, 3, 2, 1);
 	TEST_SIZE(v, 5);
 	std_sort(v, &int_compare);
@@ -274,11 +284,18 @@ int main(int argc, char * argv[])
 
 	if (argc < 2)
 	{
+#if 0
 		fprintf(stderr, "Too few arguments on command line" CRLF);
 		return EXIT_FAILURE;
+#else
+		pachArg = "vector";
+#endif
+	}
+	else
+	{
+		pachArg = argv[1];
 	}
 
-	pachArg = argv[1];
 	if (strcmp(pachArg, "vector") == 0)
 	{
 		bStatus = vector_test();
