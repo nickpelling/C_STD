@@ -191,7 +191,7 @@ static bool vector_test(void)
 			printf("Failed to pop element #%d from array (line = %d)" CRLF, (int) i, __LINE__);
 			return false;
 		}
-		if (aiPopped[0] != 1000000 - 1 - i)
+		if (aiPopped[0] != (int)(1000000U - 1U - i))
 		{
 			printf("Element #%d in vector failed to match (= %d) (line = %d)" CRLF, (int) i, aiPopped[0], __LINE__);
 			return false;
