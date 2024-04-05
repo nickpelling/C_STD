@@ -176,6 +176,29 @@ static bool vector_test(void)
 	TEST_SAME(v, szNum1, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
+	szNum1 = 0;
+	for (i = 0; i < 1000000; i++)
+	{
+		szNum1 += std_push_back(v, (int) i);
+	}
+	TEST_SIZE(v, 1000000);
+	TEST_SAME(v, szNum1, 1000000);
+
+	for (i = 0; i < 1000000; i++)
+	{
+		if (std_pop_back(v, aiPopped, 1U ) != 1U)
+		{
+			printf("Failed to pop element #%d from array (line = %d)" CRLF, (int) i, __LINE__);
+			return false;
+		}
+		if (aiPopped[0] != 1000000 - 1 - i)
+		{
+			printf("Element #%d in vector failed to match (= %d) (line = %d)" CRLF, (int) i, aiPopped[0], __LINE__);
+			return false;
+		}
+	}
+	TEST_SIZE(v, 0);
+
 	std_destruct(v);
 
 	std_construct(v);
