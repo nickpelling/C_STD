@@ -148,6 +148,39 @@ static bool vector_test(void)
 	TEST_SAME(v, szNum1, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push_back(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push_front(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	std_destruct(v);
+
+	std_construct(v);
+	TEST_SIZE(v, 0);
+	std_push_back(v, 1, 2, 3, 4, 5);
 	std_destruct(v);
 
 	return true;
