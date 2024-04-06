@@ -622,50 +622,27 @@ static bool vector_of_lists_test(void)
 int main(int argc, char * argv[])
 {
 	const char * pachArg;
+	bool bRunAll;
 	bool bStatus;
 
 	if (argc < 2)
 	{
-#if 0
-		fprintf(stderr, "Too few arguments on command line" CRLF);
-		return EXIT_FAILURE;
-#else
-		pachArg = "deque";
-#endif
+		bRunAll = true;
+		pachArg = "";
 	}
 	else
 	{
+		bRunAll = false;
 		pachArg = argv[1];
 	}
 
-	if (strcmp(pachArg, "vector") == 0)
-	{
-		bStatus = vector_test();
-	}
-	else if (strcmp(pachArg, "list") == 0)
-	{
-		bStatus = list_test();
-	}
-	else if (strcmp(pachArg, "deque") == 0)
-	{
-		bStatus = deque_test();
-	}
-	else if (strcmp(pachArg, "queue") == 0)
-	{
-		bStatus = queue_test();
-	}
-	else if (strcmp(pachArg, "stack") == 0)
-	{
-		bStatus = stack_test();
-	}
-	else if (strcmp(pachArg, "nested") == 0)
-	{
-		bStatus = vector_of_lists_test();
-	}
-	else
-	{
-		bStatus = false;
-	}
+	bStatus = true;
+	if (bRunAll || strcmp(pachArg, "vector") == 0)		{	bStatus &= vector_test();			}
+	if (bRunAll || strcmp(pachArg, "list") == 0)		{	bStatus &= list_test();				}
+	if (bRunAll || strcmp(pachArg, "deque") == 0)		{	bStatus &= deque_test();			}
+	if (bRunAll || strcmp(pachArg, "queue") == 0)		{	bStatus &= queue_test();			}
+	if (bRunAll || strcmp(pachArg, "stack") == 0)		{	bStatus &= stack_test();			}
+	if (bRunAll || strcmp(pachArg, "nested") == 0)		{	bStatus &= vector_of_lists_test();	}
 
 	return bStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
