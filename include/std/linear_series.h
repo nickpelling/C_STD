@@ -8,6 +8,7 @@
 #ifndef STD_LINEAR_SERIES_H_
 #define STD_LINEAR_SERIES_H_
 
+#include <stddef.h>			// for size_t
 #include "std/config.h"		// for STD_LINEAR_ADD
 
 typedef struct
@@ -19,7 +20,7 @@ typedef struct
 	int iStep;
 } std_linear_series_t;
 
-inline void std_linear_series_construct(std_linear_series_t * pstSeries, const void* pvData, size_t szSizeofItem, size_t szNumItems, bool bReverse)
+STD_INLINE void std_linear_series_construct(std_linear_series_t * pstSeries, const void* pvData, size_t szSizeofItem, size_t szNumItems, bool bReverse)
 {
 	pstSeries->szSizeofItem = szSizeofItem;
 	pstSeries->szNumItems = szNumItems;
@@ -37,12 +38,12 @@ inline void std_linear_series_construct(std_linear_series_t * pstSeries, const v
 	}
 }
 
-inline void std_linear_series_next(std_linear_series_t* pstSeries)
+STD_INLINE void std_linear_series_next(std_linear_series_t* pstSeries)
 {
 	pstSeries->pvData = STD_LINEAR_ADD(pstSeries->pvData, pstSeries->iStep);
 }
 
-inline bool std_linear_series_done(std_linear_series_t* pstSeries)
+STD_INLINE bool std_linear_series_done(std_linear_series_t* pstSeries)
 {
 	return (pstSeries->pvData == pstSeries->pvEnd);
 }
