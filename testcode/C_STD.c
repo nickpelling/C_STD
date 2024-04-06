@@ -493,38 +493,87 @@ static bool deque_test(void)
 
 static bool queue_test(void)
 {
-	std_queue(int) queue;
+	std_queue(int) v;
+	int aiPopped[10];
+	size_t szNum1;
+	size_t i;
 
-	TEST_CONTAINER_NAME(queue, "queue");
-	std_construct(queue);
-	TEST_SIZE(queue, 0);
+	TEST_CONTAINER_NAME(v, "queue");
+	std_construct(v);
+	TEST_SIZE(v, 0);
 
-	std_push(queue, 2, 1, 4, 3, 5);
-	TEST_SIZE(queue, 5);
+	TEST_SIZE(v, 0);
 
-	POP_ALL(queue, "Q1", std_pop, 5);
+	// Push 1/2/3/4/5 onto the container, and make sure size == 5
+	std_push(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
 
-	std_destruct(queue);
+	// Pop 5/4/3/2/1 from the container
+	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_destruct(v);
 
 	return true;
 }
 
 static bool stack_test(void)
 {
-	std_stack(int) stack;
+	std_stack(int) v;
+	int aiPopped[10];
+	size_t szNum1;
+	size_t i;
 
-	TEST_CONTAINER_NAME(stack, "stack");
-	std_construct(stack);
-	TEST_SIZE(stack, 0);
+	TEST_CONTAINER_NAME(v, "stack");
+	std_construct(v);
+	TEST_SIZE(v, 0);
 
-	std_push(stack, 2, 1, 4, 3, 5);
-	TEST_SIZE(stack, 5);
+	TEST_SIZE(v, 0);
 
-	POP_ALL(stack, "S1", std_pop, 5);
+	// Push 1/2/3/4/5 onto the container, and make sure size == 5
+	std_push(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
 
-	std_destruct(stack);
+	// Pop 5/4/3/2/1 from the container
+	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	std_destruct(v);
 
 	return true;
+
 }
 
 typedef std_list(int) list_int_t;
