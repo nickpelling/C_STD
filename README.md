@@ -35,7 +35,7 @@ Creating and using a container is as simple as this:
         // We only pushed 5 items to it, so szNum will end up set to 5
         szNum = std_pop_back(v, aiArray, 10);
         for (size_t i = 0; i < szNum; i++)
-            printf("%d ", aiNum[i]);
+            printf("%d ", aiArray[i]);
         printf("\r\n");
 
         // Destruct (destroy) the container
