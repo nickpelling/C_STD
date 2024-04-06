@@ -10,6 +10,7 @@
 
 #include "std/common.h"
 #include "std/item.h"
+#include "std/linear_series.h"
 #include "std/iterator.h"
 
 // The STD_VECTOR macro creates a union of many separate things
@@ -65,8 +66,8 @@ extern void stdlib_vector_construct(	std_container_t * pstContainer, size_t szSi
 extern bool stdlib_vector_destruct(		std_container_t * pstContainer);	
 extern bool stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
 extern void stdlib_vector_fit(			std_container_t * pstContainer);
-extern size_t stdlib_vector_push_front(	std_container_t * pstContainer, const void * pvBase, size_t szNumItems);
-extern size_t stdlib_vector_push_back(	std_container_t * pstContainer, const void * pvBase, size_t szNumItems);
+extern size_t stdlib_vector_push_front(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
+extern size_t stdlib_vector_push_back(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
 extern size_t stdlib_vector_pop_front(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);

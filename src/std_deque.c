@@ -284,13 +284,13 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 /**
  *
  */
-size_t stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_deque_push_front(std_container_t * pstContainer, std_linear_series_t * pstSeries)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
 	size_t i;
 
-	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
+	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
 	{
 		if (pstDeque->szStartOffset == 0)
 		{
@@ -307,10 +307,10 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBa
 		pstContainer->szNumItems++;
 
 		pvItem = stdlib_deque_at(pstContainer, 0);
-		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		memcpy(pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstContainer->szSizeofItem);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
 		}
 	}
 
@@ -320,13 +320,13 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, const void * pvBa
 /**
  *
  */
-size_t stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_deque_push_back(std_container_t * pstContainer, std_linear_series_t* pstSeries)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
 	size_t i;
 
-	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
+	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
 	{
 		pstContainer->szNumItems++;
 		if ((pstDeque->szStartOffset + pstContainer->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
@@ -338,10 +338,10 @@ size_t stdlib_deque_push_back(std_container_t * pstContainer, const void * pvBas
 		}
 
 		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
-		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		memcpy(pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstContainer->szSizeofItem);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
 		}
 	}
 

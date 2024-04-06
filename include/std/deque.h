@@ -10,6 +10,7 @@
 
 #include "std/common.h"
 #include "std/item.h"
+#include "std/linear_series.h"
 #include "std/iterator.h"
 
 #define STD_DEQUE_USE_DEFAULT_ITEMS_PER_BUCKET	0
@@ -78,11 +79,11 @@ extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t sz
 extern void stdlib_deque_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_deque_destruct(std_container_t* pstContainer);
 
-extern size_t stdlib_deque_push_front(std_container_t * pstContainer, const void* pvBase, size_t szNumItems);
-extern size_t stdlib_deque_push_back(std_container_t * pstContainer, const void* pvBase, size_t szNumItems);
+extern size_t stdlib_deque_push_front(std_container_t * pstContainer, std_linear_series_t *pstSeries);
+extern size_t stdlib_deque_push_back( std_container_t * pstContainer, std_linear_series_t* pstSeries);
 
 extern size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
-extern size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
+extern size_t stdlib_deque_pop_back( std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 
 extern void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex);
 

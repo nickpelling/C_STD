@@ -10,6 +10,7 @@
 
 #include "std/iterator.h"
 #include "std/lock.h"
+#include "std/linear_series.h"
 
 #include "std/vector.h"
 #include "std/list.h"
@@ -63,9 +64,9 @@ typedef struct
 											std_container_has_t eHas);
 	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	void	(* const pfn_fit)			(std_container_t * pstContainer);
-	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-	size_t	(* const pfn_push)			(std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, std_linear_series_t *pstSeries);
+	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, std_linear_series_t* pstSeries);
+	size_t	(* const pfn_push)			(std_container_t * pstContainer, std_linear_series_t* pstSeries);
 	size_t	(* const pfn_pop_front)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop_back)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop)			(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
@@ -360,20 +361,32 @@ STD_INLINE void std_container_call_fit(std_container_t* pstContainer, std_contai
  * 
  * @return Number of items pushed onto the container
  */
-STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, bool bReverse, const void* pvBase, size_t szNumElements)
 {
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstContainer->szSizeofItem, szNumElements, bReverse);
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, pvBase, szNumElements);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_front)(pstContainer, &stSeries);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return szNumPushed;
 }
 
 // Push a linear series of items to the front of a typed container
-#define std_push_front(V,...)				\
-			std_container_call_push_front(	\
-				&V.stBody.stContainer,		\
+#define std_push_front(V,...)									\
+			std_container_call_push_front(						\
+				&V.stBody.stContainer,							\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
 				STD_CONTAINER_HAS_GET(V),						\
+				false,											\
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
+
+// Prepend a linear series of items to the front of a typed container
+#define std_prepend(V,...)										\
+			std_container_call_push_front(						\
+				&V.stBody.stContainer,							\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
+				STD_CONTAINER_HAS_GET(V),						\
+				true,											\
 				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -384,15 +397,18 @@ STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, s
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	bReverse		If true, reverse the order of the linear series
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
  *
  * @return Number of items pushed onto the container
  */
-STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void * pvBase, size_t szNumElements)
+STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, bool bReverse, const void * pvBase, size_t szNumElements)
 {
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstContainer->szSizeofItem, szNumElements, bReverse);
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, pvBase, szNumElements);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, &stSeries);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return szNumPushed;
 }
@@ -402,6 +418,15 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
 				&V.stBody.stContainer,		\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
 				STD_CONTAINER_HAS_GET(V),	\
+				false,						\
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
+
+#define std_append_reversed(V,...)			\
+			std_container_call_push_back(	\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				true,						\
 				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -412,6 +437,7 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
  * @param[in]	pstContainer	The container
  * @param[in]	eContainer		The container type index
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	bReverse		If true, reverse the order of the linear series
  * @param[in]	pvBase			Start of a linear series of items
  * @param[in]	szNumElements	Number of items in the linear series
  *
@@ -419,8 +445,10 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
  */
 STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
 {
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstContainer->szSizeofItem, szNumElements, false);
 	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, pvBase, szNumElements);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, &stSeries);
 	std_container_lock_restore(pstContainer, eHas, eOldState);
 	return szNumPushed;
 }

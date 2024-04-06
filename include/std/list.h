@@ -10,6 +10,7 @@
 
 #include "std/common.h"
 #include "std/item.h"
+#include "std/linear_series.h"
 #include "std/iterator.h"
 
 #define STD_LIST_NODE(TYPE,NAME)	\
@@ -88,8 +89,8 @@ typedef	struct
 extern void stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_list_destruct(std_container_t* pstContainer);
 
-extern size_t stdlib_list_push_front(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
-extern size_t stdlib_list_push_back(	std_container_t * pstContainer, const void * pvBase, size_t szNumElements);
+extern size_t stdlib_list_push_front(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
+extern size_t stdlib_list_push_back(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
 extern size_t stdlib_list_pop_front(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern size_t stdlib_list_pop_back(		std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 

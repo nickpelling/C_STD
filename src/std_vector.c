@@ -188,57 +188,55 @@ void stdlib_vector_fit(std_container_t * pstContainer)
  * Push a series of items onto the front of a vector
  *
  * @param[in]	pstContainer	Vector container to push the series of items onto
- * @param[in]	pvBase			Pointer to start of series of items
- * @param[in]	szNumItems		Number of items to push
+ * @param[in]	pstSeries		Series of items to push onto the vector
  * 
  * @return Number of items pushed onto the vector
  */
-size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_vector_push_front(std_container_t * pstContainer, std_linear_series_t* pstSeries)
 {
+	size_t szSizeofItem = pstContainer->szSizeofItem;
+	size_t szOldCount = pstContainer->szNumItems;
+	size_t szNumItems = pstSeries->szNumItems;
+	size_t szNewCount = szOldCount + szNumItems;
 	void * pvStart;
-	void * pvItems;
-	size_t szOldCount;
-	size_t szNewCount;
-	size_t i;
+	void * pvItem;
 
-	if ((szNumItems == 0) || (pvBase == NULL))
+	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
 	{
 		return 0;
 	}
 
 	// Try to reserve space, exit early if that didn't succeed
-	if (stdlib_vector_reserve(pstContainer, pstContainer->szNumItems + szNumItems) == false)
+	if (stdlib_vector_reserve(pstContainer, szNewCount) == false)
 	{
 		return 0;
 	}
 
-	// Update the number of items
-	szOldCount = pstContainer->szNumItems;
-	szNewCount = szOldCount + szNumItems;
-	pstContainer->szNumItems = szNewCount;
-
 	if (szOldCount != 0U)
 	{
 		pvStart = stdlib_vector_at(pstContainer, 0);
-		pvItems = stdlib_vector_at(pstContainer, szNumItems);
-		memmove(pvItems, pvStart, szOldCount * pstContainer->szSizeofItem);
+		pvItem  = stdlib_vector_at(pstContainer, szNumItems);
+		memmove(pvItem, pvStart, szOldCount * szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItems, pvStart, szOldCount * pstContainer->szSizeofItem);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvStart, szOldCount * szSizeofItem);
 		}
 	}
 
-	for (i = 0U; i < szNumItems; i++, pvBase=STD_LINEAR_ADD(pvBase,pstContainer->szSizeofItem))
+	pvItem = stdlib_vector_at(pstContainer, szNumItems - 1U);
+	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem = STD_LINEAR_SUB(pvItem, szSizeofItem))
 	{
-		pvItems = stdlib_vector_at(pstContainer, szNumItems - 1U - i);
-		memcpy(pvItems, pvBase, pstContainer->szSizeofItem);
-
+		memcpy(pvItem, pstSeries->pvData, szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItems, pvBase, pstContainer->szSizeofItem);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, szSizeofItem);
 		}
 	}
 
+	// Update the number of items
+	pstContainer->szNumItems = szNewCount;
+
+	// Return the number of items successfully pushed onto the container
 	return szNumItems;
 }
 
@@ -251,27 +249,39 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, const void * pvB
  *
  * @return Number of items pushed onto the vector
  */
-size_t stdlib_vector_push_back(std_container_t * pstContainer, const void *pvBase, size_t szNumItems)
+size_t stdlib_vector_push_back(std_container_t * pstContainer, std_linear_series_t* pstSeries)
 {
-	void * pvItems;
+	size_t szSizeofItem = pstContainer->szSizeofItem;
+	size_t szOldCount = pstContainer->szNumItems;
+	size_t szNumItems = pstSeries->szNumItems;
+	size_t szNewCount = szOldCount + szNumItems;
+	void * pvItem;
 
-	// Try to reserve space, exit early if that didn't succeed
-	if (stdlib_vector_reserve(pstContainer, pstContainer->szNumItems + szNumItems) == false)
+	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
 	{
 		return 0;
 	}
 
-	pvItems = stdlib_vector_at(pstContainer, pstContainer->szNumItems);
-
-	// Update the number of items
-	pstContainer->szNumItems += szNumItems;
-
-	memcpy(pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
-	if (pstContainer->eHas & std_container_has_itemhandler)
+	// Try to reserve space, exit early if that didn't succeed
+	if (stdlib_vector_reserve(pstContainer, szNewCount) == false)
 	{
-		std_item_relocate(pstContainer->pstItemHandler, pvItems, pvBase, szNumItems * pstContainer->szSizeofItem);
+		return 0;
 	}
 
+	pvItem = stdlib_vector_at(pstContainer, szOldCount);
+	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem=STD_LINEAR_ADD(pvItem,szSizeofItem))
+	{
+		memcpy(pvItem, pstSeries->pvData, szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, szSizeofItem);
+		}
+	}
+
+	// Update the number of items in the container
+	pstContainer->szNumItems = szNewCount;
+
+	// Return the number of items successfully pushed onto the container
 	return szNumItems;
 }
 

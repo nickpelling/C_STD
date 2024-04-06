@@ -161,19 +161,18 @@ bool stdlib_list_destruct(std_container_t* pstContainer)
  * Push a series of items onto the front of a list container
  *
  * @param[in]	pstContainer	List container to push onto
- * @param[in]	pvBase			Array of items to push onto the list
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pstSeries		Linear series of items to push onto the list
  * 
  * @return Number of items pushed onto the container
  */
-size_t stdlib_list_push_front(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_list_push_front(std_container_t * pstContainer, std_linear_series_t * pstSeries)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
 	void * pvItem;
 	size_t i;
 
-	for (i = 0; i < szNumItems; i++, pvBase=STD_LINEAR_ADD(pvBase,pstList->stContainer.szSizeofItem))
+	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
 	{
 		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
 		if (pstNode == NULL)
@@ -183,10 +182,10 @@ size_t stdlib_list_push_front(std_container_t * pstContainer, const void * pvBas
 		node_insert_before(pstList, pstList->pstHead, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		memcpy(pvItem, pvBase, pstList->stContainer.szSizeofItem);
+		memcpy(pvItem, pstSeries->pvData, pstList->stContainer.szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstList->stContainer.szSizeofItem);
 		}
 	}
 
@@ -194,20 +193,19 @@ size_t stdlib_list_push_front(std_container_t * pstContainer, const void * pvBas
 }
 
 /**
- * Push a series of items onto the back of a list
+ * Push a series of items onto the back of a list container
  *
  * @param[in]	pstContainer	List container to push items onto
- * @param[in]	pvBase			Array of items to push onto the list
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pstSeries		Linear series of items to push onto the list
  */
-size_t stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase, size_t szNumItems)
+size_t stdlib_list_push_back(std_container_t * pstContainer, std_linear_series_t* pstSeries)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_node_t * pstNode;
 	void * pvItem;
 	size_t i;
 
-	for (i = 0; i < szNumItems; i++, pvBase=STD_LINEAR_ADD(pvBase,pstContainer->szSizeofItem))
+	for (i = 0; !std_linear_series_done(pstSeries); i++,std_linear_series_next(pstSeries))
 	{
 		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
 		if (pstNode == NULL)
@@ -217,10 +215,10 @@ size_t stdlib_list_push_back(std_container_t * pstContainer, const void * pvBase
 		node_insert_after(pstList, pstList->pstTail, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
+		memcpy(pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
 		if (pstContainer->eHas & std_container_has_itemhandler)
 		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstList->stContainer.szSizeofItem);
 		}
 	}
 
