@@ -199,6 +199,24 @@ static bool vector_test(void)
 	}
 	TEST_SIZE(v, 0);
 
+	std_push_back(v, 1, 2);
+	TEST_SIZE(v, 2);
+	std_append_reversed(v, 5, 4, 3);
+	TEST_SIZE(v, 5);
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_push_back(v, 4, 5);
+	TEST_SIZE(v, 2);
+	std_prepend(v, 1, 2, 3);
+	TEST_SIZE(v, 5);
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
 	std_destruct(v);
 
 	std_construct(v);
