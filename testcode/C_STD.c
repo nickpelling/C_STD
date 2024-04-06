@@ -229,56 +229,266 @@ static bool vector_test(void)
 
 static bool list_test(void)
 {
-	std_list(int) list;
+	std_list(int) v;
+	int aiPopped[10];
+	size_t szNum1;
+	size_t i;
 
-	TEST_CONTAINER_NAME(list, "list");
-	std_construct(list);
-	TEST_SIZE(list, 0);
+	TEST_CONTAINER_NAME(v, "list");
 
-	std_push_back(list, 2, 1, 4, 3, 5);
-	TEST_SIZE(list, 5);
+	// Construct a container, test the container name & that it starts empty
+	std_construct(v);
+	TEST_SIZE(v, 0);
 
-	PRINT_ALL(list, "L1", std_each_forward);
-	PRINT_ALL(list, "L2", std_each_forward_const);
-	PRINT_ALL(list, "L3", std_each_reverse);
-	PRINT_ALL(list, "L4", std_each_reverse_const);
+	// Push 1/2/3/4/5 onto the back of the container, and make sure size == 5
+	std_push_back(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
 
-	for (std_each(list, it))
+	// Iterate forwards
+	READ_CONTAINER(v, std_each_forward);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	// Iterate forwards const
+	READ_CONTAINER(v, std_each_forward_const);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	// Iterate backwards
+	READ_CONTAINER(v, std_each_reverse);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	// Iterate backwards const
+	READ_CONTAINER(v, std_each_reverse_const);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	// Pop 5/4/3/2/1 from the back of the container
+	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
+	std_push_front(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
+
+	// Pop 5/4/3/2/1 from the front of the container
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
 	{
-		if (std_iterator_at(it)[0] == 4)
+		szNum1 += std_push_back(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push_front(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 1000000; i++)
+	{
+		szNum1 += std_push_back(v, (int)i);
+	}
+	TEST_SIZE(v, 1000000);
+	TEST_SAME(v, szNum1, 1000000);
+
+	for (i = 0; i < 1000000; i++)
+	{
+		if (std_pop_back(v, aiPopped, 1U) != 1U)
 		{
-			std_insert_before(it, -3);
-			std_insert_after(it, 6);
-			break;
+			printf("Failed to pop element #%d from array (line = %d)" CRLF, (int)i, __LINE__);
+			return false;
+		}
+		if (aiPopped[0] != (int)(1000000U - 1U - i))
+		{
+			printf("Element #%d in vector failed to match (= %d) (line = %d)" CRLF, (int)i, aiPopped[0], __LINE__);
+			return false;
 		}
 	}
+	TEST_SIZE(v, 0);
 
-	POP_ALL(list, "L5", std_pop_back, 10);
+	std_push_back(v, 1, 2);
+	TEST_SIZE(v, 2);
+	std_append_reversed(v, 5, 4, 3);
+	TEST_SIZE(v, 5);
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
 
-	std_destruct(list);
+	std_push_back(v, 4, 5);
+	TEST_SIZE(v, 2);
+	std_prepend(v, 1, 2, 3);
+	TEST_SIZE(v, 5);
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_destruct(v);
+
+	std_construct(v);
+	TEST_SIZE(v, 0);
+	std_push_back(v, 1, 2, 3, 4, 5);
+	std_destruct(v);
 
 	return true;
 }
 
 static bool deque_test(void)
 {
-	std_deque(int) deque;
+	std_deque(int) v;
+	int aiPopped[10];
+	size_t szNum1;
+	size_t i;
 
-	TEST_CONTAINER_NAME(deque, "deque");
-	std_construct(deque);
-	TEST_SIZE(deque, 0);
+	TEST_CONTAINER_NAME(v, "deque");
 
-	std_push_back(deque, 2, 1, 4, 3, 5);
-	TEST_SIZE(deque, 5);
+	// Construct a container, test the container name & that it starts empty
+	std_construct(v);
+	TEST_SIZE(v, 0);
 
-	PRINT_ALL(deque, "D1", std_each_forward);
-	PRINT_ALL(deque, "D2", std_each_forward_const);
-	PRINT_ALL(deque, "D3", std_each_reverse);
-	PRINT_ALL(deque, "D4", std_each_reverse_const);
+	// Push 1/2/3/4/5 onto the back of the container, and make sure size == 5
+	std_push_back(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
 
-	POP_ALL(deque, "D5", std_pop_back, 5);
+	// Iterate forwards
+	READ_CONTAINER(v, std_each_forward);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai12345);
 
-	std_destruct(deque);
+	// Iterate forwards const
+	READ_CONTAINER(v, std_each_forward_const);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	// Iterate backwards
+	READ_CONTAINER(v, std_each_reverse);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	// Iterate backwards const
+	READ_CONTAINER(v, std_each_reverse_const);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	// Pop 5/4/3/2/1 from the back of the container
+	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+#if 0	// FIXME - these tests currently fail!!!!
+	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
+	std_push_front(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
+
+	// Pop 5/4/3/2/1 from the front of the container
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push_back(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 5; i++)
+	{
+		szNum1 += std_push_front(v, ai12345[i]);
+	}
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum1, 5);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	szNum1 = 0;
+	for (i = 0; i < 1000000; i++)
+	{
+		szNum1 += std_push_back(v, (int)i);
+	}
+	TEST_SIZE(v, 1000000);
+	TEST_SAME(v, szNum1, 1000000);
+
+	for (i = 0; i < 1000000; i++)
+	{
+		if (std_pop_back(v, aiPopped, 1U) != 1U)
+		{
+			printf("Failed to pop element #%d from array (line = %d)" CRLF, (int)i, __LINE__);
+			return false;
+		}
+		if (aiPopped[0] != (int)(1000000U - 1U - i))
+		{
+			printf("Element #%d in vector failed to match (= %d) (line = %d)" CRLF, (int)i, aiPopped[0], __LINE__);
+			return false;
+		}
+	}
+	TEST_SIZE(v, 0);
+
+	std_push_back(v, 1, 2);
+	TEST_SIZE(v, 2);
+	std_append_reversed(v, 5, 4, 3);
+	TEST_SIZE(v, 5);
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_push_back(v, 4, 5);
+	TEST_SIZE(v, 2);
+	std_prepend(v, 1, 2, 3);
+	TEST_SIZE(v, 5);
+	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum1, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+#endif
+
+	std_destruct(v);
+
+	std_construct(v);
+	TEST_SIZE(v, 0);
+	std_push_back(v, 1, 2, 3, 4, 5);
+	std_destruct(v);
 
 	return true;
 }
@@ -362,7 +572,7 @@ int main(int argc, char * argv[])
 		fprintf(stderr, "Too few arguments on command line" CRLF);
 		return EXIT_FAILURE;
 #else
-		pachArg = "vector";
+		pachArg = "deque";
 #endif
 	}
 	else

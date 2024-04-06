@@ -63,6 +63,14 @@ static inline void * bucket_alloc(const std_deque_t * pstDeque)
 }
 
 /**
+ * Release memory for a bucket of items
+ */
+static inline void bucket_free(const std_deque_t* pstDeque, void * pvBucket)
+{
+	std_memoryhandler_free(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pvBucket);
+}
+
+/**
  * Retrieve a pointer to an item from inside a bucket of items
  */
 static inline void * bucket_at(void * pvBucket, size_t szIndex, size_t szSizeofItem)
@@ -71,17 +79,9 @@ static inline void * bucket_at(void * pvBucket, size_t szIndex, size_t szSizeofI
 }
 
 /**
- * Calculate the number of buckets that would be needed if extra items were added
- */
-static inline size_t bucket_count(std_deque_t * pstDeque, size_t szExtraItems)
-{
-	return (pstDeque->szStartOffset + pstDeque->stContainer.szNumItems + szExtraItems) / pstDeque->szItemsPerBucket;
-}
-
-/**
  * Insert a new bucket of items at the start of the deque
  */
-static inline bool bucket_insert_at_start(std_deque_t * pstDeque)
+static bool bucket_insert_at_start(std_deque_t * pstDeque)
 {
 	size_t szNumBuckets;
 	size_t szSize;
@@ -95,7 +95,7 @@ static inline bool bucket_insert_at_start(std_deque_t * pstDeque)
 	}
 
 	szNumBuckets = pstDeque->szNumBuckets + 1U;
-	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
+	szSize = szNumBuckets * sizeof(papvBuckets[0]);
 	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
 	if (papvBuckets == NULL)
 	{
@@ -104,8 +104,9 @@ static inline bool bucket_insert_at_start(std_deque_t * pstDeque)
 	}
 
 	memmove(papvBuckets, &papvBuckets[1], (szNumBuckets - 1U) * sizeof(papvBuckets[0]));
+	papvBuckets[0] = pvBucket;
+
 	pstDeque->papvBuckets = papvBuckets;
-	pstDeque->papvBuckets[0] = pvBucket;
 	pstDeque->szNumBuckets = szNumBuckets;
 
 	return true;
@@ -114,7 +115,7 @@ static inline bool bucket_insert_at_start(std_deque_t * pstDeque)
 /**
  * Append a new bucket of items to the end of the deque's set of buckets
  */
-static inline bool bucket_append_to_end(std_deque_t * pstDeque)
+static bool bucket_append_to_end(std_deque_t * pstDeque)
 {
 	size_t szNumBuckets;
 	size_t szSize;
@@ -128,7 +129,7 @@ static inline bool bucket_append_to_end(std_deque_t * pstDeque)
 	}
 
 	szNumBuckets = pstDeque->szNumBuckets + 1U;
-	szSize = szNumBuckets * pstDeque->stContainer.szSizeofItem;
+	szSize = szNumBuckets * sizeof(papvBuckets[0]);
 	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
 	if (papvBuckets == NULL)
 	{
@@ -136,8 +137,91 @@ static inline bool bucket_append_to_end(std_deque_t * pstDeque)
 		return false;
 	}
 
+	papvBuckets[szNumBuckets - 1U] = pvBucket;
+
 	pstDeque->papvBuckets = papvBuckets;
-	pstDeque->papvBuckets[szNumBuckets - 1U] = pvBucket;
+	pstDeque->szNumBuckets = szNumBuckets;
+
+	return true;
+}
+
+/**
+ * Delete the very first bucket in the deque
+ * 
+ * @param[in]	pstDeque	Deque
+ * 
+ * @return True if bucket was successfully deleted, else false
+ */
+static bool bucket_delete_first(std_deque_t* pstDeque)
+{
+	size_t szNumBuckets;
+	size_t szSize;
+	void** papvBuckets;
+	void* pvBucket;
+	void* pvBucketLast;
+
+	// Grab pointers to the first bucket and the last bucket in the deque
+	pvBucket = pstDeque->papvBuckets[0];
+	pvBucketLast = pstDeque->papvBuckets[pstDeque->szNumBuckets - 1U];
+
+	// Try to reallocate the bucket pointer table
+	szNumBuckets = pstDeque->szNumBuckets - 1U;
+	szSize = szNumBuckets * sizeof(papvBuckets[0]);
+	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
+	if ((papvBuckets == NULL) && (szSize != 0U))
+	{
+		return false;
+	}
+
+	// Free the bucket
+	bucket_free(pstDeque, pvBucket);
+
+	// Move any remaining bucket pointers down by one, and then reinstate the final bucket pointer
+	if (szNumBuckets > 1U)
+	{
+		memmove(papvBuckets, &papvBuckets[1], sizeof(papvBuckets[0]) * (szNumBuckets - 1U));
+	}
+	if (papvBuckets != NULL)
+	{
+		papvBuckets[szNumBuckets - 1U] = pvBucketLast;
+	}
+
+	pstDeque->papvBuckets = papvBuckets;
+	pstDeque->szNumBuckets = szNumBuckets;
+
+	return true;
+}
+
+/**
+ * Delete the very last bucket in the deque
+ *
+ * @param[in]	pstDeque	Deque
+ *
+ * @return True if bucket was successfully deleted, else false
+ */
+static bool bucket_delete_last(std_deque_t* pstDeque)
+{
+	size_t szNumBuckets;
+	size_t szSize;
+	void** papvBuckets;
+	void* pvBucketLast;
+
+	// Grab pointer to the last bucket in the deque
+	pvBucketLast = pstDeque->papvBuckets[pstDeque->szNumBuckets - 1U];
+
+	// Try to reallocate the bucket array contents
+	szNumBuckets = pstDeque->szNumBuckets - 1U;
+	szSize = szNumBuckets * sizeof(papvBuckets[0]);
+	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
+	if (papvBuckets == NULL)
+	{
+		return false;
+	}
+
+	// Free the last bucket
+	bucket_free(pstDeque, pvBucketLast);
+
+	pstDeque->papvBuckets = papvBuckets;
 	pstDeque->szNumBuckets = szNumBuckets;
 
 	return true;
@@ -362,13 +446,24 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
+	for (i = 0; i < szMaxItems; i++)
 	{
 		// Get the address of the first item in the deque
-		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
+		pvItem = stdlib_deque_at(pstContainer, 0);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		pstDeque->szStartOffset++;
 		pstContainer->szNumItems--;
+
+		if (pstDeque->szStartOffset >= pstDeque->szItemsPerBucket)
+		{
+			bucket_delete_first(pstDeque);
+			pstDeque->szStartOffset = 0;
+		}
+
+		if (pvResult != NULL)
+		{
+			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
+		}
 	}
 
 	return szMaxItems;
@@ -379,6 +474,7 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
  */
 size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	void * pvItem;
 	size_t i;
 
@@ -387,12 +483,22 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 		szMaxItems = pstContainer->szNumItems;
 	}
 
-	for (i = 0; i < szMaxItems; i++, pvResult=STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem))
+	for (i = 0; i < szMaxItems; i++)
 	{
 		// Get the address of the final item in the deque
 		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
 		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+
 		pstContainer->szNumItems--;
+		if ((pstDeque->szStartOffset + pstContainer->szNumItems) % pstDeque->szItemsPerBucket == 0)
+		{
+			bucket_delete_last(pstDeque);
+		}
+
+		if (pvResult != NULL)
+		{
+			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
+		}
 	}
 
 	return szMaxItems;
