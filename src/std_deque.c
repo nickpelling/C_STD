@@ -177,7 +177,7 @@ static bool bucket_delete_first(std_deque_t* pstDeque)
 	bucket_free(pstDeque, pvBucket);
 
 	// Move any remaining bucket pointers down by one, and then reinstate the final bucket pointer
-	if (szNumBuckets > 1U)
+	if ((papvBuckets != NULL) && (szNumBuckets > 1U))
 	{
 		memmove(papvBuckets, &papvBuckets[1], sizeof(papvBuckets[0]) * (szNumBuckets - 1U));
 	}
@@ -213,7 +213,7 @@ static bool bucket_delete_last(std_deque_t* pstDeque)
 	szNumBuckets = pstDeque->szNumBuckets - 1U;
 	szSize = szNumBuckets * sizeof(papvBuckets[0]);
 	papvBuckets = (void**)std_memoryhandler_realloc(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pstDeque->papvBuckets, szSize);
-	if (papvBuckets == NULL)
+	if ((papvBuckets == NULL) && (szSize != 0))
 	{
 		return false;
 	}

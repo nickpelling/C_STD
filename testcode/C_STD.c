@@ -402,7 +402,6 @@ static bool deque_test(void)
 	TEST_SAME(v, szNum1, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-#if 0	// FIXME - these tests currently fail!!!!
 	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
 	std_push_front(v, 1, 2, 3, 4, 5);
 	TEST_SIZE(v, 5);
@@ -481,7 +480,6 @@ static bool deque_test(void)
 	TEST_SIZE(v, 0);
 	TEST_SAME(v, szNum1, 5);
 	TEST_ARRAY(aiPopped, ai12345);
-#endif
 
 	std_destruct(v);
 
