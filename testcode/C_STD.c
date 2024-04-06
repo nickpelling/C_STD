@@ -581,6 +581,8 @@ typedef std_list(int) list_int_t;
 static bool vector_of_lists_test(void)
 {
 	std_vector_itemhandler(list_int_t) v;
+	int i;
+
 	std_construct_itemhandler(v, std_container_default_itemhandler(STD_ITEM(v)));
 
 	list_int_t list1;
@@ -593,13 +595,22 @@ static bool vector_of_lists_test(void)
 	std_push_back(list2, 4, 3, 2, 1);
 	std_push_back(v, list2);
 
-	printf("veclist sizes =");
-	for (std_each_const(v, it))
+	i = 0;
+	for (std_each_const(v, it),i++)
 	{
 		const list_int_t* list3 = std_iterator_at(it);
-		printf(" %d", (int)std_size(list3[0]));
+		size_t szListSize = std_size(list3[0]);
+		if ((i == 0) && (szListSize != 3))
+		{
+			printf("Vectored list has wrong size (%d found, %d expected)" CRLF,
+				(int) szListSize, 3);
+		}
+		if ((i == 1) && (szListSize != 4))
+		{
+			printf("Vectored list has wrong size (%d found, %d expected)" CRLF,
+				(int) szListSize, 4);
+		}
 	}
-	printf(CRLF);
 
 	std_destruct(v);
 
