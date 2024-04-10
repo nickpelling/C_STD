@@ -53,7 +53,7 @@ extern void stdlib_priorityqueue_compare_set(std_priorityqueue_t* pstPriorityQue
 
 #define std_priorityqueue_compare_set(PRIORITYQUEUE,COMPARE)				\
 	(																		\
-		STD_TYPES_ARE_SAME(COMPARE, PRIORITYQUEUE.pfnCompare[0]),			\
+		STD_TYPES_ARE_SAME(COMPARE, PRIORITYQUEUE.pfnCompare),				\
 		stdlib_priorityqueue_compare_set(&PRIORITYQUEUE.stBody,COMPARE)		\
 	)
 
