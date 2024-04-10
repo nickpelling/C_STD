@@ -511,7 +511,7 @@ static size_t stdlib_vector_find_entry(std_container_t* pstContainer, pfn_std_co
 	pvItem = pstVector->pvStartAddr;
 	for (i = 0; i < szNumItems; i++, pvItem = STD_LINEAR_ADD(pvItem, szSizeofItem))
 	{
-		if ((*pfnCompare)(pvItem, pvBase))
+		if ((*pfnCompare)(pvItem, pvBase) == false)
 			break;
 	}
 
@@ -571,11 +571,11 @@ size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_serie
 		}
 
 		// Update the number of items in the container
-		pstContainer->szNumItems = szOldCount + i;
+		pstContainer->szNumItems++;
 	}
 
 	// Return the number of items successfully pushed onto the container
-	return szNumItems;
+	return i;
 }
 
 // -------------------------------------------------------------------------

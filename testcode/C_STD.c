@@ -96,7 +96,7 @@ static bool vector_test(void)
 {
 	std_vector(int) v;
 	int aiPopped[10];
-	size_t szNum1;
+	size_t szNum;
 	size_t i;
 
 	// Construct a container, test the container name & that it starts empty
@@ -128,9 +128,9 @@ static bool vector_test(void)
 	TEST_ARRAY(aiPopped, ai54321);
 
 	// Pop 5/4/3/2/1 from the back of the container
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
 	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
@@ -138,55 +138,55 @@ static bool vector_test(void)
 	TEST_SIZE(v, 5);
 
 	// Pop 5/4/3/2/1 from the front of the container
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
 	std_push_back(v, 5, 4, 3, 2, 1);
 	TEST_SIZE(v, 5);
 	std_sort(v, &int_compare);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push_back(v, ai12345[i]);
+		szNum += std_push_back(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push_front(v, ai12345[i]);
+		szNum += std_push_front(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 1000000; i++)
 	{
-		szNum1 += std_push_back(v, (int) i);
+		szNum += std_push_back(v, (int) i);
 	}
 	TEST_SIZE(v, 1000000);
-	TEST_SAME(v, szNum1, 1000000);
+	TEST_SAME(v, szNum, 1000000);
 
 	for (i = 0; i < 1000000; i++)
 	{
@@ -207,18 +207,18 @@ static bool vector_test(void)
 	TEST_SIZE(v, 2);
 	std_append_reversed(v, 5, 4, 3);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_push_back(v, 4, 5);
 	TEST_SIZE(v, 2);
 	std_prepend(v, 1, 2, 3);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_destruct(v);
@@ -235,7 +235,7 @@ static bool list_test(void)
 {
 	std_list(int) v;
 	int aiPopped[10];
-	size_t szNum1;
+	size_t szNum;
 	size_t i;
 
 	TEST_CONTAINER_NAME(v, "list");
@@ -269,9 +269,9 @@ static bool list_test(void)
 	TEST_ARRAY(aiPopped, ai54321);
 
 	// Pop 5/4/3/2/1 from the back of the container
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
 	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
@@ -279,46 +279,46 @@ static bool list_test(void)
 	TEST_SIZE(v, 5);
 
 	// Pop 5/4/3/2/1 from the front of the container
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push_back(v, ai12345[i]);
+		szNum += std_push_back(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push_front(v, ai12345[i]);
+		szNum += std_push_front(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 1000000; i++)
 	{
-		szNum1 += std_push_back(v, (int)i);
+		szNum += std_push_back(v, (int)i);
 	}
 	TEST_SIZE(v, 1000000);
-	TEST_SAME(v, szNum1, 1000000);
+	TEST_SAME(v, szNum, 1000000);
 
 	for (i = 0; i < 1000000; i++)
 	{
@@ -339,18 +339,18 @@ static bool list_test(void)
 	TEST_SIZE(v, 2);
 	std_append_reversed(v, 5, 4, 3);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_push_back(v, 4, 5);
 	TEST_SIZE(v, 2);
 	std_prepend(v, 1, 2, 3);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_destruct(v);
@@ -367,7 +367,7 @@ static bool deque_test(void)
 {
 	std_deque(int) v;
 	int aiPopped[10];
-	size_t szNum1;
+	size_t szNum;
 	size_t i;
 
 	TEST_CONTAINER_NAME(v, "deque");
@@ -401,9 +401,9 @@ static bool deque_test(void)
 	TEST_ARRAY(aiPopped, ai54321);
 
 	// Pop 5/4/3/2/1 from the back of the container
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
 	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
@@ -411,46 +411,46 @@ static bool deque_test(void)
 	TEST_SIZE(v, 5);
 
 	// Pop 5/4/3/2/1 from the front of the container
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push_back(v, ai12345[i]);
+		szNum += std_push_back(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_back(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push_front(v, ai12345[i]);
+		szNum += std_push_front(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 1000000; i++)
 	{
-		szNum1 += std_push_back(v, (int)i);
+		szNum += std_push_back(v, (int)i);
 	}
 	TEST_SIZE(v, 1000000);
-	TEST_SAME(v, szNum1, 1000000);
+	TEST_SAME(v, szNum, 1000000);
 
 	for (i = 0; i < 1000000; i++)
 	{
@@ -471,18 +471,18 @@ static bool deque_test(void)
 	TEST_SIZE(v, 2);
 	std_append_reversed(v, 5, 4, 3);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_push_back(v, 4, 5);
 	TEST_SIZE(v, 2);
 	std_prepend(v, 1, 2, 3);
 	TEST_SIZE(v, 5);
-	szNum1 = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_destruct(v);
@@ -499,7 +499,7 @@ static bool queue_test(void)
 {
 	std_queue(int) v;
 	int aiPopped[10];
-	size_t szNum1;
+	size_t szNum;
 	size_t i;
 
 	TEST_CONTAINER_NAME(v, "queue");
@@ -513,23 +513,23 @@ static bool queue_test(void)
 	TEST_SIZE(v, 5);
 
 	// Pop 5/4/3/2/1 from the container
-	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push(v, ai12345[i]);
+		szNum += std_push(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_destruct(v);
@@ -541,13 +541,11 @@ static bool stack_test(void)
 {
 	std_stack(int) v;
 	int aiPopped[10];
-	size_t szNum1;
+	size_t szNum;
 	size_t i;
 
 	TEST_CONTAINER_NAME(v, "stack");
 	std_construct(v);
-	TEST_SIZE(v, 0);
-
 	TEST_SIZE(v, 0);
 
 	// Push 1/2/3/4/5 onto the container, and make sure size == 5
@@ -555,23 +553,23 @@ static bool stack_test(void)
 	TEST_SIZE(v, 5);
 
 	// Pop 5/4/3/2/1 from the container
-	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-	szNum1 = 0;
+	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum1 += std_push(v, ai12345[i]);
+		szNum += std_push(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum1 = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
-	TEST_SAME(v, szNum1, 5);
+	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
 	std_destruct(v);
@@ -583,9 +581,23 @@ static bool stack_test(void)
 static bool priorityqueue_test(void)
 {
 	std_priorityqueue(int) v;
+	int aiPopped[10];
+	size_t szNum;
 
 	TEST_CONTAINER_NAME(v, "priority queue");
 	std_construct(v);
+	std_priorityqueue_compare_set(v, &int_compare);
+	TEST_SIZE(v, 0);
+
+	szNum = std_push(v, 3, 1, 5, 2, 4);
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum, 5);
+
+	szNum = std_pop(v, aiPopped, 10);
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
 	std_destruct(v);
 	return true;
 }
@@ -667,8 +679,8 @@ int main(int argc, char * argv[])
 	if (bRunAll || strcmp(pachArg, "queue") == 0)		{	bStatus &= queue_test();			}
 	if (bRunAll || strcmp(pachArg, "stack") == 0)		{	bStatus &= stack_test();			}
 	if (bRunAll || strcmp(pachArg, "nested") == 0)		{	bStatus &= vector_of_lists_test();	}
-	if (bRunAll || strcmp(pachArg, "priorityqueue") == 0) { bStatus &= priorityqueue_test(); }
-	if (bRunAll || strcmp(pachArg, "prioritydeque") == 0) { bStatus &= prioritydeque_test(); }
+	if (bRunAll || strcmp(pachArg, "priorityqueue") == 0) { bStatus &= priorityqueue_test();	}
+	if (bRunAll || strcmp(pachArg, "prioritydeque") == 0) { bStatus &= prioritydeque_test();	}
 
 	return bStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

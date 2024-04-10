@@ -47,6 +47,16 @@ typedef struct
 #define std_priorityqueue_lockhandler_memoryhandler(T)					STD_PRIORITYQUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler)
 #define std_priorityqueue_lockhandler_memoryhandler_itemhandler(T)		STD_PRIORITYQUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
 
+extern size_t stdlib_priorityqueue_push(std_container_t* pstContainer, std_linear_series_t* pstSeries);
+
+extern void stdlib_priorityqueue_compare_set(std_priorityqueue_t* pstPriorityQueue, pfn_std_compare_t pfnCompare);
+
+#define std_priorityqueue_compare_set(PRIORITYQUEUE,COMPARE)				\
+	(																		\
+		STD_TYPES_ARE_SAME(COMPARE, PRIORITYQUEUE.pfnCompare[0]),			\
+		stdlib_priorityqueue_compare_set(&PRIORITYQUEUE.stBody,COMPARE)		\
+	)
+
 enum
 {
 	std_priorityqueue_implements =
@@ -54,8 +64,7 @@ enum
 		| std_container_implements_construct
 		| std_container_implements_destruct
 		| std_container_implements_push
-		| std_container_implements_pop_front
-		| std_container_implements_pop_back
+		| std_container_implements_pop
 		| std_container_implements_at
 		| std_container_implements_default_itemhandler)
 };
@@ -64,9 +73,8 @@ enum
 	.pachContainerName = "priority queue",				\
 	.pfn_construct		= &stdlib_vector_construct,		\
 	.pfn_destruct		= &stdlib_vector_destruct,		\
-	.pfn_push			= &stdlib_vector_push_front,	\
-	.pfn_pop_front		= &stdlib_vector_pop_front,		\
-	.pfn_pop_back		= &stdlib_vector_pop_back,		\
+	.pfn_push			= &stdlib_priorityqueue_push,	\
+	.pfn_pop			= &stdlib_vector_pop_front,		\
 	.pfn_at				= &stdlib_vector_at,			\
 	.pstDefaultItemHandler = &std_vector_default_itemhandler,
 

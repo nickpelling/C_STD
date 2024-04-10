@@ -30,6 +30,11 @@ SOFTWARE.
 #define ITERATOR_TO_VECTORIT(IT)					STD_CONTAINER_OF(IT, std_vector_iterator_t, stIterator)
 #define VECTORIT_TO_ITERATOR(PRIORITYQUEUEIT)		&PRIORITYQUEUEIT->stIterator
 
+void stdlib_priorityqueue_compare_set(std_priorityqueue_t* pstPriorityQueue, pfn_std_compare_t pfnCompare)
+{
+	pstPriorityQueue->pfnCompare = pfnCompare;
+}
+
 /**
  * Push a series of items onto a priority queue container
  *
