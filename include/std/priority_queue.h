@@ -54,7 +54,7 @@ extern void stdlib_priorityqueue_compare_set(std_priorityqueue_t* pstPriorityQue
 #define std_priorityqueue_compare_set(PRIORITYQUEUE,COMPARE)				\
 	(																		\
 		STD_TYPES_ARE_SAME(COMPARE, PRIORITYQUEUE.pfnCompare),				\
-		stdlib_priorityqueue_compare_set(&PRIORITYQUEUE.stBody,COMPARE)		\
+		stdlib_priorityqueue_compare_set(&PRIORITYQUEUE.stBody,(pfn_std_compare_t)(COMPARE))	\
 	)
 
 enum
