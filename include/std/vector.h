@@ -51,12 +51,14 @@ SOFTWARE.
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS);		\
 	}
 
+#define STD_VECTOR_FIELDS			\
+	size_t szNumAlloced;			\
+	void* pvStartAddr				\
+
 typedef struct
 {
 	std_container_t stContainer;
-
-	size_t szNumAlloced;
-	void * pvStartAddr;
+	STD_VECTOR_FIELDS;
 } std_vector_t;
 
 typedef	struct
@@ -66,7 +68,8 @@ typedef	struct
 
 // Client-side declaration code
 
-#define STD_VECTOR_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, std_vector_implements, STD_FAKEVAR())
+#define STD_VECTOR_DECLARE(T,HAS_ENUM)	\
+	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, std_vector_implements, STD_FAKEVAR())
 
 #define std_vector(T)											STD_VECTOR_DECLARE(T,std_container_has_no_handlers)
 #define std_vector_itemhandler(T)								STD_VECTOR_DECLARE(T,std_container_has_itemhandler)
@@ -96,6 +99,8 @@ extern void stdlib_vector_reverseiterator_construct(std_container_t * pstContain
 extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
 extern void stdlib_vector_iterator_next(std_iterator_t * pstIterator);
 extern void stdlib_vector_iterator_prev(std_iterator_t * pstIterator);
+
+extern size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare);
 
 extern const std_item_handler_t std_vector_default_itemhandler;
 

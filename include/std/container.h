@@ -33,6 +33,7 @@ SOFTWARE.
 #include "std/list.h"
 #include "std/deque.h"
 #include "std/queue.h"
+#include "std/priority_deque.h"
 #include "std/priority_queue.h"
 #include "std/set.h"
 #include "std/stack.h"
@@ -103,7 +104,8 @@ STD_STATIC const std_container_jumptable_t std_container_jumptable_array[std_con
 {
 	[std_container_enum_deque]			= { STD_DEQUE_JUMPTABLE },
 	[std_container_enum_list]			= { STD_LIST_JUMPTABLE },
-	[std_container_enum_priority_queue]	= { STD_PRIORITYQUEUE_JUMPTABLE },
+	[std_container_enum_prioritydeque]	= { STD_PRIORITYDEQUE_JUMPTABLE },
+	[std_container_enum_priorityqueue]	= { STD_PRIORITYQUEUE_JUMPTABLE },
 	[std_container_enum_queue]			= { STD_QUEUE_JUMPTABLE },
 	[std_container_enum_set]			= { STD_SET_JUMPTABLE },
 	[std_container_enum_stack]			= { STD_STACK_JUMPTABLE },

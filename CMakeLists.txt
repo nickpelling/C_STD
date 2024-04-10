@@ -36,7 +36,7 @@ endif()
 set(CMAKE_C_FLAGS, "/std\:clatest")
 
 # Build a static library
-add_library( C_STD STATIC src/std_deque.c src/std_item.c src/std_list.c  src/std_vector.c src/std_memory.c src/std_container.c )
+add_library( C_STD STATIC src/std_deque.c src/std_item.c src/std_list.c  src/std_vector.c src/std_memory.c src/std_container.c src/std_priority_queue.c src/std_priority_deque.c)
 
 # Build a test application using testcode and the static library
 add_executable( TestApp testcode/C_STD.c testcode/memory_counter.c) 

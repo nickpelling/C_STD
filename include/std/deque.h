@@ -55,21 +55,23 @@ SOFTWARE.
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS); \
 	}
 
+#define STD_DEQUE_FIELDS				\
+	/* Number of items per bucket */	\
+	size_t szItemsPerBucket;			\
+										\
+	/* Pointer to an allocated linear array of pointers to buckets */	\
+	void** papvBuckets;					\
+										\
+	/* Number of buckets in the allocated linear array of pointers to buckets */	\
+	size_t szNumBuckets;				\
+										\
+	/* Starting offset within the deque's first bucket	*/	\
+	size_t szStartOffset
+
 typedef struct
 {
 	std_container_t stContainer;
-
-	// Number of items per bucket
-	size_t szItemsPerBucket;
-
-	// Pointer to an allocated linear array of pointers to buckets
-	void * * papvBuckets;
-
-	// Number of buckets in the allocated linear array of pointers to buckets
-    size_t szNumBuckets;
-
-    // Starting offset within the deque's first bucket
-    size_t szStartOffset;
+	STD_DEQUE_FIELDS;
 } std_deque_t;
 
 typedef struct

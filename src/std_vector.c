@@ -490,6 +490,96 @@ void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std
 
 // -------------------------------------------------------------------------
 
+/**
+ * Find the ordered slot where a new item should be inserted
+ *
+ * @param[in]	pstContainer		Vector container to search
+ * @param[in]	pfnCompare			Comparison callback
+ * @param[in]	pvBase				New item to compare existing items with
+ *
+ * @return Index in the container where new item should be inserted
+ */
+static size_t stdlib_vector_find_entry(std_container_t* pstContainer, pfn_std_compare_t pfnCompare, const void* pvBase)
+{
+	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
+	size_t szSizeofItem = pstContainer->szSizeofItem;
+	size_t szNumItems = pstContainer->szNumItems;
+	size_t i;
+	void* pvItem;
+
+	// Simple (non-binary-chopping) initial version to test all the interfaces and to write tests
+	pvItem = pstVector->pvStartAddr;
+	for (i = 0; i < szNumItems; i++, pvItem = STD_LINEAR_ADD(pvItem, szSizeofItem))
+	{
+		if ((*pfnCompare)(pvItem, pvBase))
+			break;
+	}
+
+	return i;
+}
+
+/**
+ * Insert a series of items into an ordered vector (heap) 
+ *
+ * @param[in]	pstContainer	Vector container to insert the series of items onto
+ * @param[in]	pstSeries		Linear series of items to insert into the container
+ *
+ * @return Number of items inserted into the vector container
+ */
+size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare)
+{
+	size_t szSizeofItem = pstContainer->szSizeofItem;
+	size_t szOldCount = pstContainer->szNumItems;
+	size_t szNumItems = pstSeries->szNumItems;
+	size_t szNewCount = szOldCount + szNumItems;
+	void * pvItem;
+	void * pvNext;
+	size_t szIndex;
+	size_t i;
+
+	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
+	{
+		return 0;
+	}
+
+	// Try to reserve space, exit early if that didn't succeed
+	if (stdlib_vector_reserve(pstContainer, szNewCount) == false)
+	{
+		return 0;
+	}
+
+	for (i = 0; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem = STD_LINEAR_ADD(pvItem, szSizeofItem), i++)
+	{
+		// Binary chop to find the highest entry less than the new item
+		szIndex = stdlib_vector_find_entry(pstContainer, pfnCompare, pstSeries->pvData);
+		pvItem = stdlib_vector_at(pstContainer, szIndex);
+
+		// If this isn't the entry just past the final entry in the table, ripple all the items above it up by one
+		if (szIndex < szOldCount + i)
+		{
+			pvNext = STD_LINEAR_ADD(pvItem, szSizeofItem);
+			memmove(pvNext, pvItem, szSizeofItem * (szOldCount + i - szIndex));
+			if (pstContainer->eHas & std_container_has_itemhandler)
+			{
+				std_item_relocate(pstContainer->pstItemHandler, pvNext, pvItem, szSizeofItem * (szOldCount + i - szIndex));
+			}
+		}
+		memcpy(pvItem, pstSeries->pvData, szSizeofItem);
+		if (pstContainer->eHas & std_container_has_itemhandler)
+		{
+			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, szSizeofItem);
+		}
+
+		// Update the number of items in the container
+		pstContainer->szNumItems = szOldCount + i;
+	}
+
+	// Return the number of items successfully pushed onto the container
+	return szNumItems;
+}
+
+// -------------------------------------------------------------------------
+
 static bool vector_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
 {
 	if (pstItemHandler) { /* Unused parameter */ }

@@ -34,20 +34,6 @@ static int int_compare(const int* a, const int* b)
     return (*b < *a);
 }
 
-#define PRINT_ALL(CONTAINER, MSG, ITERATOR)		\
-	printf("%s:", MSG);							\
-	for (ITERATOR(CONTAINER, it))				\
-		printf(" %d", std_iterator_at(it)[0]);	\
-	printf(CRLF)
-
-#define POP_ALL(CONTAINER, MSG, POPFUNC, MAXITEMS)	\
-	int aiNum[MAXITEMS];							\
-	size_t szNum = POPFUNC(CONTAINER, aiNum, STD_NUM_ELEMENTS(aiNum));	\
-	printf("%s:", MSG);								\
-	for (size_t j = 0; j < szNum; j++)				\
-		printf(" %d", aiNum[j]);					\
-	printf(CRLF)
-
 #define TEST_CONTAINER_NAME(CONTAINER,NAME)			\
 	do {											\
 		const char * pachContainerName = std_container_name(CONTAINER);	\
@@ -594,6 +580,26 @@ static bool stack_test(void)
 
 }
 
+static bool priorityqueue_test(void)
+{
+	std_priorityqueue(int) v;
+
+	TEST_CONTAINER_NAME(v, "priority queue");
+	std_construct(v);
+	std_destruct(v);
+	return true;
+}
+
+static bool prioritydeque_test(void)
+{
+	std_prioritydeque(int) v;
+
+	TEST_CONTAINER_NAME(v, "priority deque");
+	std_construct(v);
+	std_destruct(v);
+	return true;
+}
+
 typedef std_list(int) list_int_t;
 
 static bool vector_of_lists_test(void)
@@ -661,6 +667,8 @@ int main(int argc, char * argv[])
 	if (bRunAll || strcmp(pachArg, "queue") == 0)		{	bStatus &= queue_test();			}
 	if (bRunAll || strcmp(pachArg, "stack") == 0)		{	bStatus &= stack_test();			}
 	if (bRunAll || strcmp(pachArg, "nested") == 0)		{	bStatus &= vector_of_lists_test();	}
+	if (bRunAll || strcmp(pachArg, "priorityqueue") == 0) { bStatus &= priorityqueue_test(); }
+	if (bRunAll || strcmp(pachArg, "prioritydeque") == 0) { bStatus &= prioritydeque_test(); }
 
 	return bStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

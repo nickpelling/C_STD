@@ -25,13 +25,49 @@ SOFTWARE.
 #ifndef STD_PRIORITY_QUEUE_H_
 #define STD_PRIORITY_QUEUE_H_
 
+#include "std/config.h"
+#include "std/vector.h"
+
+typedef struct
+{
+	std_container_t stContainer;
+	STD_VECTOR_FIELDS;
+	int (*pfnCompare)(const void* a, const void* b);
+} std_priorityqueue_t;
+
+#define STD_PRIORITYQUEUE_DECLARE(T,HAS_ENUM)	\
+		STD_VECTOR(std_priorityqueue_t, std_vector_iterator_t, T, std_container_enum_priorityqueue, HAS_ENUM, std_priorityqueue_implements, STD_FAKEVAR())
+
+#define std_priorityqueue(T)											STD_PRIORITYQUEUE_DECLARE(T,std_container_has_no_handlers)
+#define std_priorityqueue_itemhandler(T)								STD_PRIORITYQUEUE_DECLARE(T,std_container_has_itemhandler)
+#define std_priorityqueue_memoryhandler(T)								STD_PRIORITYQUEUE_DECLARE(T,std_container_has_memoryhandler)
+#define std_priorityqueue_memoryhandler_itemhandler(T)					STD_PRIORITYQUEUE_DECLARE(T,std_container_has_memoryhandler_itemhandler)
+#define std_priorityqueue_lockhandler(T)								STD_PRIORITYQUEUE_DECLARE(T,std_container_has_lockhandler)
+#define std_priorityqueue_lockhandler_itemhandler(T)					STD_PRIORITYQUEUE_DECLARE(T,std_container_has_lockhandler_itemhandler)
+#define std_priorityqueue_lockhandler_memoryhandler(T)					STD_PRIORITYQUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler)
+#define std_priorityqueue_lockhandler_memoryhandler_itemhandler(T)		STD_PRIORITYQUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
+
 enum
 {
 	std_priorityqueue_implements =
-		std_container_implements_name
+	(std_container_implements_name
+		| std_container_implements_construct
+		| std_container_implements_destruct
+		| std_container_implements_push
+		| std_container_implements_pop_front
+		| std_container_implements_pop_back
+		| std_container_implements_at
+		| std_container_implements_default_itemhandler)
 };
 
 #define STD_PRIORITYQUEUE_JUMPTABLE \
-		.pachContainerName = "priority queue"
+	.pachContainerName = "priority queue",				\
+	.pfn_construct		= &stdlib_vector_construct,		\
+	.pfn_destruct		= &stdlib_vector_destruct,		\
+	.pfn_push			= &stdlib_vector_push_front,	\
+	.pfn_pop_front		= &stdlib_vector_pop_front,		\
+	.pfn_pop_back		= &stdlib_vector_pop_back,		\
+	.pfn_at				= &stdlib_vector_at,			\
+	.pstDefaultItemHandler = &std_vector_default_itemhandler,
 
 #endif /* STD_PRIORITY_QUEUE_H_ */
