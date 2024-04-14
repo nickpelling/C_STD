@@ -85,8 +85,7 @@ typedef enum
 #define STD_CONTAINER_XMACRO(X)				\
 	X(std_container_enum_deque)				\
 	X(std_container_enum_list)				\
-	X(std_container_enum_prioritydeque)		\
-	X(std_container_enum_priorityqueue)		\
+	X(std_container_enum_ring)				\
 	X(std_container_enum_queue)				\
 	X(std_container_enum_stack)				\
 	X(std_container_enum_vector)			\
@@ -98,8 +97,9 @@ typedef enum
 	X(std_container_enum_map)				\
 	X(std_container_enum_unorderedmap)		\
 											\
+	X(std_container_enum_prioritydeque)		\
+	X(std_container_enum_priorityqueue)		\
 	X(std_container_enum_pool)				\
-	X(std_container_enum_ring)				\
 	X(std_container_enum_heap)				\
 	X(std_container_enum_graph)
 
