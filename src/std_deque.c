@@ -410,11 +410,7 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, std_linear_series
 		pstContainer->szNumItems++;
 
 		pvItem = stdlib_deque_at(pstContainer, 0);
-		memcpy(pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
 	}
 
 	return i;
@@ -441,11 +437,7 @@ size_t stdlib_deque_push_back(std_container_t * pstContainer, std_linear_series_
 		}
 
 		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
-		memcpy(pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
 	}
 
 	return i;
@@ -469,7 +461,7 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
 	{
 		// Get the address of the first item in the deque
 		pvItem = stdlib_deque_at(pstContainer, 0);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		pstDeque->szStartOffset++;
 		pstContainer->szNumItems--;
 
@@ -506,7 +498,7 @@ size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, si
 	{
 		// Get the address of the final item in the deque
 		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 
 		pstContainer->szNumItems--;
 		if ((pstDeque->szStartOffset + pstContainer->szNumItems) % pstDeque->szItemsPerBucket == 0)

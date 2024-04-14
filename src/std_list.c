@@ -199,11 +199,7 @@ size_t stdlib_list_push_front(std_container_t * pstContainer, std_linear_series_
 		node_insert_before(pstList, pstList->pstHead, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		memcpy(pvItem, pstSeries->pvData, pstList->stContainer.szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstList->stContainer.szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1U);
 	}
 
 	return i;
@@ -232,11 +228,7 @@ size_t stdlib_list_push_back(std_container_t * pstContainer, std_linear_series_t
 		node_insert_after(pstList, pstList->pstTail, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		memcpy(pvItem, pstSeries->pvData, pstContainer->szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, pstList->stContainer.szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
 	}
 
 	return i;
@@ -268,7 +260,7 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
 		pstNode = pstList->pstHead;
 		node_disconnect(pstList, pstNode);
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
 		pstContainer->szNumItems--;
 		if (pvResult != NULL)
@@ -306,7 +298,7 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 		pstNode = pstList->pstTail;
 		node_disconnect(pstList, pstNode);
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);
 		pstContainer->szNumItems--;
 		if (pvResult != NULL)
@@ -448,11 +440,7 @@ size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const void* pvBase,
 		node_insert_after(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pvBase, 1);
 	}
 
 	return i;
@@ -488,11 +476,7 @@ size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const void* pvBase
 		node_insert_before(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		memcpy(pvItem, pvBase, pstContainer->szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvBase, pstList->stContainer.szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pvBase, 1);
 	}
 
 	return i;

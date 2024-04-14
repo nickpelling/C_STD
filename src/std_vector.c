@@ -166,7 +166,7 @@ bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 			}
 			if (pstContainer->eHas & std_container_has_itemhandler)
 			{
-				std_item_relocate(pstContainer->pstItemHandler, pvNewStart, pstVector->pvStartAddr, szTotalSize);
+				stdlib_item_relocate(pstContainer->pstItemHandler, pvNewStart, pstVector->pvStartAddr, szTotalSize);
 			}
 			pstVector->pvStartAddr = pvNewStart;
 		}
@@ -207,21 +207,13 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, std_linear_serie
 	{
 		pvStart = stdlib_vector_at(pstContainer, 0);
 		pvItem  = stdlib_vector_at(pstContainer, szNumItems);
-		memmove(pvItem, pvStart, szOldCount * szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pvStart, szOldCount * szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pvStart, szOldCount);
 	}
 
 	pvItem = stdlib_vector_at(pstContainer, szNumItems - 1U);
 	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem = STD_LINEAR_SUB(pvItem, szSizeofItem))
 	{
-		memcpy(pvItem, pstSeries->pvData, szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
 	}
 
 	// Update the number of items
@@ -262,11 +254,7 @@ size_t stdlib_vector_push_back(std_container_t * pstContainer, std_linear_series
 	pvItem = stdlib_vector_at(pstContainer, szOldCount);
 	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem=STD_LINEAR_ADD(pvItem,szSizeofItem))
 	{
-		memcpy(pvItem, pstSeries->pvData, szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
 	}
 
 	// Update the number of items in the container
@@ -300,7 +288,7 @@ size_t stdlib_vector_pop_front(std_container_t* pstContainer, void* pvResult, si
 	for (i = 0; i < szMaxItems; i++)
 	{
 		pvItem = stdlib_vector_at(pstContainer, i);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
+		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
 		if (pvResult)
 		{
 			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
@@ -311,11 +299,7 @@ size_t stdlib_vector_pop_front(std_container_t* pstContainer, void* pvResult, si
 	{
 		pvBase = stdlib_vector_at(pstContainer, 0);
 		pvItem = stdlib_vector_at(pstContainer, szMaxItems);
-		memmove(pvBase, pvItem, (pstContainer->szNumItems - szMaxItems) * pstContainer->szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvBase, pvItem, (pstContainer->szNumItems - szMaxItems) * pstContainer->szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pvBase, pstContainer->szNumItems - szMaxItems);
 	}
 	pstContainer->szNumItems -= szMaxItems;
 
@@ -345,7 +329,7 @@ size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, 
 	for (i = 0; i < szMaxItems; i++)
 	{
 		pvItem = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U - i);
-		std_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
+		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstVector->stContainer.szSizeofItem);
 		if (pvResult)
 		{
 			pvResult = STD_LINEAR_ADD(pvResult, pstContainer->szSizeofItem);
@@ -532,17 +516,9 @@ size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_serie
 		if (szIndex < szOldCount + i)
 		{
 			pvNext = STD_LINEAR_ADD(pvItem, szSizeofItem);
-			memmove(pvNext, pvItem, szSizeofItem * (szOldCount + i - szIndex));
-			if (pstContainer->eHas & std_container_has_itemhandler)
-			{
-				std_item_relocate(pstContainer->pstItemHandler, pvNext, pvItem, szSizeofItem * (szOldCount + i - szIndex));
-			}
+			stdlib_container_relocate_items(pstContainer, pvNext, pvItem, szOldCount + i - szIndex);
 		}
-		memcpy(pvItem, pstSeries->pvData, szSizeofItem);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvItem, pstSeries->pvData, szSizeofItem);
-		}
+		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
 
 		// Update the number of items in the container
 		pstContainer->szNumItems++;

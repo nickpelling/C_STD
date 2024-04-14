@@ -32,6 +32,8 @@ SOFTWARE.
 #include "std/config.h"
 #include "std/enums.h"
 
+typedef struct std_container_s std_container_t;
+
 typedef struct std_item_handler_s std_item_handler_t;
 
 struct std_item_handler_s
@@ -46,9 +48,11 @@ struct std_item_handler_s
 	void (*pfn_Relocator)(const std_item_handler_t * pstItemHandler, void * pvNewAddr, const void * pvOldAddr);
 };
 
-extern void std_item_destruct(const std_item_handler_t* pstItemHandler, void* pvData, size_t szNumElements);
-extern void std_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewAddr, const void* pvOldAddr, size_t szTotalSize);
+extern void stdlib_item_destruct(const std_item_handler_t* pstItemHandler, void* pvData, size_t szNumElements);
+extern void stdlib_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewAddr, const void* pvOldAddr, size_t szTotalSize);
 
-extern void std_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHandler, void* pvResult, void* pvItem, size_t szSize);
+extern void stdlib_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHandler, void* pvResult, void* pvItem, size_t szSize);
+
+extern void stdlib_container_relocate_items(std_container_t* pstContainer, void* pvNewAddr, const void* pvOldAddr, size_t szNumItems);
 
 #endif /* STD_ITEM_H_ */

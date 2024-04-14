@@ -53,7 +53,7 @@ typedef struct
 #define STD_MEMORYHANDLER(X)	.pstMemoryHandler = X
 #define STD_LOCKHANDLER(X)		.pstLockHandler = X
 
-typedef struct
+typedef struct std_container_s
 {
 	size_t						szSizeofItem;		// Size of each item in the container
 	size_t						szNumItems;			// Number of items currently in the container
