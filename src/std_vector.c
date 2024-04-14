@@ -176,32 +176,6 @@ bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 }
 
 /**
- * Shrink an over-allocated block to exactly fit the number of elements in it
- *
- * @param[in]	pstContainer	Vector container to shrink
- */
-void stdlib_vector_fit(std_container_t * pstContainer)
-{
-	std_vector_t * pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	void * pvNewPtr;
-	size_t szNumItems;
-	size_t szSize;
-
-	szNumItems = pstContainer->szNumItems;
-	if (pstVector->szNumAlloced != szNumItems)
-	{
-		pstVector->szNumAlloced = szNumItems;
-		szSize = szNumItems * pstVector->stContainer.szSizeofItem;
-		pvNewPtr = std_memoryhandler_realloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstVector->pvStartAddr, szSize);
-		if (pstContainer->eHas & std_container_has_itemhandler)
-		{
-			std_item_relocate(pstContainer->pstItemHandler, pvNewPtr, pstVector->pvStartAddr, szSize);
-		}
-		pstVector->pvStartAddr = pvNewPtr;
-	}
-}
-
-/**
  * Push a series of items onto the front of a vector
  *
  * @param[in]	pstContainer	Vector container to push the series of items onto

@@ -114,7 +114,6 @@ enum
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
 		| std_container_implements_reserve
-		| std_container_implements_fit
 		| std_container_implements_ranged_sort
 		| std_container_implements_forward_constructnextprev
 		| std_container_implements_forward_range
@@ -133,7 +132,6 @@ enum
 	.pfn_pop_back		= &stdlib_vector_pop_back,		\
 	.pfn_at				= &stdlib_vector_at,			\
 	.pfn_reserve		= &stdlib_vector_reserve,		\
-	.pfn_fit			= &stdlib_vector_fit,			\
 	.pfn_ranged_sort	= &stdlib_vector_ranged_sort,	\
 	.astIterators =										\
 	{													\

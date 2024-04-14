@@ -81,7 +81,6 @@ typedef struct
 	void	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
 											std_container_has_t eHas);
 	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
-	void	(* const pfn_fit)			(std_container_t * pstContainer);
 	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, std_linear_series_t *pstSeries);
 	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, std_linear_series_t* pstSeries);
 	size_t	(* const pfn_push)			(std_container_t * pstContainer, std_linear_series_t* pstSeries);
@@ -340,28 +339,8 @@ STD_INLINE bool std_container_call_reserve(std_container_t* pstContainer, std_co
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,reserve),	\
 				STD_CONTAINER_HAS_GET(V), N)
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
- * Fit an untyped container to the number of elements previously pushed to it
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- */
-STD_INLINE void std_container_call_fit(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas)
-{
-	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	STD_CONTAINER_CALL(eContainer, pfn_fit)(pstContainer);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-}
-
 // Fit a typed container to the number of elements previously pushed to it
-#define std_fit(V)							\
-			std_container_call_fit(			\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,fit), \
-				STD_CONTAINER_HAS_GET(V)	)
+#define std_fit(V)		std_reserve(V, std_size(V))
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
