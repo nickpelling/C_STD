@@ -106,7 +106,7 @@ void stdlib_item_relocate(const std_item_handler_t* pstItemHandler, void* pvNewA
  * @param[in]	pvOldAddr
  * @param[in]	szNumItems
  */
-void stdlib_container_relocate_items(std_container_t* pstContainer, void* pvNewAddr, void* pvOldAddr, size_t szNumItems)
+void stdlib_container_relocate_items(std_container_t* pstContainer, void* pvNewAddr, const void* pvOldAddr, size_t szNumItems)
 {
 	size_t szSizeofItem = pstContainer->szSizeofItem;
 	size_t i;
