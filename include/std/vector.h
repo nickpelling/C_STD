@@ -85,7 +85,6 @@ typedef	struct
 extern void stdlib_vector_construct(	std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_vector_destruct(		std_container_t * pstContainer);	
 extern bool stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
-extern void stdlib_vector_fit(			std_container_t * pstContainer);
 extern size_t stdlib_vector_push_front(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
 extern size_t stdlib_vector_push_back(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
 extern size_t stdlib_vector_pop_front(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
