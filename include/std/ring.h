@@ -41,7 +41,7 @@ typedef	struct
 	void * pvRingEnd;
 } std_ring_iterator_t;
 
-#define STD_RING_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_ring_t, std_vector_iterator_t, T, std_container_enum_ring, HAS_ENUM, std_ring_implements, STD_FAKEVAR())
+#define STD_RING_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_ring_t, std_ring_iterator_t, T, std_container_enum_ring, HAS_ENUM, std_ring_implements, STD_FAKEVAR())
 
 #define std_ring(T)											STD_RING_DECLARE(T,std_container_has_no_handlers)
 #define std_ring_itemhandler(T)								STD_RING_DECLARE(T,std_container_has_itemhandler)

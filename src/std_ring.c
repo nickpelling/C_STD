@@ -392,11 +392,11 @@ void stdlib_ring_forwarditerator_range(std_container_t * pstContainer, std_itera
 	else
 	{
 		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
+		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
+		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
 		pstIterator->pvNext		= next_item(pstIterator, pvBegin);
-		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
-		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
 	}
 }
 
@@ -419,11 +419,11 @@ void stdlib_ring_reverseiterator_range(std_container_t * pstContainer, std_itera
 	else
 	{
 		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
+		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
+		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
 		pstIterator->pvNext		= prev_item(pstIterator, pvBegin);
-		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
-		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
 	}
 }
 
