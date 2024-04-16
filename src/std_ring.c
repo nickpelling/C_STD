@@ -158,10 +158,16 @@ bool stdlib_ring_destruct(std_container_t * pstContainer)
 bool stdlib_ring_reserve(std_container_t * pstContainer, size_t szNewSize)
 {
 	std_ring_t * pstRing = CONTAINER_TO_RING(pstContainer);
+	size_t szNumItems = pstContainer->szNumItems;
+	size_t szOldCapacity = pstRing->szNumAlloced;
 	size_t szNewCapacity;
 	void * pvNewStart;
+	void * pvOldStart;
+	void * pvItem;
+	void * pvData;
+	size_t szNum;
 
-	if (szNewSize > pstRing->szNumAlloced)
+	if (szNewSize > szOldCapacity)
 	{
 		szNewCapacity = 1ULL << (64U - __builtin_clzll(szNewSize));
 		if (szNewCapacity < szNewSize)
@@ -169,20 +175,41 @@ bool stdlib_ring_reserve(std_container_t * pstContainer, size_t szNewSize)
 			szNewCapacity <<= 1;
 		}
 
-		if (szNewCapacity != pstRing->szNumAlloced)
+		if (szNewCapacity != szOldCapacity)
 		{
 			pstRing->szNumAlloced = szNewCapacity;
-			size_t szTotalSize = pstRing->szNumAlloced * pstContainer->szSizeofItem;
-			pvNewStart = std_memoryhandler_realloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstRing->pvStartAddr, szTotalSize);
+			size_t szTotalSize = szNewCapacity * pstContainer->szSizeofItem;
+			pvNewStart = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, szTotalSize);
 			if (pvNewStart == NULL)
 			{
 				return false;
 			}
-			if (pstContainer->eHas & std_container_has_itemhandler)
+			pvOldStart = pstRing->pvStartAddr;
+			if (szOldCapacity != 0U)
 			{
-				stdlib_item_relocate(pstContainer->pstItemHandler, pvNewStart, pstRing->pvStartAddr, szTotalSize);
+				pvItem = stdlib_ring_at(pstContainer, pstRing->szStartOffset);
+				if (pstRing->szStartOffset + szNumItems < szOldCapacity)
+				{
+					pstRing->pvStartAddr = pvNewStart;
+					stdlib_container_relocate_items(pstContainer, pvNewStart, pvItem, pstContainer->szNumItems);
+				}
+				else
+				{
+					szNum = szOldCapacity - pstRing->szStartOffset;
+					stdlib_container_relocate_items(pstContainer, pvNewStart, pvItem, szNum);
+
+					pvItem = stdlib_ring_at(pstContainer, 0);
+					pstRing->pvStartAddr = pvNewStart;
+					pvData = stdlib_ring_at(pstContainer, szNum);
+					stdlib_container_relocate_items(pstContainer, pvData, pvItem, szOldCapacity - szNum);
+				}
 			}
-			pstRing->pvStartAddr = pvNewStart;
+			else
+			{
+				pstRing->pvStartAddr = pvNewStart;
+			}
+			pstRing->szStartOffset = 0;
+			std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pvOldStart);
 		}
 	}
 

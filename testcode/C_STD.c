@@ -562,7 +562,6 @@ static bool ring_test(void)
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
-#if 0
 	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
@@ -585,20 +584,23 @@ static bool ring_test(void)
 	TEST_SIZE(v, 1000000);
 	TEST_SAME(v, szNum, 1000000);
 
+#if 0
+
 	for (i = 0; i < 1000000; i++)
 	{
 		if (std_pop_back(v, aiPopped, 1U) != 1U)
 		{
-			printf("Failed to pop element #%d from array (line = %d)" CRLF, (int)i, __LINE__);
+			printf("Failed to pop element #%d from ring (line = %d)" CRLF, (int)i, __LINE__);
 			return false;
 		}
 		if (aiPopped[0] != (int)(1000000U - 1U - i))
 		{
-			printf("Element #%d in vector failed to match (= %d) (line = %d)" CRLF, (int)i, aiPopped[0], __LINE__);
+			printf("Element #%d in ring failed to match (= %d) (line = %d)" CRLF, (int)i, aiPopped[0], __LINE__);
 			return false;
 		}
 	}
 	TEST_SIZE(v, 0);
+
 
 	std_push_back(v, 1, 2);
 	TEST_SIZE(v, 2);
