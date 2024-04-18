@@ -584,7 +584,7 @@ static bool ring_test(void)
 	TEST_SIZE(v, 5);
 	TEST_SAME(v, szNum, 5);
 
-	szNum = std_pop_front(v, (const void *)NULL, 4);
+	szNum = std_pop_front(v, (int *)NULL, 4);
 	TEST_SIZE(v, 1);
 	TEST_SAME(v, szNum, 4);
 
