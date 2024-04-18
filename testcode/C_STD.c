@@ -576,6 +576,28 @@ static bool ring_test(void)
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai54321);
 
+	std_destruct(v);
+
+	std_construct(v);
+
+	szNum = std_push_back(v, 6, 7, 8, 9, 1);
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum, 5);
+
+	szNum = std_pop_front(v, NULL, 4);
+	TEST_SIZE(v, 1);
+	TEST_SAME(v, szNum, 4);
+
+	szNum = std_push_back(v, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
+	TEST_SAME(v, szNum, 4);
+
+	memset(aiPopped, 0, sizeof(aiPopped));
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
 	szNum = 0;
 	for (i = 0; i < 1000000; i++)
 	{
@@ -583,8 +605,6 @@ static bool ring_test(void)
 	}
 	TEST_SIZE(v, 1000000);
 	TEST_SAME(v, szNum, 1000000);
-
-#if 0
 
 	for (i = 0; i < 1000000; i++)
 	{
@@ -619,7 +639,7 @@ static bool ring_test(void)
 	TEST_SIZE(v, 0);
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
-#endif
+
 	std_destruct(v);
 
 	std_construct(v);

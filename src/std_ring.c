@@ -332,8 +332,15 @@ size_t stdlib_ring_pop_front(std_container_t* pstContainer, void* pvResult, size
 		}
 	}
 
-	pstRing->szStartOffset   += szMaxItems;
 	pstContainer->szNumItems -= szMaxItems;
+	if (pstContainer->szNumItems == 0)
+	{
+		pstRing->szStartOffset = 0;
+	}
+	else
+	{
+		pstRing->szStartOffset = (pstRing->szStartOffset + szMaxItems) & (pstRing->szNumAlloced - 1U);
+	}
 
 	return szMaxItems;
 }
