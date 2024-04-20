@@ -659,7 +659,7 @@ static bool queue_test(void)
 	size_t szNum;
 	size_t i;
 
-	TEST_CONTAINER_NAME(v, "queue");
+	TEST_CONTAINER_NAME(v, "vector");
 	std_construct(v);
 	TEST_SIZE(v, 0);
 
@@ -701,6 +701,7 @@ static bool stack_test(void)
 	size_t szNum;
 	size_t i;
 
+	TEST_CONTAINER_NAME(v, "vector");
 	std_construct(v);
 	TEST_SIZE(v, 0);
 
