@@ -772,21 +772,19 @@ static bool prioritydeque_test(void)
 	return true;
 }
 
-typedef std_list(int) list_int_t;
-
 static bool vector_of_lists_test(void)
 {
-	std_vector_itemhandler(list_int_t) v;
+	std_vector_itemhandler(std_list(int)) v;
 	int i;
 
 	std_construct_itemhandler(v, std_container_default_itemhandler(STD_ITEM(v)));
 
-	list_int_t list1;
+	STD_ITEM_TYPEOF(v) list1;
 	std_construct(list1);
 	std_push_back(list1, 1, 2, 3);
 	std_push_back(v, list1);
 
-	list_int_t list2;
+	STD_ITEM_TYPEOF(v) list2;
 	std_construct(list2);
 	std_push_back(list2, 4, 3, 2, 1);
 	std_push_back(v, list2);
@@ -794,7 +792,7 @@ static bool vector_of_lists_test(void)
 	i = 0;
 	for (std_each_const(v, it),i++)
 	{
-		const list_int_t* list3 = std_iterator_at(it);
+		const STD_ITEM_TYPEOF(v) * list3 = std_iterator_at(it);
 		size_t szListSize = std_size(list3[0]);
 		if ((i == 0) && (szListSize != 3))
 		{

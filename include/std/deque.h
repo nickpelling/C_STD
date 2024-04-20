@@ -39,19 +39,20 @@ SOFTWARE.
 //	- an iterator smuggle, used to give easy access to an associated iterator
 //	- a typed comparison function (for sorting)
 //	- a typed equals function
-#define STD_DEQUE(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME)	\
-	union TEMPNAME								\
+#define STD_DEQUE(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, UNIONNAME, TYPEWRAPPER)	\
+	union UNIONNAME								\
 	{											\
 		BASE 	   			 stBody;			\
-		TYPE			*	pstType;			\
-		STD_COMPARE(TYPE const, pfnCompare);	\
+		STD_TYPE_SET(TYPEWRAPPER,TYPE) * pstWrapper;	\
+		STD_TYPE_GET(TYPEWRAPPER)	*	pstType;		\
+		STD_COMPARE(STD_TYPE_GET(TYPEWRAPPER) const, pfnCompare);	\
 		\
-		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\
+		STD_ITERATORS(ITBASE, STD_TYPE_GET(TYPEWRAPPER), UNIONNAME);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
 		STD_CONTAINER_PAYLOAD_OFFSET_SET(0);	\
-		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(TYPE));	\
+		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_TYPE_GET(TYPEWRAPPER)));	\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS); \
 	}
 
@@ -83,7 +84,7 @@ typedef struct
 } std_deque_iterator_t;
 
 #define STD_DEQUE_DECLARE(T,HAS_ENUM,...)	\
-			STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, STD_DEFAULT_PARAMETER(std_deque_implements,__VA_ARGS__), STD_FAKEVAR())
+			STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, STD_DEFAULT_PARAMETER(std_deque_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR())
 
 #define std_deque(T,...)											STD_DEQUE_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
 #define std_deque_itemhandler(T,...)								STD_DEQUE_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)

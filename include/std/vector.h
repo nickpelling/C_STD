@@ -35,19 +35,20 @@ SOFTWARE.
 //	- a type smuggle, used to give easy access to an inner (TYPE *) cast
 //	- a typed comparison function type (e.g. for sorting)
 //	- an iterator smuggle, used to give easy access to associated iterators
-#define STD_VECTOR(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, TEMPNAME)	\
-	union TEMPNAME								\
+#define STD_VECTOR(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, UNIONNAME, TYPEWRAPPER)	\
+	union UNIONNAME								\
 	{											\
 		BASE 	   			 stBody;			\
-		TYPE			*	pstType;			\
-		STD_COMPARE(const TYPE, pfnCompare);	\
+		STD_TYPE_SET(TYPEWRAPPER,TYPE) * pstWrapper;	\
+		STD_TYPE_GET(TYPEWRAPPER)	*	pstType;		\
+		STD_COMPARE(const STD_TYPE_GET(TYPEWRAPPER), pfnCompare);	\
 		\
-		STD_ITERATORS(ITBASE, TYPE, TEMPNAME);	\
+		STD_ITERATORS(ITBASE, STD_TYPE_GET(TYPEWRAPPER), UNIONNAME);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
 		STD_CONTAINER_PAYLOAD_OFFSET_SET(0);	\
-		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(TYPE));		\
+		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_TYPE_GET(TYPEWRAPPER)));		\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS);		\
 	}
 
@@ -69,7 +70,7 @@ typedef	struct
 // Client-side declaration code
 
 #define STD_VECTOR_DECLARE(T,HAS_ENUM,...)	\
-	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, STD_DEFAULT_PARAMETER(std_vector_implements,__VA_ARGS__), STD_FAKEVAR())
+	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, STD_DEFAULT_PARAMETER(std_vector_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR())
 
 #define std_vector(T,...)											STD_VECTOR_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
 #define std_vector_itemhandler(T,...)								STD_VECTOR_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)

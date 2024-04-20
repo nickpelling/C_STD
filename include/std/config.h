@@ -112,6 +112,10 @@ SOFTWARE.
 #define STD_TYPES_ARE_SAME(T1, T2)  1
 #endif
 
+// Wrap a type up inside a named struct (and then retrieve it!)
+#define STD_TYPE_SET(TYPEWRAPPER,TYPE)	struct TYPEWRAPPER { TYPE type; }
+#define STD_TYPE_GET(TYPEWRAPPER)		STD_TYPEOF(((struct TYPEWRAPPER *)1024)->type)
+
 #define STD_ARG1(A,...)	        A
 #define STD_ARG2(A,B,...)	    B
 #define STD_ARG3(A,B,C,...)	    C
