@@ -25,18 +25,68 @@ SOFTWARE.
 #ifndef STD_STACK_H_
 #define STD_STACK_H_
 
-#include "std/vector.h"
+/**
+ * Push a linear series of items to a stack container
+ *
+ * @param[in]	pstContainer	The container
+ * @param[in]	eContainer		The container type index
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	bReverse		If true, reverse the order of the linear series
+ * @param[in]	pvBase			Start of a linear series of items
+ * @param[in]	szNumElements	Number of items in the linear series
+ *
+ * @return Number of items pushed onto the container
+ */
+STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+{
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstContainer->szSizeofItem, szNumElements, false);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, &stSeries);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNumPushed;
+}
 
-#define STD_STACK_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_stack, HAS_ENUM, std_stack_implements, STD_FAKEVAR())
+#define std_push(V,...)						\
+			std_container_call_push(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_pop),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
-#define std_stack(T)											STD_STACK_DECLARE(T,std_container_has_no_handlers)
-#define std_stack_itemhandler(T)								STD_STACK_DECLARE(T,std_container_has_itemhandler)
-#define std_stack_memoryhandler(T)								STD_STACK_DECLARE(T,std_container_has_memoryhandler)
-#define std_stack_memoryhandler_itemhandler(T)					STD_STACK_DECLARE(T,std_container_has_memoryhandler_itemhandler)
-#define std_stack_lockhandler(T)								STD_STACK_DECLARE(T,std_container_has_lockhandler)
-#define std_stack_lockhandler_itemhandler(T)					STD_STACK_DECLARE(T,std_container_has_lockhandler_itemhandler)
-#define std_stack_lockhandler_memoryhandler(T)					STD_STACK_DECLARE(T,std_container_has_lockhandler_memoryhandler)
-#define std_stack_lockhandler_memoryhandler_itemhandler(T)		STD_STACK_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Pop a number of items from a stack container into a linear area of memory
+ *
+ * @param[in]	pstContainer	The container
+ * @param[in]	eContainer		The container type index
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[out]	pvBase			Start of the destination memory area (can be NULL)
+ * @param[in]	szMaxItems		Maximum number of items allowed in the linear series
+ *
+ * @return Number of items actually popped from the container
+ */
+STD_INLINE size_t std_container_call_pop(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
+{
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
+	size_t szNum = STD_CONTAINER_CALL(eContainer, pfn_pop_back)(pstContainer, pvResult, szMaxItems);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNum;
+}
+
+#define std_pop(V,RESULT,MAXITEMS)			\
+	(										\
+		STD_CHECK_TYPE(V, (RESULT)[0], pop_result_parameter), \
+		std_container_call_pop(				\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_pop),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
+	)
+
+#define std_stack(CONTAINER,TYPE)	CONTAINER(TYPE,std_stack_implements)
 
 enum
 {
@@ -44,18 +94,9 @@ enum
 		( std_container_implements_name
 		| std_container_implements_construct
 		| std_container_implements_destruct
-		| std_container_implements_pushpop
+		| std_container_implements_push_pop
 		| std_container_implements_at
 		| std_container_implements_default_itemhandler)
 };
-
-#define STD_STACK_JUMPTABLE \
-	.pachContainerName = "stack",					\
-	.pfn_construct		= &stdlib_vector_construct,	\
-	.pfn_destruct		= &stdlib_vector_destruct,	\
-	.pfn_push			= &stdlib_vector_push_back,	\
-	.pfn_pop			= &stdlib_vector_pop_back,	\
-	.pfn_at				= &stdlib_vector_at,		\
-	.pstDefaultItemHandler = &std_vector_default_itemhandler,
 
 #endif /* STD_STACK_H_ */

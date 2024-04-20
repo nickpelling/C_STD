@@ -32,12 +32,8 @@ SOFTWARE.
 #include "std/vector.h"
 #include "std/list.h"
 #include "std/deque.h"
-#include "std/queue.h"
-#include "std/priority_deque.h"
-#include "std/priority_queue.h"
 #include "std/ring.h"
 #include "std/set.h"
-#include "std/stack.h"
 
 #define CONTAINER_TIMEOUT_DEFAULT	500		// FIXME (should probably move this into the lock handler?!)
 
@@ -84,10 +80,8 @@ typedef struct
 	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
 	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, std_linear_series_t *pstSeries);
 	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, std_linear_series_t* pstSeries);
-	size_t	(* const pfn_push)			(std_container_t * pstContainer, std_linear_series_t* pstSeries);
 	size_t	(* const pfn_pop_front)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop_back)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
-	size_t	(* const pfn_pop)			(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	void	(* const pfn_range) 		(std_container_t * pstContainer, void * pvBegin, void * pvEnd, std_iterator_t * pstIterator);
 	void	(* const pfn_ranged_sort)	(std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 	void *	(* const pfn_at)			(std_container_t * pstContainer, size_t szIndex);
@@ -104,12 +98,10 @@ STD_STATIC const std_container_jumptable_t std_container_jumptable_array[std_con
 {
 	[std_container_enum_deque]			= { STD_DEQUE_JUMPTABLE },
 	[std_container_enum_list]			= { STD_LIST_JUMPTABLE },
-	[std_container_enum_prioritydeque]	= { STD_PRIORITYDEQUE_JUMPTABLE },
-	[std_container_enum_priorityqueue]	= { STD_PRIORITYQUEUE_JUMPTABLE },
-	[std_container_enum_queue]			= { STD_QUEUE_JUMPTABLE },
+//	[std_container_enum_prioritydeque]	= { STD_PRIORITYDEQUE_JUMPTABLE },
+//	[std_container_enum_priorityqueue]	= { STD_PRIORITYQUEUE_JUMPTABLE },
 	[std_container_enum_ring]			= { STD_RING_JUMPTABLE },
 	[std_container_enum_set]			= { STD_SET_JUMPTABLE },
-	[std_container_enum_stack]			= { STD_STACK_JUMPTABLE },
 	[std_container_enum_vector]			= { STD_VECTOR_JUMPTABLE },
 };
 
@@ -183,7 +175,7 @@ STD_INLINE void std_container_call_construct(std_container_t* pstContainer, std_
 }
 
 // Construct a typed container
-#define std_construct_common(V,HAS)							\
+#define STD_CONSTRUCT(V,HAS)							\
 			STD_STATIC_ASSERT(STD_CONTAINER_HAS_GET(V) == HAS, STD_CONCAT(container_declaration_and_instantiation_are_inconsistent_,__COUNTER__));	\
 			std_container_call_construct(					\
 				&V.stBody.stContainer,						\
@@ -194,40 +186,40 @@ STD_INLINE void std_container_call_construct(std_container_t* pstContainer, std_
 				STD_CONTAINER_PAYLOAD_OFFSET_GET(V)		)
 
 #define std_construct(V)	\
-			std_construct_common(V, std_container_has_no_handlers)
+			STD_CONSTRUCT(V, std_container_has_no_handlers)
 
 #define std_construct_itemhandler(V,ITEMHANDLER)	\
 			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
-			std_construct_common(V, std_container_has_itemhandler)
+			STD_CONSTRUCT(V, std_container_has_itemhandler)
 
 #define std_construct_memoryhandler(V,MEMORYHANDLER)	\
 			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
-			std_construct_common(V, std_container_has_memoryhandler)
+			STD_CONSTRUCT(V, std_container_has_memoryhandler)
 
 #define std_construct_memoryhandler_itemhandler(V,MEMORYHANDLER,ITEMHANDLER)	\
 			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
 			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
-			std_construct_common(V, std_container_has_memoryhandler_itemhandler)
+			STD_CONSTRUCT(V, std_container_has_memoryhandler_itemhandler)
 
 #define std_construct_lockhandler(V,LOCKHANDLER)	\
 			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
-			std_construct_common(V, std_container_has_lockhandler)
+			STD_CONSTRUCT(V, std_container_has_lockhandler)
 
 #define std_construct_lockhandler_itemhandler(V,LOCKHANDLER,ITEMHANDLER)	\
 			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
 			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
-			std_construct_common(V, std_container_has_lockhandler_itemhandler)
+			STD_CONSTRUCT(V, std_container_has_lockhandler_itemhandler)
 
 #define std_construct_lockhandler_memoryhandler(V,LOCKHANDLER,MEMORYHANDLER)	\
 			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
 			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
-			std_construct_common(V, std_container_has_lockhandler_memoryhandler)
+			STD_CONSTRUCT(V, std_container_has_lockhandler_memoryhandler)
 
 #define std_construct_lockhandler_memoryhandler_itemhandler(V,LOCKHANDLER,MEMORYHANDLER,ITEMHANDLER)	\
 			V.stBody.stContainer.pstLockHandler = LOCKHANDLER;	\
 			V.stBody.stContainer.pstMemoryHandler = MEMORYHANDLER;	\
 			V.stBody.stContainer.pstItemHandler = ITEMHANDLER;	\
-			std_construct_common(V, std_container_has_lockhandler_memoryhandler_itemhandler)
+			STD_CONSTRUCT(V, std_container_has_lockhandler_memoryhandler_itemhandler)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -432,37 +424,6 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * Push a linear series of items to a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	bReverse		If true, reverse the order of the linear series
- * @param[in]	pvBase			Start of a linear series of items
- * @param[in]	szNumElements	Number of items in the linear series
- *
- * @return Number of items pushed onto the container
- */
-STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
-{
-	std_linear_series_t stSeries;
-	std_linear_series_construct(&stSeries, pvBase, pstContainer->szSizeofItem, szNumElements, false);
-	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push)(pstContainer, &stSeries);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return szNumPushed;
-}
-
-#define std_push(V,...)						\
-			std_container_call_push(		\
-				&V.stBody.stContainer,		\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
  * Pop a number of items from the front of a container into a linear area of memory
  *
  * @param[in]	pstContainer	The container
@@ -519,38 +480,6 @@ STD_INLINE size_t std_container_call_pop_back(std_container_t* pstContainer, std
 		std_container_call_pop_back(		\
 			&V.stBody.stContainer,			\
 			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop_back),	\
-			STD_CONTAINER_HAS_GET(V),		\
-			RESULT,							\
-			MAXITEMS)						\
-	)
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
- * Pop a number of items from a container into a linear area of memory
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[out]	pvBase			Start of the destination memory area (can be NULL)
- * @param[in]	szMaxItems		Maximum number of items allowed in the linear series
- * 
- * @return Number of items actually popped from the container
- */
-STD_INLINE size_t std_container_call_pop(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
-{
-	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
-	size_t szNum = STD_CONTAINER_CALL(eContainer, pfn_pop)(pstContainer, pvResult, szMaxItems);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-	return szNum;
-}
-
-#define std_pop(V,RESULT,MAXITEMS)			\
-	(										\
-		STD_CHECK_TYPE(V, (RESULT)[0], pop_result_parameter), \
-		std_container_call_pop(				\
-			&V.stBody.stContainer,			\
-			STD_CONTAINER_ENUM_GET_AND_CHECK(V,pop),	\
 			STD_CONTAINER_HAS_GET(V),		\
 			RESULT,							\
 			MAXITEMS)						\

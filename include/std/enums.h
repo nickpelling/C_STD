@@ -50,46 +50,50 @@ typedef enum
 	std_container_implements_destruct = 1 << 2,
 	std_container_implements_push_front = 1 << 3,
 	std_container_implements_push_back = 1 << 4,
-	std_container_implements_push = 1 << 5,
-	std_container_implements_pop_front = 1 << 6,
-	std_container_implements_pop_back = 1 << 7,
-	std_container_implements_pop = 1 << 8,
-	std_container_implements_at = 1 << 9,
-	std_container_implements_reserve = 1 << 10,
-	std_container_implements_ranged_sort = 1 << 11,
-	std_container_implements_forward_construct = 1 << 12,
-	std_container_implements_forward_next = 1 << 13,
-	std_container_implements_forward_prev = 1 << 14,
-	std_container_implements_forward_range = 1 << 15,
-	std_container_implements_forward_insert_after = 1 << 16,
-	std_container_implements_forward_insert_before = 1 << 17,
-	std_container_implements_reverse_construct = 1 << 18,
-	std_container_implements_reverse_next = 1 << 19,
-	std_container_implements_reverse_prev = 1 << 20,
-	std_container_implements_reverse_range = 1 << 21,
-	std_container_implements_reverse_insert_after = 1 << 22,
-	std_container_implements_reverse_insert_before = 1 << 23,
-	std_container_implements_erase = 1 << 24,
-	std_container_implements_default_itemhandler = 1 << 25,
+	std_container_implements_pop_front = 1 << 5,
+	std_container_implements_pop_back = 1 << 6,
+	std_container_implements_at = 1 << 7,
+	std_container_implements_reserve = 1 << 8,
+	std_container_implements_ranged_sort = 1 << 9,
+	std_container_implements_forward_construct = 1 << 10,
+	std_container_implements_forward_next = 1 << 11,
+	std_container_implements_forward_prev = 1 << 12,
+	std_container_implements_forward_range = 1 << 13,
+	std_container_implements_forward_insert_after = 1 << 14,
+	std_container_implements_forward_insert_before = 1 << 15,
+	std_container_implements_reverse_construct = 1 << 16,
+	std_container_implements_reverse_next = 1 << 17,
+	std_container_implements_reverse_prev = 1 << 18,
+	std_container_implements_reverse_range = 1 << 19,
+	std_container_implements_reverse_insert_after = 1 << 20,
+	std_container_implements_reverse_insert_before = 1 << 21,
+	std_container_implements_erase = 1 << 22,
+	std_container_implements_default_itemhandler = 1 << 23,
+	std_container_implements_push_pop = 1 << 24,
+	std_container_implements_enqueue_dequeue = 1 << 25,
 
 	std_container_implements_pushpop_front = std_container_implements_push_front | std_container_implements_pop_front,
 	std_container_implements_pushpop_back = std_container_implements_push_back | std_container_implements_pop_back,
-	std_container_implements_pushpop = std_container_implements_push | std_container_implements_pop,
 	std_container_implements_forward_constructnextprev = std_container_implements_forward_construct | std_container_implements_forward_next | std_container_implements_forward_prev,
 	std_container_implements_reverse_constructnextprev = std_container_implements_reverse_construct | std_container_implements_reverse_next | std_container_implements_reverse_prev,
 
 } std_container_implements_t;
 
 // -----------------------------------------------------------------
+// https://en.wikipedia.org/wiki/Heap_(data_structure)#Comparison_of_theoretic_bounds_for_variants
+// https://www.cs.au.dk/~gerth/papers/soda96.pdf
 
 #define STD_CONTAINER_XMACRO(X)				\
 	X(std_container_enum_deque)				\
+	X(std_container_enum_forward_list)		\
 	X(std_container_enum_list)				\
 	X(std_container_enum_ring)				\
-	X(std_container_enum_queue)				\
-	X(std_container_enum_stack)				\
 	X(std_container_enum_vector)			\
-	X(std_container_enum_bitarray)			\
+											\
+	X(std_container_enum_heap)				\
+	X(std_container_enum_splay_tree)		\
+	X(std_container_enum_skew_heap)			\
+	X(std_container_enum_calendar_queue)	\
 											\
 	X(std_container_enum_set)				\
 	X(std_container_enum_unorderedset)		\
@@ -99,8 +103,6 @@ typedef enum
 											\
 	X(std_container_enum_prioritydeque)		\
 	X(std_container_enum_priorityqueue)		\
-	X(std_container_enum_pool)				\
-	X(std_container_enum_heap)				\
 	X(std_container_enum_graph)
 
 typedef enum

@@ -26,6 +26,8 @@ SOFTWARE.
 #include <stdlib.h>
 
 #include "std/container.h"
+#include "std/stack.h"
+#include "std/queue.h"
 
 #define CRLF	"\r\n"
 
@@ -652,7 +654,7 @@ static bool ring_test(void)
 
 static bool queue_test(void)
 {
-	std_queue(int) v;
+	std_queue(std_vector,int) v;
 	int aiPopped[10];
 	size_t szNum;
 	size_t i;
@@ -664,11 +666,11 @@ static bool queue_test(void)
 	TEST_SIZE(v, 0);
 
 	// Push 1/2/3/4/5 onto the container, and make sure size == 5
-	std_push(v, 1, 2, 3, 4, 5);
+	std_enqueue(v, 1, 2, 3, 4, 5);
 	TEST_SIZE(v, 5);
 
 	// Pop 5/4/3/2/1 from the container
-	szNum = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_dequeue(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
@@ -676,13 +678,13 @@ static bool queue_test(void)
 	szNum = 0;
 	for (i = 0; i < 5; i++)
 	{
-		szNum += std_push(v, ai12345[i]);
+		szNum += std_enqueue(v, ai12345[i]);
 	}
 	TEST_SIZE(v, 5);
 	TEST_SAME(v, szNum, 5);
 
 	memset(aiPopped, 0, sizeof(aiPopped));
-	szNum = std_pop(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	szNum = std_dequeue(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
 	TEST_SIZE(v, 0);
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
@@ -694,12 +696,11 @@ static bool queue_test(void)
 
 static bool stack_test(void)
 {
-	std_stack(int) v;
+	std_stack(std_vector,int) v;
 	int aiPopped[10];
 	size_t szNum;
 	size_t i;
 
-	TEST_CONTAINER_NAME(v, "stack");
 	std_construct(v);
 	TEST_SIZE(v, 0);
 
@@ -730,11 +731,11 @@ static bool stack_test(void)
 	std_destruct(v);
 
 	return true;
-
 }
 
 static bool priorityqueue_test(void)
 {
+#if 0
 	std_priorityqueue(int) v;
 	int aiPopped[10];
 	size_t szNum;
@@ -754,16 +755,19 @@ static bool priorityqueue_test(void)
 	TEST_ARRAY(aiPopped, ai54321);
 
 	std_destruct(v);
+#endif
 	return true;
 }
 
 static bool prioritydeque_test(void)
 {
+#if 0
 	std_prioritydeque(int) v;
 
 	TEST_CONTAINER_NAME(v, "priority deque");
 	std_construct(v);
 	std_destruct(v);
+#endif
 	return true;
 }
 

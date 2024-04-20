@@ -25,18 +25,69 @@ SOFTWARE.
 #ifndef STD_QUEUE_H_
 #define STD_QUEUE_H_
 
-#include "std/deque.h"
+ /**
+  * Enqueue a linear series of items onto a queue container
+  *
+  * @param[in]	pstContainer	The container
+  * @param[in]	eContainer		The container type index
+  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+  * @param[in]	bReverse		If true, reverse the order of the linear series
+  * @param[in]	pvBase			Start of a linear series of items
+  * @param[in]	szNumElements	Number of items in the linear series
+  *
+  * @return Number of items pushed onto the container
+  */
+STD_INLINE size_t std_container_call_enqueue(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, const void* pvBase, size_t szNumElements)
+{
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstContainer->szSizeofItem, szNumElements, false);
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
+	size_t szNumPushed = STD_CONTAINER_CALL(eContainer, pfn_push_back)(pstContainer, &stSeries);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNumPushed;
+}
 
-#define STD_QUEUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_queue, HAS_ENUM, std_queue_implements, STD_FAKEVAR())
+#define std_enqueue(V,...)						\
+			std_container_call_enqueue(		\
+				&V.stBody.stContainer,		\
+				STD_CONTAINER_ENUM_GET_AND_CHECK(V,enqueue_dequeue),	\
+				STD_CONTAINER_HAS_GET(V),	\
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
-#define std_queue(T)											STD_QUEUE_DECLARE(T,std_container_has_no_handlers)
-#define std_queue_itemhandler(T)								STD_QUEUE_DECLARE(T,std_container_has_itemhandler)
-#define std_queue_memoryhandler(T)								STD_QUEUE_DECLARE(T,std_container_has_memoryhandler)
-#define std_queue_memoryhandler_itemhandler(T)					STD_QUEUE_DECLARE(T,std_container_has_memoryhandler_itemhandler)
-#define std_queue_lockhandler(T)								STD_QUEUE_DECLARE(T,std_container_has_lockhandler)
-#define std_queue_lockhandler_itemhandler(T)					STD_QUEUE_DECLARE(T,std_container_has_lockhandler_itemhandler)
-#define std_queue_lockhandler_memoryhandler(T)					STD_QUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler)
-#define std_queue_lockhandler_memoryhandler_itemhandler(T)		STD_QUEUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**
+ * Dequeue a number of items from a queue container into a linear area of memory
+ *
+ * @param[in]	pstContainer	The container
+ * @param[in]	eContainer		The container type index
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[out]	pvBase			Start of the destination memory area (can be NULL)
+ * @param[in]	szMaxItems		Maximum number of items allowed in the linear series
+ *
+ * @return Number of items actually popped from the container
+ */
+STD_INLINE size_t std_container_call_dequeue(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvResult, size_t szMaxItems)
+{
+	std_lock_state_t eOldState = std_container_lock_for_writing(pstContainer, eHas);
+	size_t szNum = STD_CONTAINER_CALL(eContainer, pfn_pop_front)(pstContainer, pvResult, szMaxItems);
+	std_container_lock_restore(pstContainer, eHas, eOldState);
+	return szNum;
+}
+
+#define std_dequeue(V,RESULT,MAXITEMS)		\
+	(										\
+		STD_CHECK_TYPE(V, (RESULT)[0], pop_result_parameter), \
+		std_container_call_dequeue(			\
+			&V.stBody.stContainer,			\
+			STD_CONTAINER_ENUM_GET_AND_CHECK(V,enqueue_dequeue),	\
+			STD_CONTAINER_HAS_GET(V),		\
+			RESULT,							\
+			MAXITEMS)						\
+	)
+
+#define std_queue(CONTAINER,TYPE)	CONTAINER(TYPE,std_queue_implements)
+
 
 enum
 {
@@ -44,8 +95,7 @@ enum
 		( std_container_implements_name
 		| std_container_implements_construct
 		| std_container_implements_destruct
-		| std_container_implements_push
-		| std_container_implements_pop
+		| std_container_implements_enqueue_dequeue
 		| std_container_implements_at
 		| std_container_implements_default_itemhandler)
 };
