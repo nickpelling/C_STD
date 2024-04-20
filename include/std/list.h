@@ -92,16 +92,17 @@ typedef	struct
 	std_list_node_t * pstEnd;
 } std_list_iterator_t;
 
-#define STD_LIST_DECLARE(T,HAS_ENUM)	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, std_list_implements, STD_FAKEVAR(), STD_FAKEVAR())
+#define STD_LIST_DECLARE(T,HAS_ENUM,...)	\
+	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, STD_DEFAULT_PARAMETER(std_list_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR())
 
-#define std_list(T)											STD_LIST_DECLARE(T,std_container_has_no_handlers)
-#define std_list_itemhandler(T)								STD_LIST_DECLARE(T,std_container_has_itemhandler)
-#define std_list_memoryhandler(T)							STD_LIST_DECLARE(T,std_container_has_memoryhandler)
-#define std_list_memoryhandler_itemhandler(T)				STD_LIST_DECLARE(T,std_container_has_memoryhandler_itemhandler)
-#define std_list_lockhandler(T)								STD_LIST_DECLARE(T,std_container_has_lockhandler)
-#define std_list_lockhandler_itemhandler(T)					STD_LIST_DECLARE(T,std_container_has_lockhandler_itemhandler)
-#define std_list_lockhandler_memoryhandler(T)				STD_LIST_DECLARE(T,std_container_has_lockhandler_memoryhandler)
-#define std_list_lockhandler_memoryhandler_itemhandler(T)	STD_LIST_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
+#define std_list(T,...)											STD_LIST_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
+#define std_list_itemhandler(T,...)								STD_LIST_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)
+#define std_list_memoryhandler(T,...)							STD_LIST_DECLARE(T,std_container_has_memoryhandler,__VA_ARGS__)
+#define std_list_memoryhandler_itemhandler(T,...)				STD_LIST_DECLARE(T,std_container_has_memoryhandler_itemhandler,__VA_ARGS__)
+#define std_list_lockhandler(T,...)								STD_LIST_DECLARE(T,std_container_has_lockhandler,__VA_ARGS__)
+#define std_list_lockhandler_itemhandler(T,...)					STD_LIST_DECLARE(T,std_container_has_lockhandler_itemhandler,__VA_ARGS__)
+#define std_list_lockhandler_memoryhandler(T,...)				STD_LIST_DECLARE(T,std_container_has_lockhandler_memoryhandler,__VA_ARGS__)
+#define std_list_lockhandler_memoryhandler_itemhandler(T,...)	STD_LIST_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler,__VA_ARGS__)
 
 extern void stdlib_list_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_list_destruct(std_container_t* pstContainer);

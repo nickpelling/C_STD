@@ -41,16 +41,17 @@ typedef	struct
 	void * pvRingEnd;
 } std_ring_iterator_t;
 
-#define STD_RING_DECLARE(T,HAS_ENUM)	STD_VECTOR(std_ring_t, std_ring_iterator_t, T, std_container_enum_ring, HAS_ENUM, std_ring_implements, STD_FAKEVAR())
+#define STD_RING_DECLARE(T,HAS_ENUM,...)	\
+	STD_VECTOR(std_ring_t, std_ring_iterator_t, T, std_container_enum_ring, HAS_ENUM, STD_DEFAULT_PARAMETER(std_ring_implements,__VA_ARGS__), STD_FAKEVAR())
 
-#define std_ring(T)											STD_RING_DECLARE(T,std_container_has_no_handlers)
-#define std_ring_itemhandler(T)								STD_RING_DECLARE(T,std_container_has_itemhandler)
-#define std_ring_memoryhandler(T)							STD_RING_DECLARE(T,std_container_has_memoryhandler)
-#define std_ring_memoryhandler_itemhandler(T)				STD_RING_DECLARE(T,std_container_has_memoryhandler_itemhandler)
-#define std_ring_lockhandler(T)								STD_RING_DECLARE(T,std_container_has_lockhandler)
-#define std_ring_lockhandler_itemhandler(T)					STD_RING_DECLARE(T,std_container_has_lockhandler_itemhandler)
-#define std_ring_lockhandler_memoryhandler(T)				STD_RING_DECLARE(T,std_container_has_lockhandler_memoryhandler)
-#define std_ring_lockhandler_memoryhandler_itemhandler(T)	STD_RING_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
+#define std_ring(T,...)											STD_RING_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
+#define std_ring_itemhandler(T,...)								STD_RING_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)
+#define std_ring_memoryhandler(T,...)							STD_RING_DECLARE(T,std_container_has_memoryhandler,__VA_ARGS__)
+#define std_ring_memoryhandler_itemhandler(T,...)				STD_RING_DECLARE(T,std_container_has_memoryhandler_itemhandler,__VA_ARGS__)
+#define std_ring_lockhandler(T,...)								STD_RING_DECLARE(T,std_container_has_lockhandler,__VA_ARGS__)
+#define std_ring_lockhandler_itemhandler(T,...)					STD_RING_DECLARE(T,std_container_has_lockhandler_itemhandler,__VA_ARGS__)
+#define std_ring_lockhandler_memoryhandler(T,...)				STD_RING_DECLARE(T,std_container_has_lockhandler_memoryhandler,__VA_ARGS__)
+#define std_ring_lockhandler_memoryhandler_itemhandler(T,...)	STD_RING_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler,__VA_ARGS__)
 
 extern void stdlib_ring_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_ring_destruct(std_container_t* pstContainer);

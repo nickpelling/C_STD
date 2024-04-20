@@ -82,16 +82,17 @@ typedef struct
     size_t szRangeLen;
 } std_deque_iterator_t;
 
-#define STD_DEQUE_DECLARE(T,HAS_ENUM)	STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, std_deque_implements, STD_FAKEVAR())
+#define STD_DEQUE_DECLARE(T,HAS_ENUM,...)	\
+			STD_DEQUE(std_deque_t, std_deque_iterator_t, T, std_container_enum_deque, HAS_ENUM, STD_DEFAULT_PARAMETER(std_deque_implements,__VA_ARGS__), STD_FAKEVAR())
 
-#define std_deque(T)											STD_DEQUE_DECLARE(T,std_container_has_no_handlers)
-#define std_deque_itemhandler(T)								STD_DEQUE_DECLARE(T,std_container_has_itemhandler)
-#define std_deque_memoryhandler(T)								STD_DEQUE_DECLARE(T,std_container_has_memoryhandler)
-#define std_deque_memoryhandler_itemhandler(T)					STD_DEQUE_DECLARE(T,std_container_has_memoryhandler_itemhandler)
-#define std_deque_lockhandler(T)								STD_DEQUE_DECLARE(T,std_container_has_lockhandler)
-#define std_deque_lockhandler_itemhandler(T)					STD_DEQUE_DECLARE(T,std_container_has_lockhandler_itemhandler)
-#define std_deque_lockhandler_memoryhandler(T)					STD_DEQUE_DECLARE(T,std_container_has_lockhandler_memoryhandler)
-#define std_deque_lockhandler_memoryhandler_itemhandler(T)		STD_DEQUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler)
+#define std_deque(T,...)											STD_DEQUE_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
+#define std_deque_itemhandler(T,...)								STD_DEQUE_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)
+#define std_deque_memoryhandler(T,...)								STD_DEQUE_DECLARE(T,std_container_has_memoryhandler,__VA_ARGS__)
+#define std_deque_memoryhandler_itemhandler(T,...)					STD_DEQUE_DECLARE(T,std_container_has_memoryhandler_itemhandler,__VA_ARGS__)
+#define std_deque_lockhandler(T,...)								STD_DEQUE_DECLARE(T,std_container_has_lockhandler,__VA_ARGS__)
+#define std_deque_lockhandler_itemhandler(T,...)					STD_DEQUE_DECLARE(T,std_container_has_lockhandler_itemhandler,__VA_ARGS__)
+#define std_deque_lockhandler_memoryhandler(T,...)					STD_DEQUE_DECLARE(T,std_container_has_lockhandler_memoryhandler,__VA_ARGS__)
+#define std_deque_lockhandler_memoryhandler_itemhandler(T,...)		STD_DEQUE_DECLARE(T,std_container_has_lockhandler_memoryhandler_itemhandler,__VA_ARGS__)
 
 extern void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize);
 
