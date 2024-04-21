@@ -57,7 +57,7 @@ SOFTWARE.
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
-		STD_CONTAINER_PAYLOAD_OFFSET_SET(sizeof(std_list_node_t));	\
+		STD_CONTAINER_PAYLOAD_OFFSET_SET(STD_OFFSETOF(struct NODENAME, stPayload));	\
 		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_LIST_NODE(STD_TYPE_GET(TYPEWRAPPER),STD_FAKEVAR())));	\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS); \
 	}
@@ -95,7 +95,7 @@ typedef	struct
 } std_list_iterator_t;
 
 #define STD_LIST_DECLARE(T,HAS_ENUM,...)	\
-	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, STD_DEFAULT_PARAMETER(std_list_implements,__VA_ARGS__), STD_FAKEUNION(), STD_FAKEVAR(), STD_FAKESTRUCT())
+	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, STD_DEFAULT_PARAMETER(std_list_implements,__VA_ARGS__), STD_FAKEUNION(), STD_FAKESTRUCT(), STD_FAKESTRUCT())
 
 #define std_list(T,...)											STD_LIST_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
 #define std_list_itemhandler(T,...)								STD_LIST_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)
