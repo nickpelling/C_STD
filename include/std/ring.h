@@ -25,12 +25,34 @@ SOFTWARE.
 #ifndef STD_RING_H_
 #define STD_RING_H_
 
-#include "std/vector.h"
+#include "std/common.h"
+#include "std/item.h"
+#include "std/linear_series.h"
+#include "std/iterator.h"
+
+#define STD_RING(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, UNIONNAME, TYPEWRAPPER)	\
+	union UNIONNAME										\
+	{													\
+		STD_TYPE_SET(TYPEWRAPPER,TYPE) * pstWrapper;	\
+		\
+		BASE 	   			 stBody;					\
+		STD_TYPE_GET(TYPEWRAPPER)	*	pstType;		\
+		STD_COMPARE(const STD_TYPE_GET(TYPEWRAPPER), pfnCompare);	\
+		\
+		STD_ITERATORS(ITBASE, STD_TYPE_GET(TYPEWRAPPER), UNIONNAME);	\
+		\
+		STD_CONTAINER_ENUM_SET(ENUM);					\
+		STD_CONTAINER_HAS_SET(HAS_ENUM);				\
+		STD_CONTAINER_PAYLOAD_OFFSET_SET(0);			\
+		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_TYPE_GET(TYPEWRAPPER)));		\
+		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS);		\
+	}
 
 typedef struct
 {
 	std_container_t stContainer;
-	STD_VECTOR_FIELDS;
+	size_t szNumAlloced;
+	void* pvStartAddr;
 	size_t szStartOffset;		// Offset of start of ring data within vector
 } std_ring_t;
 
@@ -42,7 +64,7 @@ typedef	struct
 } std_ring_iterator_t;
 
 #define STD_RING_DECLARE(T,HAS_ENUM,...)	\
-	STD_VECTOR(std_ring_t, std_ring_iterator_t, T, std_container_enum_ring, HAS_ENUM, STD_DEFAULT_PARAMETER(std_ring_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR())
+	STD_RING(std_ring_t, std_ring_iterator_t, T, std_container_enum_ring, HAS_ENUM, STD_DEFAULT_PARAMETER(std_ring_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR())
 
 #define std_ring(T,...)											STD_RING_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
 #define std_ring_itemhandler(T,...)								STD_RING_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)

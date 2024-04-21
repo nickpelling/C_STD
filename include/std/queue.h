@@ -25,6 +25,8 @@ SOFTWARE.
 #ifndef STD_QUEUE_H_
 #define STD_QUEUE_H_
 
+#include "std/container.h"
+
  /**
   * Enqueue a linear series of items onto a queue container
   *
@@ -88,7 +90,6 @@ STD_INLINE size_t std_container_call_dequeue(std_container_t* pstContainer, std_
 
 #define std_queue(CONTAINER,TYPE)	CONTAINER(TYPE,std_queue_implements)
 
-
 enum
 {
 	std_queue_implements =
@@ -96,17 +97,7 @@ enum
 		| std_container_implements_construct
 		| std_container_implements_destruct
 		| std_container_implements_enqueue_dequeue
-		| std_container_implements_at
 		| std_container_implements_default_itemhandler)
 };
-
-#define STD_QUEUE_JUMPTABLE \
-	.pachContainerName = "queue",					\
-	.pfn_construct		= &stdlib_deque_construct,	\
-	.pfn_destruct		= &stdlib_deque_destruct,	\
-	.pfn_push			= &stdlib_deque_push_front,	\
-	.pfn_pop			= &stdlib_deque_pop_back,	\
-	.pfn_at				= &stdlib_deque_at,			\
-	.pstDefaultItemHandler = &std_deque_default_itemhandler,
 
 #endif /* STD_QUEUE_H_ */

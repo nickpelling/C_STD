@@ -43,10 +43,11 @@ SOFTWARE.
 //	- a typed comparison function (for sorting)
 //	- an iterator smuggle, used to give easy access to an associated iterator
 #define STD_LIST(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, UNIONNAME, NODENAME, TYPEWRAPPER)		\
-	union UNIONNAME								\
-	{											\
-		BASE 	   			 stBody;			\
+	union UNIONNAME										\
+	{													\
 		STD_TYPE_SET(TYPEWRAPPER,TYPE) * pstWrapper;	\
+		\
+		BASE 	   			 stBody;					\
 		STD_TYPE_GET(TYPEWRAPPER)	*	pstType;		\
 		STD_COMPARE(STD_TYPE_GET(TYPEWRAPPER) const, pfnCompare);	\
 		\

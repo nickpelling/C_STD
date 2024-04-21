@@ -95,7 +95,6 @@ enum
 		| std_container_implements_construct
 		| std_container_implements_destruct
 		| std_container_implements_push_pop
-		| std_container_implements_at
 		| std_container_implements_default_itemhandler)
 };
 

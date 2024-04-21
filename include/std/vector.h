@@ -36,18 +36,19 @@ SOFTWARE.
 //	- a typed comparison function type (e.g. for sorting)
 //	- an iterator smuggle, used to give easy access to associated iterators
 #define STD_VECTOR(BASE, ITBASE, TYPE, ENUM, HAS_ENUM, IMPLEMENTS, UNIONNAME, TYPEWRAPPER)	\
-	union UNIONNAME								\
-	{											\
-		BASE 	   			 stBody;			\
+	union UNIONNAME										\
+	{													\
 		STD_TYPE_SET(TYPEWRAPPER,TYPE) * pstWrapper;	\
+		\
+		BASE 	   			 stBody;					\
 		STD_TYPE_GET(TYPEWRAPPER)	*	pstType;		\
 		STD_COMPARE(const STD_TYPE_GET(TYPEWRAPPER), pfnCompare);	\
 		\
 		STD_ITERATORS(ITBASE, STD_TYPE_GET(TYPEWRAPPER), UNIONNAME);	\
 		\
-		STD_CONTAINER_ENUM_SET(ENUM);			\
-		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
-		STD_CONTAINER_PAYLOAD_OFFSET_SET(0);	\
+		STD_CONTAINER_ENUM_SET(ENUM);					\
+		STD_CONTAINER_HAS_SET(HAS_ENUM);				\
+		STD_CONTAINER_PAYLOAD_OFFSET_SET(0);			\
 		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_TYPE_GET(TYPEWRAPPER)));		\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS);		\
 	}
@@ -59,7 +60,8 @@ SOFTWARE.
 typedef struct
 {
 	std_container_t stContainer;
-	STD_VECTOR_FIELDS;
+	size_t szNumAlloced;
+	void* pvStartAddr;
 } std_vector_t;
 
 typedef	struct
