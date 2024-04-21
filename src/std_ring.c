@@ -1,5 +1,5 @@
 /*
- * src/ring.c
+ * src/std_ring.c
 
 Copyright (c) 2024 Nick Pelling
 

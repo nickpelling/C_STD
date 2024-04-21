@@ -1,5 +1,5 @@
 /*
- * std_deque.c
+ * src/std_deque.c
 
 Copyright (c) 2024 Nick Pelling
 
