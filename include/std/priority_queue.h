@@ -36,7 +36,7 @@ typedef struct
 } std_priorityqueue_t;
 
 #define STD_PRIORITYQUEUE_DECLARE(T,HAS_ENUM)	\
-		STD_VECTOR(std_priorityqueue_t, std_vector_iterator_t, T, std_container_enum_priorityqueue, HAS_ENUM, std_priorityqueue_implements, STD_FAKEVAR())
+		STD_VECTOR(std_priorityqueue_t, std_vector_iterator_t, T, std_container_enum_priorityqueue, HAS_ENUM, std_priorityqueue_implements, STD_FAKEUNION(), STD_FAKESTRUCT())
 
 #define std_priorityqueue(T)											STD_PRIORITYQUEUE_DECLARE(T,std_container_has_no_handlers)
 #define std_priorityqueue_itemhandler(T)								STD_PRIORITYQUEUE_DECLARE(T,std_container_has_itemhandler)

@@ -55,7 +55,15 @@ SOFTWARE.
 #endif
 
 #ifndef STD_FAKEVAR
-#define STD_FAKEVAR()		STD_CONCAT(_fakevar_, __COUNTER__)
+#define STD_FAKEVAR()		STD_CONCAT(_var_, __COUNTER__)
+#endif
+
+#ifndef STD_FAKESTRUCT
+#define STD_FAKESTRUCT()	STD_CONCAT(_struct_, __COUNTER__)
+#endif
+
+#ifndef STD_FAKEUNION
+#define STD_FAKEUNION() 	STD_CONCAT(_union_, __COUNTER__)
 #endif
 
 #ifndef STD_OFFSETOF

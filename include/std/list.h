@@ -95,7 +95,7 @@ typedef	struct
 } std_list_iterator_t;
 
 #define STD_LIST_DECLARE(T,HAS_ENUM,...)	\
-	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, STD_DEFAULT_PARAMETER(std_list_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR(), STD_FAKEVAR())
+	STD_LIST(std_list_t, std_list_iterator_t, T, std_container_enum_list, HAS_ENUM, STD_DEFAULT_PARAMETER(std_list_implements,__VA_ARGS__), STD_FAKEUNION(), STD_FAKEVAR(), STD_FAKESTRUCT())
 
 #define std_list(T,...)											STD_LIST_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
 #define std_list_itemhandler(T,...)								STD_LIST_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)

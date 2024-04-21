@@ -72,7 +72,7 @@ typedef	struct
 // Client-side declaration code
 
 #define STD_VECTOR_DECLARE(T,HAS_ENUM,...)	\
-	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, STD_DEFAULT_PARAMETER(std_vector_implements,__VA_ARGS__), STD_FAKEVAR(), STD_FAKEVAR())
+	STD_VECTOR(std_vector_t, std_vector_iterator_t, T, std_container_enum_vector, HAS_ENUM, STD_DEFAULT_PARAMETER(std_vector_implements,__VA_ARGS__), STD_FAKEUNION(), STD_FAKESTRUCT())
 
 #define std_vector(T,...)											STD_VECTOR_DECLARE(T,std_container_has_no_handlers,__VA_ARGS__)
 #define std_vector_itemhandler(T,...)								STD_VECTOR_DECLARE(T,std_container_has_itemhandler,__VA_ARGS__)
