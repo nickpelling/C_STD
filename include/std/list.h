@@ -46,25 +46,20 @@ SOFTWARE.
 	union UNIONNAME										\
 	{													\
 		STD_TYPE_SET(TYPEWRAPPER,TYPE) * pstWrapper;	\
+		STD_LIST_NODE(STD_TYPE_GET(TYPEWRAPPER),NODENAME) * pstLink;	\
 		\
 		BASE 	   			 stBody;					\
 		STD_TYPE_GET(TYPEWRAPPER)	*	pstType;		\
 		STD_COMPARE(STD_TYPE_GET(TYPEWRAPPER) const, pfnCompare);	\
-		\
-		STD_LIST_NODE(STD_TYPE_GET(TYPEWRAPPER),NODENAME) * pstLink;	\
 		\
 		STD_ITERATORS(ITBASE, STD_TYPE_GET(TYPEWRAPPER), UNIONNAME);	\
 		\
 		STD_CONTAINER_ENUM_SET(ENUM);			\
 		STD_CONTAINER_HAS_SET(HAS_ENUM);		\
 		STD_CONTAINER_PAYLOAD_OFFSET_SET(STD_OFFSETOF(struct NODENAME, stPayload));	\
-		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(STD_LIST_NODE(STD_TYPE_GET(TYPEWRAPPER),STD_FAKEVAR())));	\
+		STD_CONTAINER_WRAPPEDITEM_SIZEOF_SET(sizeof(struct NODENAME));	\
 		STD_CONTAINER_IMPLEMENTS_SET(IMPLEMENTS); \
 	}
-// Note: the payload offset should be set to STD_OFFSETOF(struct NODENAME, stPayload),
-// but gcc complains like crazy if you do that, and I don't see how to fix this.
-// Using sizeof(std_list_node_t) for this should be OK unless you start using item
-// types with exotic alignments.
 
 typedef struct stListLink_s std_list_node_t;
 
