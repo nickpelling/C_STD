@@ -503,8 +503,6 @@ static bool list_default_destruct(const std_item_handler_t* pstItemHandler, void
 	return stdlib_list_destruct((std_container_t*)pvData);
 }
 
-// typedef std_list(int) list_int_t;
-
 const std_item_handler_t std_list_default_itemhandler =
 {
 	.szElementSize = sizeof(std_list_t),

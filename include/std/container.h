@@ -30,6 +30,7 @@ SOFTWARE.
 #include "std/linear_series.h"
 
 #include "std/vector.h"
+#include "std/forward_list.h"
 #include "std/list.h"
 #include "std/deque.h"
 #include "std/ring.h"
@@ -97,6 +98,7 @@ typedef struct
 STD_STATIC const std_container_jumptable_t std_container_jumptable_array[std_container_enum_MAX] =
 {
 	[std_container_enum_deque]			= { STD_DEQUE_JUMPTABLE },
+	[std_container_enum_forward_list]	= { STD_FORWARD_LIST_JUMPTABLE },
 	[std_container_enum_list]			= { STD_LIST_JUMPTABLE },
 //	[std_container_enum_prioritydeque]	= { STD_PRIORITYDEQUE_JUMPTABLE },
 //	[std_container_enum_priorityqueue]	= { STD_PRIORITYQUEUE_JUMPTABLE },
