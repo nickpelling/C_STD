@@ -45,6 +45,7 @@ target_link_libraries( TestApp C_STD )
 # Enable tests and add test invocations
 enable_testing()
 add_test(NAME vector_test			COMMAND $<TARGET_FILE:TestApp> vector)
+add_test(NAME forward_list_test		COMMAND $<TARGET_FILE:TestApp> forwardlist)
 add_test(NAME list_test				COMMAND $<TARGET_FILE:TestApp> list)
 add_test(NAME deque_test			COMMAND $<TARGET_FILE:TestApp> deque)
 add_test(NAME ring_test				COMMAND $<TARGET_FILE:TestApp> ring)

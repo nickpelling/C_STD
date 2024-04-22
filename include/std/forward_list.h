@@ -68,8 +68,8 @@ typedef struct
 	std_container_t stContainer;
 	size_t szLinkSize;
 	size_t szPayloadOffset;
-	std_forward_list_node_t* pstHead;
-	std_forward_list_node_t* pstLast;
+	std_forward_list_node_t* pstHead;	// Very first node in this forward list
+	std_forward_list_node_t* pstLast;	// Final node in this forward list
 } std_forward_list_t;
 
 typedef	struct
@@ -101,7 +101,6 @@ extern bool stdlib_forward_list_destruct(std_container_t* pstContainer);
 extern size_t stdlib_forward_list_push_front(std_container_t* pstContainer, std_linear_series_t* pstSeries);
 extern size_t stdlib_forward_list_push_back(std_container_t* pstContainer, std_linear_series_t* pstSeries);
 extern size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResult, size_t szMaxItems);
-extern size_t stdlib_forward_list_pop_back(std_container_t* pstContainer, void* pvResult, size_t szMaxItems);
 
 extern void stdlib_forward_list_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
 extern void stdlib_forward_list_next(std_iterator_t* pstIterator);
@@ -128,7 +127,7 @@ enum
 };
 
 #define STD_FORWARD_LIST_JUMPTABLE \
-	.pachContainerName = "forward_list",			\
+	.pachContainerName = "forward list",			\
 	.pfn_construct		= &stdlib_forward_list_construct,	\
 	.pfn_destruct		= &stdlib_forward_list_destruct,	\
 	.pfn_push_front		= &stdlib_forward_list_push_front,	\

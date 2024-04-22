@@ -23,7 +23,6 @@ SOFTWARE.
  */
 
 #include "std/list.h"
-#include "std/config.h"
 
 // Cast a generic container to a list, and a list to a generic container
 #define CONTAINER_TO_LIST(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_list_t, stContainer)

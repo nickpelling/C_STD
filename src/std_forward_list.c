@@ -23,7 +23,6 @@ SOFTWARE.
  */
 
 #include "std/forward_list.h"
-#include "std/config.h"
 
  // Cast a generic container to a forward list, and a forward list to a generic container
 #define CONTAINER_TO_FORWARD_LIST(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_forward_list_t, stContainer)
@@ -130,6 +129,7 @@ void stdlib_forward_list_construct(std_container_t* pstContainer, size_t szSizeo
 	pstList->szLinkSize = szWrappedSizeof;
 	pstList->szPayloadOffset = szPayloadOffset;
 	pstList->pstHead = NULL;
+	pstList->pstLast = NULL;
 }
 
 /**
@@ -173,7 +173,9 @@ size_t stdlib_forward_list_push_front(std_container_t* pstContainer, std_linear_
 		{
 			break;
 		}
-		node_insert_before(pstList, pstList->pstHead, pstNode);
+		pstNode->pstNext = pstList->pstHead;
+		pstList->pstHead = pstNode;
+		pstList->stContainer.szNumItems++;
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1U);
@@ -202,7 +204,19 @@ size_t stdlib_forward_list_push_back(std_container_t* pstContainer, std_linear_s
 		{
 			break;
 		}
-		node_insert_after(pstList, pstList->pstLast, pstNode);
+		// If the forward list is empty
+		if (pstList->pstHead == NULL)
+		{
+			// Set the forward list head to this node
+			pstList->pstHead = pstNode;
+		}
+		else
+		{
+			// Link the final node in the list forward to this node
+			pstList->pstLast->pstNext = pstNode;
+		}
+		pstList->pstLast = pstNode;
+		pstList->stContainer.szNumItems++;
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
@@ -235,7 +249,11 @@ size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResu
 	for (i = 0; i < szMaxItems; i++)
 	{
 		pstNode = pstList->pstHead;
-		node_disconnect(pstList, pstNode, NULL /* FIXME */);
+		pstList->pstHead = pstNode->pstNext;
+		if (pstList->pstHead == NULL)
+		{
+			pstList->pstLast = NULL;
+		}
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
 		std_memoryhandler_free(pstContainer->pstMemoryHandler, pstContainer->eHas, pstNode);

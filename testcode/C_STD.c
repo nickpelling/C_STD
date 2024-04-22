@@ -365,6 +365,43 @@ static bool list_test(void)
 	return true;
 }
 
+static bool forward_list_test(void)
+{
+	std_forward_list(int) v;
+	int aiPopped[10];
+	size_t szNum;
+
+	TEST_CONTAINER_NAME(v, "forward list");
+
+	// Construct a container, test the container name & that it starts empty
+	std_construct(v);
+	TEST_SIZE(v, 0);
+
+	// Push 1/2/3/4/5 onto the back of the container, and make sure size == 5
+	std_push_back(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
+
+	// Pop 5/4/3/2/1 from the back of the container
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	// Push 1/2/3/4/5 onto the front of the container, and make sure size == 5
+	std_push_front(v, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 5);
+
+	// Pop 5/4/3/2/1 from the back of the container
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai54321);
+
+	std_destruct(v);
+
+	return true;
+}
+
 static bool deque_test(void)
 {
 	std_deque(int) v;
@@ -834,6 +871,7 @@ int main(int argc, char * argv[])
 	if (bRunAll || strcmp(pachArg, "vector") == 0)		{	bStatus &= vector_test();			}
 	if (bRunAll || strcmp(pachArg, "ring") == 0)		{	bStatus &= ring_test();				}
 	if (bRunAll || strcmp(pachArg, "list") == 0)		{	bStatus &= list_test();				}
+	if (bRunAll || strcmp(pachArg, "forwardlist") == 0) {	bStatus &= forward_list_test();		}
 	if (bRunAll || strcmp(pachArg, "deque") == 0)		{	bStatus &= deque_test();			}
 	if (bRunAll || strcmp(pachArg, "queue") == 0)		{	bStatus &= queue_test();			}
 	if (bRunAll || strcmp(pachArg, "stack") == 0)		{	bStatus &= stack_test();			}
