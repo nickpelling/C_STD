@@ -370,6 +370,7 @@ static bool forward_list_test(void)
 	std_forward_list(int) v;
 	int aiPopped[10];
 	size_t szNum;
+	size_t i;
 
 	TEST_CONTAINER_NAME(v, "forward list");
 
@@ -380,6 +381,16 @@ static bool forward_list_test(void)
 	// Push 1/2/3/4/5 onto the back of the container, and make sure size == 5
 	std_push_back(v, 1, 2, 3, 4, 5);
 	TEST_SIZE(v, 5);
+
+	// Iterate forwards
+	READ_CONTAINER(v, std_each_forward);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	// Iterate forwards const
+	READ_CONTAINER(v, std_each_forward_const);
+	TEST_SAME(v, i, 5);
+	TEST_ARRAY(aiPopped, ai12345);
 
 	// Pop 5/4/3/2/1 from the back of the container
 	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));

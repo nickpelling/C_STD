@@ -216,6 +216,7 @@ size_t stdlib_forward_list_push_back(std_container_t* pstContainer, std_linear_s
 			pstList->pstLast->pstNext = pstNode;
 		}
 		pstList->pstLast = pstNode;
+		pstNode->pstNext = NULL;
 		pstList->stContainer.szNumItems++;
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
@@ -241,14 +242,13 @@ size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResu
 	void* pvItem;
 	size_t i;
 
-	if (szMaxItems > pstContainer->szNumItems)
-	{
-		szMaxItems = pstContainer->szNumItems;
-	}
-
 	for (i = 0; i < szMaxItems; i++)
 	{
 		pstNode = pstList->pstHead;
+		if (pstNode == NULL)
+		{
+			break;
+		}
 		pstList->pstHead = pstNode->pstNext;
 		if (pstList->pstHead == NULL)
 		{
@@ -264,7 +264,7 @@ size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResu
 		}
 	}
 
-	return szMaxItems;
+	return i;
 }
 
 /**
@@ -275,15 +275,21 @@ size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResu
 void stdlib_forward_list_next(std_iterator_t* pstIterator)
 {
 	std_forward_list_iterator_t* pstListIt = ITERATOR_TO_FORWARDLISTIT(pstIterator);
+	std_forward_list_node_t * pstNode;
+
 	if (pstListIt->pstNext == pstListIt->pstEnd)
 	{
 		pstListIt->stIterator.bDone = true;
 	}
 	else
 	{
-		pstListIt->pstNode = pstListIt->pstNext;
-		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
-		pstListIt->pstNext = pstListIt->pstNode->pstNext;
+		// Keep a copy of the previous node
+		pstListIt->pstPrev = pstListIt->pstNode;
+
+		pstNode = pstListIt->pstNext;
+		pstListIt->pstNode = pstNode;
+		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstNode, pstListIt->szPayloadOffset);
+		pstListIt->pstNext = pstNode->pstNext;
 	}
 }
 
@@ -314,6 +320,7 @@ void stdlib_forward_list_forwarditerator_construct(std_container_t* pstContainer
 		pstListIt->pstEnd = NULL;
 		pstListIt->pstNext = pstNode->pstNext;
 		pstListIt->pstNode = pstNode;
+		pstListIt->pstPrev = NULL;
 	}
 }
 

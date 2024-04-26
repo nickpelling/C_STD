@@ -81,6 +81,7 @@ typedef	struct
 	std_forward_list_node_t* pstNode;
 	std_forward_list_node_t* pstNext;
 	std_forward_list_node_t* pstEnd;
+	std_forward_list_node_t* pstPrev;
 } std_forward_list_iterator_t;
 
 #define STD_FORWARD_LIST_DECLARE(T,HAS_ENUM,...)	\
