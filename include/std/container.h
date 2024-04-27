@@ -706,10 +706,10 @@ STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_containe
  *
  * @return Number of items inserted
  */
-STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumElements)
+STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, bool bReverse, const void* pvBase, size_t szNumElements)
 {
 	std_linear_series_t stSeries;
-	std_linear_series_construct(&stSeries, pvBase, pstIterator->szSizeofItem, szNumElements, false);
+	std_linear_series_construct(&stSeries, pvBase, pstIterator->szSizeofItem, szNumElements, bReverse);
 	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_after)(pstIterator, &stSeries);
 }
 
@@ -718,6 +718,15 @@ STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, st
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
+				false,										\
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
+
+#define std_insert_after_reversed(IT,...)					\
+			std_iterator_call_insert_after(					\
+				&IT.stItBody.stIterator,					\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
+				true,										\
 				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -728,15 +737,16 @@ STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, st
  * @param[in]	pstIterator		Iterator
  * @param[in]	eContainer		The container type index
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ * @param[in]	bReverse		True if linear series should be reversed
  * @param[in]	pvBase			Linear series of items
  * @param[in]	szNumElements	Number of items
  *
  * @return Number of items inserted
  */
-STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumElements)
+STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, bool bReverse, const void* pvBase, size_t szNumElements)
 {
 	std_linear_series_t stSeries;
-	std_linear_series_construct(&stSeries, pvBase, pstIterator->szSizeofItem, szNumElements, false);
+	std_linear_series_construct(&stSeries, pvBase, pstIterator->szSizeofItem, szNumElements, bReverse);
 	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_before)(pstIterator, &stSeries);
 }
 
@@ -745,6 +755,15 @@ STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, s
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
+				false,										\
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
+
+#define std_insert_before_reversed(IT,...)					\
+			std_iterator_call_insert_before(				\
+				&IT.stItBody.stIterator,					\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
+				true,										\
 				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
