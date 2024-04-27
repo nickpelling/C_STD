@@ -390,7 +390,12 @@ void stdlib_forward_list_erase(std_iterator_t* pstIterator)
 	{
 		pstIt->pstPrev = pstIterator->pvNext;
 	}
-	// FIXME: call item destructor here!!
+
+	if (pstContainer->eHas & std_container_has_itemhandler)
+	{
+		stdlib_item_destruct(pstContainer->pstItemHandler, pstIterator->pvRef, 1);
+	}
+	pstContainer->szNumItems--;
 }
 
 // -------------------------------------------------------------------------

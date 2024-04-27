@@ -496,8 +496,15 @@ void stdlib_list_erase(std_iterator_t* pstIterator)
 {
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
+	std_list_iterator_t * pstIt = ITERATOR_TO_LISTIT(pstIterator);
 
-	node_disconnect(pstList, pstIterator->pvRef);
+	node_disconnect(pstList, pstIt->pstNode);
+
+	if (pstContainer->eHas & std_container_has_itemhandler)
+	{
+		stdlib_item_destruct(pstContainer->pstItemHandler, pstIterator->pvRef, 1);
+	}
+	pstContainer->szNumItems--;
 }
 
 // -------------------------------------------------------------------------

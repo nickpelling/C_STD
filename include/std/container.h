@@ -88,8 +88,6 @@ typedef struct
 	void *	(* const pfn_at)			(std_container_t * pstContainer, size_t szIndex);
 	bool	(* const pfn_destruct)		(std_container_t * pstContainer);
 
-	void	(* const pfn_erase)			(std_iterator_t * pstIterator);
-
 	std_container_iterate_jumptable_t	astIterators[std_iterator_enum_MAX];
 
 	const std_item_handler_t			* pstDefaultItemHandler;
@@ -774,14 +772,16 @@ STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, s
  * @param[in]	pstIterator		Iterator
  * @param[in]	eContainer		The container type index
  */
-STD_INLINE void std_iterator_call_erase(std_iterator_t* pstIterator, std_container_enum_t eContainer)
+STD_INLINE void std_iterator_call_erase(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator)
 {
-	STD_CONTAINER_CALL(eContainer, pfn_erase)(pstIterator);
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_erase)(pstIterator);
 }
 
-#define std_erase(IT)						\
-			std_iterator_call_erase(		\
-				&V.stBody.stContainer,		\
-				STD_ITERATOR_PARENT_ENUM_GET(IT,erase)	)	// FIXME: should be ..._AND_CHECK(
+#define std_erase(IT)								\
+			std_iterator_call_erase(				\
+				&IT.stItBody.stIterator,			\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,erase))
+
 
 #endif /* STD_CONTAINER_H_ */
