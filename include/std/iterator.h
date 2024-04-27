@@ -73,11 +73,17 @@ struct std_iterator_s
 		STD_ITERATOR_IS_CONST_SET(IS_CONST);	\
 	}
 
-#define STD_ITERATORS(ITBASE, TYPE, PARENT)	\
+#define STD_ITERATORS_FORWARD(ITBASE, TYPE, PARENT)	\
 	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_forward, false, TYPE)		*	pstForwardIterator;			\
-	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_forward, true,  TYPE const)	*	pstForwardConstIterator;	\
+	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_forward, true,  TYPE const)	*	pstForwardConstIterator
+
+#define STD_ITERATORS_REVERSE(ITBASE, TYPE, PARENT)	\
 	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, false, TYPE)		*	pstReverseIterator;			\
-	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, true,  TYPE const)	*	pstReverseConstIterator
+	STD_ITERATOR(ITBASE, PARENT, std_iterator_enum_reverse, true, TYPE const)	*	pstReverseConstIterator
+
+#define STD_ITERATORS(ITBASE, TYPE, PARENT)			\
+	STD_ITERATORS_FORWARD(ITBASE, TYPE, PARENT);	\
+	STD_ITERATORS_REVERSE(ITBASE, TYPE, PARENT)
 
 STD_INLINE void stdlib_iterator_construct_done(std_iterator_t* pstIterator)
 {
