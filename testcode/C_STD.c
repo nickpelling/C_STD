@@ -448,6 +448,55 @@ static bool list_test(void)
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
+	std_push_back(v, 100, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 6);
+	i = 0;
+	for (std_each_forward(v, it), i++)
+	{
+		if (i == 0)
+		{
+			std_erase(it);
+			TEST_SIZE(v, 5);
+			break;
+		}
+	}
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_push_back(v, 1, 2, 3, 4, 5, 100);
+	TEST_SIZE(v, 6);
+	i = 0;
+	for (std_each_forward(v, it), i++)
+	{
+		if (i == 5)
+		{
+			std_erase(it);
+			TEST_SIZE(v, 5);
+			break;
+		}
+	}
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_push_back(v, 100, 1, 100, 2, 100, 3, 100, 4, 100, 5, 100);
+	TEST_SIZE(v, 11);
+	for (std_each_forward(v, it))
+	{
+		if (std_iterator_at(it)[0] == 100)
+		{
+			std_erase(it);
+		}
+	}
+	TEST_SIZE(v, 5);
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
 	std_destruct(v);
 
 	std_construct(v);
@@ -594,6 +643,41 @@ static bool forward_list_test(void)
 	TEST_SIZE(v, 0);
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
+
+	std_push_back(v, 100, 1, 2, 3, 4, 5);
+	TEST_SIZE(v, 6);
+	i = 0;
+	for (std_each_forward(v, it), i++)
+	{
+		if (i == 0)
+		{
+			std_erase(it);
+			TEST_SIZE(v, 5);
+			break;
+		}
+	}
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
+	std_push_back(v, 1, 2, 3, 4, 5, 100);
+	TEST_SIZE(v, 6);
+	i = 0;
+	for (std_each_forward(v, it), i++)
+	{
+		if (i == 5)
+		{
+			std_erase(it);
+			TEST_SIZE(v, 5);
+			break;
+		}
+	}
+	szNum = std_pop_front(v, aiPopped, STD_NUM_ELEMENTS(aiPopped));
+	TEST_SIZE(v, 0);
+	TEST_SAME(v, szNum, 5);
+	TEST_ARRAY(aiPopped, ai12345);
+
 
 	std_destruct(v);
 
