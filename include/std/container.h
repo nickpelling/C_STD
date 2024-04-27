@@ -340,9 +340,9 @@ STD_INLINE bool std_container_call_reserve(std_container_t* pstContainer, std_co
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#define STD_PUSH_DATA(CONTAINER,...)	\
-			&(STD_ITEM_TYPEOF(CONTAINER)[]){ __VA_ARGS__ },			\
-			STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(CONTAINER)[]) { __VA_ARGS__ }))
+#define STD_PUSH_DATA(TYPE,...)	\
+			&(TYPE[]){ __VA_ARGS__ },			\
+			STD_NUM_ELEMENTS(((TYPE[]) { __VA_ARGS__ }))
 
 /**
  * Push a linear series of items to the front of an untyped container
@@ -372,7 +372,7 @@ STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, s
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
 				STD_CONTAINER_HAS_GET(V),						\
 				false,											\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(V),__VA_ARGS__)	)
 
 // Prepend a linear series of items to the front of a typed container
 #define std_prepend(V,...)										\
@@ -381,7 +381,7 @@ STD_INLINE size_t std_container_call_push_front(std_container_t* pstContainer, s
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_front), \
 				STD_CONTAINER_HAS_GET(V),						\
 				true,											\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(V),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -413,7 +413,7 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
 				STD_CONTAINER_HAS_GET(V),	\
 				false,						\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(V),__VA_ARGS__)	)
 
 #define std_append_reversed(V,...)			\
 			std_container_call_push_back(	\
@@ -421,7 +421,7 @@ STD_INLINE size_t std_container_call_push_back(std_container_t* pstContainer, st
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_back),	\
 				STD_CONTAINER_HAS_GET(V),	\
 				true,						\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(V),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -718,7 +718,7 @@ STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, st
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -745,7 +745,7 @@ STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, s
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

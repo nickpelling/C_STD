@@ -52,7 +52,7 @@ STD_INLINE size_t std_container_call_push(std_container_t* pstContainer, std_con
 				&V.stBody.stContainer,		\
 				STD_CONTAINER_ENUM_GET_AND_CHECK(V,push_pop),	\
 				STD_CONTAINER_HAS_GET(V),	\
-				STD_PUSH_DATA(V,__VA_ARGS__)	)
+				STD_PUSH_DATA(STD_ITEM_TYPEOF(V),__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
