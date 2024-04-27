@@ -701,13 +701,16 @@ STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_containe
  * @param[in]	pstIterator		Iterator
  * @param[in]	eContainer		The container type index
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
- * @param[in]	pvSeries		Linear series of items
+ * @param[in]	pvBase			Linear series of items
+ * @param[in]	szNumElements	Number of items
  *
  * @return Number of items inserted
  */
-STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const std_linear_series_t *pstSeries)
+STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumElements)
 {
-	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_after)(pstIterator, pstSeries);
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstIterator->szSizeofItem, szNumElements, false);
+	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_after)(pstIterator, &stSeries);
 }
 
 #define std_insert_after(IT,...)							\
@@ -725,13 +728,16 @@ STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, st
  * @param[in]	pstIterator		Iterator
  * @param[in]	eContainer		The container type index
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
- * @param[in]	pvSeries		Linear series of items
+ * @param[in]	pvBase			Linear series of items
+ * @param[in]	szNumElements	Number of items
  *
  * @return Number of items inserted
  */
-STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const std_linear_series_t * pstSeries)
+STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumElements)
 {
-	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_before)(pstIterator, pstSeries);
+	std_linear_series_t stSeries;
+	std_linear_series_construct(&stSeries, pvBase, pstIterator->szSizeofItem, szNumElements, false);
+	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_before)(pstIterator, &stSeries);
 }
 
 #define std_insert_before(IT,...)							\
