@@ -42,25 +42,6 @@ SOFTWARE.
 // --------------------------------------------------------------------------
 
 /**
- * Disconnect a singly-linked node from its predecessor and successor nodes
- *
- * @param[in]	pstList		List to update
- * @param[in]	pstNode		Node to disconnect
- */
-static void node_disconnect(std_forward_list_t* pstList, std_forward_list_node_t* pstNode, std_forward_list_node_t* pstPrev)
-{
-	std_forward_list_node_t* pstNext = pstNode->pstNext;
-	if (pstPrev == NULL)
-	{
-		pstList->pstHead = pstNext;
-	}
-	else
-	{
-		pstPrev->pstNext = pstNext;
-	}
-}
-
-/**
  * Insert a list link after an existing list link within a list
  *
  * @param[in]	pstList			List
