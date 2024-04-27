@@ -179,20 +179,21 @@ bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
  * Push a series of items onto the front of a vector
  *
  * @param[in]	pstContainer	Vector container to push the series of items onto
- * @param[in]	pstSeries		Series of items to push onto the vector
- * 
+ * @param[in]	pstSeries		Linear series of items
+ *
  * @return Number of items pushed onto the vector
  */
-size_t stdlib_vector_push_front(std_container_t * pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_vector_push_front(std_container_t * pstContainer, const std_linear_series_t* pstSeries)
 {
 	size_t szSizeofItem = pstContainer->szSizeofItem;
 	size_t szOldCount = pstContainer->szNumItems;
 	size_t szNumItems = pstSeries->szNumItems;
 	size_t szNewCount = szOldCount + szNumItems;
+	std_linear_series_iterator_t stIt;
 	void * pvStart;
 	void * pvItem;
 
-	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
+	if ((szNumItems == 0) || (pstSeries->pvStart == NULL))
 	{
 		return 0;
 	}
@@ -211,9 +212,10 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, std_linear_serie
 	}
 
 	pvItem = stdlib_vector_at(pstContainer, szNumItems - 1U);
-	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem = STD_LINEAR_SUB(pvItem, szSizeofItem))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (; !std_linear_series_iterator_done(&stIt); std_linear_series_iterator_next(&stIt), pvItem = STD_LINEAR_SUB(pvItem, szSizeofItem))
 	{
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	// Update the number of items
@@ -227,20 +229,20 @@ size_t stdlib_vector_push_front(std_container_t * pstContainer, std_linear_serie
  * Push a series of items onto the back of a vector
  *
  * @param[in]	pstContainer	Vector container to push the series of items onto
- * @param[in]	pvBase			Pointer to start of array of items
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pstSeries		Linear series of items
  *
  * @return Number of items pushed onto the vector
  */
-size_t stdlib_vector_push_back(std_container_t * pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_vector_push_back(std_container_t * pstContainer, const std_linear_series_t* pstSeries)
 {
 	size_t szSizeofItem = pstContainer->szSizeofItem;
 	size_t szOldCount = pstContainer->szNumItems;
 	size_t szNumItems = pstSeries->szNumItems;
 	size_t szNewCount = szOldCount + szNumItems;
+	std_linear_series_iterator_t stIt;
 	void * pvItem;
 
-	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
+	if ((szNumItems == 0) || (pstSeries->pvStart == NULL))
 	{
 		return 0;
 	}
@@ -252,9 +254,10 @@ size_t stdlib_vector_push_back(std_container_t * pstContainer, std_linear_series
 	}
 
 	pvItem = stdlib_vector_at(pstContainer, szOldCount);
-	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem=STD_LINEAR_ADD(pvItem,szSizeofItem))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (; !std_linear_series_iterator_done(&stIt); std_linear_series_iterator_next(&stIt), pvItem=STD_LINEAR_ADD(pvItem,szSizeofItem))
 	{
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	// Update the number of items in the container
@@ -484,18 +487,19 @@ static size_t stdlib_vector_find_entry(std_container_t* pstContainer, pfn_std_co
  *
  * @return Number of items inserted into the vector container
  */
-size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare)
+size_t stdlib_vector_heap_insert(std_container_t* pstContainer, const std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare)
 {
 	size_t szSizeofItem = pstContainer->szSizeofItem;
 	size_t szOldCount = pstContainer->szNumItems;
 	size_t szNumItems = pstSeries->szNumItems;
 	size_t szNewCount = szOldCount + szNumItems;
+	std_linear_series_iterator_t stIt;
 	void * pvItem;
 	void * pvNext;
 	size_t szIndex;
 	size_t i;
 
-	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
+	if ((szNumItems == 0) || (pstSeries->pvStart == NULL))
 	{
 		return 0;
 	}
@@ -506,10 +510,11 @@ size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_serie
 		return 0;
 	}
 
-	for (i = 0; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem = STD_LINEAR_ADD(pvItem, szSizeofItem), i++)
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); std_linear_series_iterator_next(&stIt), pvItem = STD_LINEAR_ADD(pvItem, szSizeofItem), i++)
 	{
 		// Binary chop to find the highest entry less than the new item
-		szIndex = stdlib_vector_find_entry(pstContainer, pfnCompare, pstSeries->pvData);
+		szIndex = stdlib_vector_find_entry(pstContainer, pfnCompare, stIt.pvData);
 		pvItem = stdlib_vector_at(pstContainer, szIndex);
 
 		// If this isn't the entry just past the final entry in the table, ripple all the items above it up by one
@@ -518,7 +523,7 @@ size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_serie
 			pvNext = STD_LINEAR_ADD(pvItem, szSizeofItem);
 			stdlib_container_relocate_items(pstContainer, pvNext, pvItem, szOldCount + i - szIndex);
 		}
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 
 		// Update the number of items in the container
 		pstContainer->szNumItems++;

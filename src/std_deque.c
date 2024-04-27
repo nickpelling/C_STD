@@ -387,13 +387,15 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 /**
  *
  */
-size_t stdlib_deque_push_front(std_container_t * pstContainer, std_linear_series_t * pstSeries)
+size_t stdlib_deque_push_front(std_container_t * pstContainer, const std_linear_series_t * pstSeries)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	std_linear_series_iterator_t stIt;
 	void * pvItem;
 	size_t i;
 
-	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); i++, std_linear_series_iterator_next(&stIt))
 	{
 		if (pstDeque->szStartOffset == 0)
 		{
@@ -410,7 +412,7 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, std_linear_series
 		pstContainer->szNumItems++;
 
 		pvItem = stdlib_deque_at(pstContainer, 0);
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	return i;
@@ -419,13 +421,15 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, std_linear_series
 /**
  *
  */
-size_t stdlib_deque_push_back(std_container_t * pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_deque_push_back(std_container_t * pstContainer, const std_linear_series_t* pstSeries)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	std_linear_series_iterator_t stIt;
 	void * pvItem;
 	size_t i;
 
-	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); i++, std_linear_series_iterator_next(&stIt))
 	{
 		pstContainer->szNumItems++;
 		if ((pstDeque->szStartOffset + pstContainer->szNumItems) > (pstDeque->szNumBuckets * pstDeque->szItemsPerBucket))
@@ -437,7 +441,7 @@ size_t stdlib_deque_push_back(std_container_t * pstContainer, std_linear_series_
 		}
 
 		pvItem = stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U);
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	return i;

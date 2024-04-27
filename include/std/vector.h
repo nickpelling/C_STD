@@ -88,8 +88,8 @@ typedef	struct
 extern void stdlib_vector_construct(	std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas);
 extern bool stdlib_vector_destruct(		std_container_t * pstContainer);	
 extern bool stdlib_vector_reserve(		std_container_t * pstContainer, size_t szNewSize);
-extern size_t stdlib_vector_push_front(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
-extern size_t stdlib_vector_push_back(	std_container_t * pstContainer, std_linear_series_t * pstSeries);
+extern size_t stdlib_vector_push_front(	std_container_t * pstContainer, const std_linear_series_t * pstSeries);
+extern size_t stdlib_vector_push_back(	std_container_t * pstContainer, const std_linear_series_t * pstSeries);
 extern size_t stdlib_vector_pop_front(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
@@ -102,7 +102,7 @@ extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, 
 extern void stdlib_vector_iterator_next(std_iterator_t * pstIterator);
 extern void stdlib_vector_iterator_prev(std_iterator_t * pstIterator);
 
-extern size_t stdlib_vector_heap_insert(std_container_t* pstContainer, std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare);
+extern size_t stdlib_vector_heap_insert(std_container_t* pstContainer, const std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare);
 
 extern const std_item_handler_t std_vector_default_itemhandler;
 

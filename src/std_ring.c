@@ -224,16 +224,17 @@ bool stdlib_ring_reserve(std_container_t * pstContainer, size_t szNewSize)
  * 
  * @return Number of items pushed onto the ring
  */
-size_t stdlib_ring_push_front(std_container_t * pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_ring_push_front(std_container_t * pstContainer, const std_linear_series_t* pstSeries)
 {
 	std_ring_t * pstRing = CONTAINER_TO_RING(pstContainer);
 	size_t szSizeofItem = pstContainer->szSizeofItem;
 	size_t szOldCount = pstContainer->szNumItems;
 	size_t szNumItems = pstSeries->szNumItems;
 	size_t szNewCount = szOldCount + szNumItems;
+	std_linear_series_iterator_t stIt;
 	void * pvItem;
 
-	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
+	if ((szNumItems == 0) || (pstSeries->pvStart == NULL))
 	{
 		return 0;
 	}
@@ -244,7 +245,8 @@ size_t stdlib_ring_push_front(std_container_t * pstContainer, std_linear_series_
 		return 0;
 	}
 
-	for (; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), pvItem = STD_LINEAR_SUB(pvItem, szSizeofItem))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (; !std_linear_series_iterator_done(&stIt); std_linear_series_iterator_next(&stIt), pvItem = STD_LINEAR_SUB(pvItem, szSizeofItem))
 	{
 		if (pstRing->szStartOffset == 0)
 		{
@@ -254,7 +256,7 @@ size_t stdlib_ring_push_front(std_container_t * pstContainer, std_linear_series_
 		pstContainer->szNumItems++;
 
 		pvItem = stdlib_ring_at(pstContainer, 0);
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	// Return the number of items successfully pushed onto the container
@@ -265,20 +267,20 @@ size_t stdlib_ring_push_front(std_container_t * pstContainer, std_linear_series_
  * Push a series of items onto the back of a ring
  *
  * @param[in]	pstContainer	Ring container to push the series of items onto
- * @param[in]	pvBase			Pointer to start of array of items
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pstSeries		Linear series of items
  *
  * @return Number of items pushed onto the ring
  */
-size_t stdlib_ring_push_back(std_container_t * pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_ring_push_back(std_container_t * pstContainer, const std_linear_series_t* pstSeries)
 {
 	size_t szOldCount = pstContainer->szNumItems;
 	size_t szNumItems = pstSeries->szNumItems;
 	size_t szNewCount = szOldCount + szNumItems;
+	std_linear_series_iterator_t stIt;
 	void * pvItem;
 	size_t i;
 
-	if ((szNumItems == 0) || (pstSeries->pvData == NULL))
+	if ((szNumItems == 0) || (pstSeries->pvStart == NULL))
 	{
 		return 0;
 	}
@@ -289,10 +291,11 @@ size_t stdlib_ring_push_back(std_container_t * pstContainer, std_linear_series_t
 		return 0;
 	}
 
-	for (i = szOldCount; !std_linear_series_done(pstSeries); std_linear_series_next(pstSeries), i++)
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = szOldCount; !std_linear_series_iterator_done(&stIt); std_linear_series_iterator_next(&stIt), i++)
 	{
 		pvItem = stdlib_ring_at(pstContainer, i);
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	// Update the number of items in the container

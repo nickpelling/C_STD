@@ -79,8 +79,8 @@ typedef struct
 	void	(* const pfn_construct)		(std_container_t * pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset,
 											std_container_has_t eHas);
 	bool	(* const pfn_reserve)		(std_container_t * pstContainer, size_t szNewSize);
-	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, std_linear_series_t *pstSeries);
-	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, std_linear_series_t* pstSeries);
+	size_t	(* const pfn_push_front)	(std_container_t * pstContainer, const std_linear_series_t * pstSeries);
+	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, const std_linear_series_t * pstSeries);
 	size_t	(* const pfn_pop_front)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop_back)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	void	(* const pfn_range) 		(std_container_t * pstContainer, void * pvBegin, void * pvEnd, std_iterator_t * pstIterator);
@@ -700,15 +700,14 @@ STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_containe
  *
  * @param[in]	pstIterator		Iterator
  * @param[in]	eContainer		The container type index
- * @param[in]	pvBase			Start of a linear series of items
- * @param[in]	szNumElements	Number of items in the linear series
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ * @param[in]	pvSeries		Linear series of items
  *
  * @return Number of items inserted
  */
-STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumItems)
+STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const std_linear_series_t *pstSeries)
 {
-	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_after)(pstIterator, pvBase, szNumItems);
+	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_after)(pstIterator, pstSeries);
 }
 
 #define std_insert_after(IT,...)							\
@@ -716,8 +715,7 @@ STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, st
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
-				&(STD_ITEM_TYPEOF(IT)[]){ __VA_ARGS__ },	\
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(IT)[]) { __VA_ARGS__ }))	)
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -726,15 +724,14 @@ STD_INLINE size_t std_iterator_call_insert_after(std_iterator_t* pstIterator, st
  *
  * @param[in]	pstIterator		Iterator
  * @param[in]	eContainer		The container type index
- * @param[in]	pvBase			Start of a linear series of items
- * @param[in]	szNumElements	Number of items in the linear series
  * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ * @param[in]	pvSeries		Linear series of items
  *
  * @return Number of items inserted
  */
-STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const void* pvBase, size_t szNumItems)
+STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_iterator_enum_t eIterator, const std_linear_series_t * pstSeries)
 {
-	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_before)(pstIterator, pvBase, szNumItems);
+	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_insert_before)(pstIterator, pstSeries);
 }
 
 #define std_insert_before(IT,...)							\
@@ -742,8 +739,7 @@ STD_INLINE size_t std_iterator_call_insert_before(std_iterator_t* pstIterator, s
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
-				&(STD_ITEM_TYPEOF(IT)[]){ __VA_ARGS__ },	\
-				STD_NUM_ELEMENTS(((STD_ITEM_TYPEOF(IT)[]) { __VA_ARGS__ }))	)
+				STD_PUSH_DATA(V,__VA_ARGS__)	)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

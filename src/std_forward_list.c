@@ -159,14 +159,16 @@ bool stdlib_forward_list_destruct(std_container_t* pstContainer)
  *
  * @return Number of items pushed onto the container
  */
-size_t stdlib_forward_list_push_front(std_container_t* pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_forward_list_push_front(std_container_t* pstContainer, const std_linear_series_t* pstSeries)
 {
 	std_forward_list_t* pstList = CONTAINER_TO_FORWARD_LIST(pstContainer);
+	std_linear_series_iterator_t stIt;
 	std_forward_list_node_t* pstNode;
 	void* pvItem;
 	size_t i;
 
-	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); i++, std_linear_series_iterator_next(&stIt))
 	{
 		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
 		if (pstNode == NULL)
@@ -178,7 +180,7 @@ size_t stdlib_forward_list_push_front(std_container_t* pstContainer, std_linear_
 		pstList->stContainer.szNumItems++;
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1U);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1U);
 	}
 
 	return i;
@@ -190,14 +192,16 @@ size_t stdlib_forward_list_push_front(std_container_t* pstContainer, std_linear_
  * @param[in]	pstContainer	Forward list container to push items onto
  * @param[in]	pstSeries		Linear series of items to push onto the list
  */
-size_t stdlib_forward_list_push_back(std_container_t* pstContainer, std_linear_series_t* pstSeries)
+size_t stdlib_forward_list_push_back(std_container_t* pstContainer, const std_linear_series_t* pstSeries)
 {
 	std_forward_list_t* pstList = CONTAINER_TO_FORWARD_LIST(pstContainer);
+	std_linear_series_iterator_t stIt;
 	std_forward_list_node_t* pstNode;
 	void* pvItem;
 	size_t i;
 
-	for (i = 0; !std_linear_series_done(pstSeries); i++, std_linear_series_next(pstSeries))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); i++, std_linear_series_iterator_next(&stIt))
 	{
 		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
 		if (pstNode == NULL)
@@ -220,7 +224,7 @@ size_t stdlib_forward_list_push_back(std_container_t* pstContainer, std_linear_s
 		pstList->stContainer.szNumItems++;
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		stdlib_container_relocate_items(pstContainer, pvItem, pstSeries->pvData, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	return i;
@@ -328,15 +332,15 @@ void stdlib_forward_list_forwarditerator_construct(std_container_t* pstContainer
  * Insert a linear series of items immediately after the current iterator item
  *
  * @param[in]	pstIterator		List iterator
- * @param[in]	pvBase			Start of the linear series of items
- * @param[in]	szNumItems		Number of items in the linear series
+ * @param[in]	pstSeries		Linear series of items
  *
  * @return Number of items successfully inserted
  */
-size_t stdlib_forward_list_insert_after(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems)
+size_t stdlib_forward_list_insert_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries)
 {
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_forward_list_t* pstList = CONTAINER_TO_FORWARD_LIST(pstContainer);
+	std_linear_series_iterator_t stIt;
 	std_forward_list_node_t* pstNode;
 	std_forward_list_node_t* pstItNode;
 	void* pvItem;
@@ -344,7 +348,8 @@ size_t stdlib_forward_list_insert_after(std_iterator_t* pstIterator, const void*
 
 	pstItNode = STD_LINEAR_SUB(pstIterator->pvRef, pstList->szPayloadOffset);
 
-	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); i++, std_linear_series_iterator_next(&stIt))
 	{
 		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
 		if (pstNode == NULL)
@@ -354,7 +359,7 @@ size_t stdlib_forward_list_insert_after(std_iterator_t* pstIterator, const void*
 		node_insert_after(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		stdlib_container_relocate_items(pstContainer, pvItem, pvBase, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	return i;
@@ -364,15 +369,15 @@ size_t stdlib_forward_list_insert_after(std_iterator_t* pstIterator, const void*
  * Insert a linear series of items immediately before the current iterator item
  *
  * @param[in]	pstIterator		List iterator
- * @param[in]	pvBase			Start of the linear series of items
- * @param[in]	szNumItems		Number of items in the linear series
+ * @param[in]	pstSeries		Linear series of items
  *
  * @return Number of items successfully inserted
  */
-size_t stdlib_forward_list_insert_before(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems)
+size_t stdlib_forward_list_insert_before(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries)
 {
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_forward_list_t* pstList = CONTAINER_TO_FORWARD_LIST(pstContainer);
+	std_linear_series_iterator_t stIt;
 	std_forward_list_node_t* pstNode;
 	std_forward_list_node_t* pstItNode;
 	void* pvItem;
@@ -380,7 +385,8 @@ size_t stdlib_forward_list_insert_before(std_iterator_t* pstIterator, const void
 
 	pstItNode = STD_LINEAR_SUB(pstIterator->pvRef, pstList->szPayloadOffset);
 
-	for (i = 0; i < szNumItems; i++, pvBase = STD_LINEAR_ADD(pvBase, pstContainer->szSizeofItem))
+	std_linear_series_iterator_construct(&stIt, pstSeries);
+	for (i = 0; !std_linear_series_iterator_done(&stIt); i++, std_linear_series_iterator_next(&stIt))
 	{
 		pstNode = std_memoryhandler_malloc(pstContainer->pstMemoryHandler, pstContainer->eHas, pstList->szLinkSize);
 		if (pstNode == NULL)
@@ -390,7 +396,7 @@ size_t stdlib_forward_list_insert_before(std_iterator_t* pstIterator, const void
 		node_insert_before(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
-		stdlib_container_relocate_items(pstContainer, pvItem, pvBase, 1);
+		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
 	}
 
 	return i;

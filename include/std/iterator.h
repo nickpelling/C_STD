@@ -26,6 +26,7 @@ SOFTWARE.
 #define STD_ITERATOR_H_
 
 #include "std/common.h"
+#include "std/linear_series.h"
 
 typedef struct std_iterator_s std_iterator_t;
 
@@ -35,8 +36,8 @@ typedef struct
 	void (*pfn_range)(	std_container_t * pstContainer, std_iterator_t * pstIterator, void * pvBegin, void * pvEnd);
 	void (*pfn_next)(	std_iterator_t  * pstIterator);
 	void (*pfn_prev)(	std_iterator_t  * pstIterator);
-	size_t (*pfn_insert_after)(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems);
-	size_t (*pfn_insert_before)(std_iterator_t* pstIterator, const void* pvBase, size_t szNumItems);
+	size_t (*pfn_insert_after)(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
+	size_t (*pfn_insert_before)(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 } std_container_iterate_jumptable_t;
 
 // Shared base class for all iterators
