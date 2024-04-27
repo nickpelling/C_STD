@@ -244,7 +244,7 @@ void stdlib_forward_list_next(std_iterator_t* pstIterator)
 	std_forward_list_iterator_t* pstListIt = ITERATOR_TO_FORWARDLISTIT(pstIterator);
 	std_forward_list_node_t * pstNode;
 
-	if (pstListIt->pstNext == pstListIt->pstEnd)
+	if (pstIterator->pvNext == pstIterator->pvEnd)
 	{
 		pstListIt->stIterator.bDone = true;
 	}
@@ -253,10 +253,10 @@ void stdlib_forward_list_next(std_iterator_t* pstIterator)
 		// Keep a copy of the previous node
 		pstListIt->pstPrev = pstListIt->pstNode;
 
-		pstNode = pstListIt->pstNext;
+		pstNode = pstIterator->pvNext;
 		pstListIt->pstNode = pstNode;
 		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstNode, pstListIt->szPayloadOffset);
-		pstListIt->pstNext = pstNode->pstNext;
+		pstIterator->pvNext = pstNode->pstNext;
 	}
 }
 
@@ -283,9 +283,9 @@ void stdlib_forward_list_forwarditerator_construct(std_container_t* pstContainer
 
 		pstListIt->szLinkSize = pstList->szLinkSize;
 		pstListIt->szPayloadOffset = pstList->szPayloadOffset;
-		pstListIt->pstBegin = pstNode;
-		pstListIt->pstEnd = NULL;
-		pstListIt->pstNext = pstNode->pstNext;
+		pstIterator->pvBegin = pstNode;
+		pstIterator->pvEnd = NULL;
+		pstIterator->pvNext = pstNode->pstNext;
 		pstListIt->pstNode = pstNode;
 		pstListIt->pstPrev = NULL;
 	}
@@ -388,7 +388,7 @@ void stdlib_forward_list_erase(std_iterator_t* pstIterator)
 	}
 	else
 	{
-		pstIt->pstPrev = pstIterator->pvNext;
+		pstIt->pstPrev->pstNext = pstIterator->pvNext;
 	}
 
 	if (pstContainer->eHas & std_container_has_itemhandler)

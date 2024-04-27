@@ -321,15 +321,15 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 void stdlib_list_next(std_iterator_t * pstIterator)
 {
 	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
-    if (pstListIt->pstNext == pstListIt->pstEnd)
+    if (pstIterator->pvNext == pstIterator->pvEnd)
     {
     	pstListIt->stIterator.bDone = true;
     }
     else
     {
-    	pstListIt->pstNode = pstListIt->pstNext;
+    	pstListIt->pstNode = pstIterator->pvNext;
     	pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
-    	pstListIt->pstNext = pstListIt->pstNode->pstNext;
+		pstIterator->pvNext = pstListIt->pstNode->pstNext;
     }
 }
 
@@ -341,15 +341,15 @@ void stdlib_list_next(std_iterator_t * pstIterator)
 void stdlib_list_prev(std_iterator_t * pstIterator)
 {
 	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
-    if (pstListIt->pstNext == pstListIt->pstEnd)
+    if (pstIterator->pvNext == pstIterator->pvEnd)
     {
     	pstListIt->stIterator.bDone = true;
     }
     else
     {
-    	pstListIt->pstNode = pstListIt->pstNext;
+    	pstListIt->pstNode = pstIterator->pvNext;
     	pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
-    	pstListIt->pstNext = pstListIt->pstNode->pstPrev;
+		pstIterator->pvNext = pstListIt->pstNode->pstPrev;
     }
 }
 
@@ -376,10 +376,10 @@ void stdlib_list_forwarditerator_construct(std_container_t * pstContainer, std_i
 
 		pstListIt->szLinkSize = pstList->szLinkSize;
 		pstListIt->szPayloadOffset = pstList->szPayloadOffset;
-		pstListIt->pstBegin = pstNode;
-		pstListIt->pstEnd   = NULL;
-		pstListIt->pstNext	= pstNode->pstNext;
-		pstListIt->pstNode	= pstNode;
+		pstIterator->pvBegin	= pstNode;
+		pstIterator->pvEnd		= NULL;
+		pstIterator->pvNext		= pstNode->pstNext;
+		pstListIt->pstNode		= pstNode;
     }
 }
 
@@ -406,10 +406,10 @@ void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_i
 
 		pstListIt->szLinkSize = pstList->szLinkSize;
 		pstListIt->szPayloadOffset = pstList->szPayloadOffset;
-		pstListIt->pstBegin = pstNode;
-		pstListIt->pstEnd   = NULL;
-		pstListIt->pstNext	= pstNode->pstPrev;
-		pstListIt->pstNode	= pstNode;
+		pstIterator->pvBegin	= pstNode;
+		pstIterator->pvEnd		= NULL;
+		pstIterator->pvNext		= pstNode->pstPrev;
+		pstListIt->pstNode		= pstNode;
     }
 }
 

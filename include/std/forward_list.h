@@ -77,10 +77,7 @@ typedef	struct
 	std_iterator_t stIterator;
 	size_t szLinkSize;
 	size_t szPayloadOffset;
-	std_forward_list_node_t* pstBegin;
 	std_forward_list_node_t* pstNode;
-	std_forward_list_node_t* pstNext;
-	std_forward_list_node_t* pstEnd;
 	std_forward_list_node_t* pstPrev;
 } std_forward_list_iterator_t;
 

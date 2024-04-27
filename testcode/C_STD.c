@@ -578,7 +578,6 @@ static bool forward_list_test(void)
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
 
-#if 0
 	std_push_back(v, 1, 100, 2, 3, 4, 5);
 	TEST_SIZE(v, 6);
 	i = 0;
@@ -595,7 +594,6 @@ static bool forward_list_test(void)
 	TEST_SIZE(v, 0);
 	TEST_SAME(v, szNum, 5);
 	TEST_ARRAY(aiPopped, ai12345);
-#endif
 
 	std_destruct(v);
 

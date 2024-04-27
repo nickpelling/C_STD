@@ -83,10 +83,7 @@ typedef	struct
 	std_iterator_t stIterator;
 	size_t szLinkSize;
 	size_t szPayloadOffset;
-	std_list_node_t * pstBegin;
 	std_list_node_t * pstNode;
-	std_list_node_t * pstNext;
-	std_list_node_t * pstEnd;
 } std_list_iterator_t;
 
 #define STD_LIST_DECLARE(T,HAS_ENUM,...)	\
