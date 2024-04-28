@@ -76,7 +76,7 @@ static void node_disconnect(std_list_t * pstList, std_list_node_t * pstNode)
  * @param[in]	pstPosition		Existing list link
  * @param[in]	pstNode			New list link to insert
  */
-static void node_insert_after(std_list_t * pstList, std_list_node_t * pstPosition, std_list_node_t * pstNode)
+static void node_push_after(std_list_t * pstList, std_list_node_t * pstPosition, std_list_node_t * pstNode)
 {
 	if (pstList->stContainer.szNumItems == 0)
 	{
@@ -107,7 +107,7 @@ static void node_insert_after(std_list_t * pstList, std_list_node_t * pstPositio
  * @param[in]	pstPosition		Existing list link
  * @param[in]	pstNode			New list link to insert
  */
-static void node_insert_before(std_list_t * pstList, std_list_node_t * pstPosition, std_list_node_t * pstNode)
+static void node_push_before(std_list_t * pstList, std_list_node_t * pstPosition, std_list_node_t * pstNode)
 {
 	if (pstList->stContainer.szNumItems == 0)
 	{
@@ -197,7 +197,7 @@ size_t stdlib_list_push_front(std_container_t * pstContainer, const std_linear_s
 		{
 			break;
 		}
-		node_insert_before(pstList, pstList->pstHead, pstNode);
+		node_push_before(pstList, pstList->pstHead, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1U);
@@ -228,7 +228,7 @@ size_t stdlib_list_push_back(std_container_t * pstContainer, const std_linear_se
 		{
 			break;
 		}
-		node_insert_after(pstList, pstList->pstTail, pstNode);
+		node_push_after(pstList, pstList->pstTail, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
@@ -421,7 +421,7 @@ void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_i
  * 
  * @return Number of items successfully inserted
  */
-size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries)
+size_t stdlib_list_push_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries)
 {
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
@@ -441,7 +441,7 @@ size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const std_linear_se
 		{
 			break;
 		}
-		node_insert_after(pstList, pstItNode, pstNode);
+		node_push_after(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
@@ -458,7 +458,7 @@ size_t stdlib_list_insert_after(std_iterator_t* pstIterator, const std_linear_se
  *
  * @return Number of items successfully inserted
  */
-size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const std_linear_series_t *pstSeries)
+size_t stdlib_list_push_before(std_iterator_t* pstIterator, const std_linear_series_t *pstSeries)
 {
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
@@ -478,7 +478,7 @@ size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const std_linear_s
 		{
 			break;
 		}
-		node_insert_before(pstList, pstItNode, pstNode);
+		node_push_before(pstList, pstItNode, pstNode);
 
 		pvItem = STD_LINEAR_ADD(pstNode, pstList->szPayloadOffset);
 		stdlib_container_relocate_items(pstContainer, pvItem, stIt.pvData, 1);
@@ -488,22 +488,24 @@ size_t stdlib_list_insert_before(std_iterator_t* pstIterator, const std_linear_s
 }
 
 /**
- * Erase a single item at the current iterator item
+ * Pop/erase the item at the current iterator
  *
  * @param[in]	pstIterator		List iterator
+ * @param[in]	pvResult		Where to pop the item to (or NULL to erase it)
  */
-void stdlib_list_erase(std_iterator_t* pstIterator)
+void stdlib_list_pop_at(std_iterator_t* pstIterator, void *pvResult)
 {
 	std_container_t* pstContainer = pstIterator->pstContainer;
 	std_list_t* pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_iterator_t * pstIt = ITERATOR_TO_LISTIT(pstIterator);
+	void* pvItem;
 
 	node_disconnect(pstList, pstIt->pstNode);
 
-	if (pstContainer->eHas & std_container_has_itemhandler)
-	{
-		stdlib_item_destruct(pstContainer->pstItemHandler, pstIterator->pvRef, 1);
-	}
+	pvItem = STD_LINEAR_ADD(pstIt->pstNode, pstList->szPayloadOffset);
+	stdlib_item_pop(pstContainer->eHas, pstContainer->pstItemHandler, pvResult, pvItem, pstContainer->szSizeofItem);
+	pstIt->pstNode = NULL;
+
 	pstContainer->szNumItems--;
 }
 

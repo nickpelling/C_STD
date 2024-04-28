@@ -366,7 +366,7 @@ static bool list_test(void)
 	{
 		if (i == 0)
 		{
-			szNum = std_insert_after(it, 4, 3, 2);
+			szNum = std_push_after(it, 4, 3, 2);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -384,7 +384,7 @@ static bool list_test(void)
 	{
 		if (i == 1)
 		{
-			szNum = std_insert_before(it, 2, 3, 4);
+			szNum = std_push_before(it, 2, 3, 4);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -402,7 +402,7 @@ static bool list_test(void)
 	{
 		if (i == 0)
 		{
-			szNum = std_insert_after_reversed(it, 2, 3, 4);
+			szNum = std_push_after_reversed(it, 2, 3, 4);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -420,7 +420,7 @@ static bool list_test(void)
 	{
 		if (i == 1)
 		{
-			szNum = std_insert_before_reversed(it, 4, 3, 2);
+			szNum = std_push_before_reversed(it, 4, 3, 2);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -562,7 +562,7 @@ static bool forward_list_test(void)
 	{
 		if (i == 0)
 		{
-			szNum = std_insert_after(it, 4, 3, 2);
+			szNum = std_push_after(it, 4, 3, 2);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -580,7 +580,7 @@ static bool forward_list_test(void)
 	{
 		if (i == 1)
 		{
-			szNum = std_insert_before(it, 2, 3, 4);
+			szNum = std_push_before(it, 2, 3, 4);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -598,7 +598,7 @@ static bool forward_list_test(void)
 	{
 		if (i == 0)
 		{
-			szNum = std_insert_after_reversed(it, 2, 3, 4);
+			szNum = std_push_after_reversed(it, 2, 3, 4);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;
@@ -616,7 +616,7 @@ static bool forward_list_test(void)
 	{
 		if (i == 1)
 		{
-			szNum = std_insert_before_reversed(it, 4, 3, 2);
+			szNum = std_push_before_reversed(it, 4, 3, 2);
 			TEST_SIZE(v, 5);
 			TEST_SAME(v, szNum, 3);
 			break;

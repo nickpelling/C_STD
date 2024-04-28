@@ -102,9 +102,9 @@ extern size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void*
 
 extern void stdlib_forward_list_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
 extern void stdlib_forward_list_next(std_iterator_t* pstIterator);
-extern size_t stdlib_forward_list_insert_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
-extern size_t stdlib_forward_list_insert_before(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
-extern void stdlib_forward_list_erase(std_iterator_t* pstIterator);
+extern size_t stdlib_forward_list_push_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
+extern size_t stdlib_forward_list_push_before(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
+extern void stdlib_forward_list_pop_at(std_iterator_t* pstIterator, void * pvResult);
 
 extern const std_item_handler_t std_forward_list_default_itemhandler;
 
@@ -118,9 +118,9 @@ enum
 		| std_container_implements_push_back
 		| std_container_implements_forward_construct
 		| std_container_implements_forward_next
-		| std_container_implements_forward_insert_after
-		| std_container_implements_forward_insert_before
-		| std_container_implements_forward_erase
+		| std_container_implements_forward_push_after
+		| std_container_implements_forward_push_before
+		| std_container_implements_forward_pop_at
 		| std_container_implements_default_itemhandler)
 };
 
@@ -136,10 +136,10 @@ enum
 		[std_iterator_enum_forward] =				\
 		{											\
 			.pfn_construct = &stdlib_forward_list_forwarditerator_construct,	\
-			.pfn_next = &stdlib_forward_list_next,						\
-			.pfn_insert_after = &stdlib_forward_list_insert_after,		\
-			.pfn_insert_before = &stdlib_forward_list_insert_before,	\
-			.pfn_erase = &stdlib_forward_list_erase,					\
+			.pfn_next = &stdlib_forward_list_next,					\
+			.pfn_push_after = &stdlib_forward_list_push_after,		\
+			.pfn_push_before = &stdlib_forward_list_push_before,	\
+			.pfn_pop_at = &stdlib_forward_list_pop_at,				\
 		},											\
 	},												\
 	.pstDefaultItemHandler = &std_forward_list_default_itemhandler

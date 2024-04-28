@@ -36,9 +36,9 @@ typedef struct
 	void (*pfn_range)(	std_container_t * pstContainer, std_iterator_t * pstIterator, void * pvBegin, void * pvEnd);
 	void (*pfn_next)(	std_iterator_t  * pstIterator);
 	void (*pfn_prev)(	std_iterator_t  * pstIterator);
-	size_t (*pfn_insert_after)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
-	size_t (*pfn_insert_before)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
-	void	(* pfn_erase)		(std_iterator_t* pstIterator);
+	size_t (*pfn_push_after)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
+	size_t (*pfn_push_before)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
+	void	(* pfn_pop_at)		(std_iterator_t* pstIterator, void * pvResult);
 } std_container_iterate_jumptable_t;
 
 // Shared base class for all iterators
