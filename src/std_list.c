@@ -139,7 +139,7 @@ static void node_push_before(std_list_t * pstList, std_list_node_t * pstPosition
  * Initialise a newly-allocated list
  *
  * @param[in]	pstContainer	List container to initialise
- * @param[in]	szSizeofItem	Size of a raw (unwrapped) item
+ * @param[in]	szSizeof		Size of a raw (unwrapped) item
  * @param[in]	szWrappedSizeof	Size of a wrapped item (i.e. including its node header)
  * @param[in]	szPayloadOffset	Offset of a raw (payload) item inside a wrapped (node) item
  * @param[in]	eHas			Specifies which kinds of handlers this container uses
@@ -241,8 +241,8 @@ size_t stdlib_list_push_back(std_container_t * pstContainer, const std_linear_se
  * Pop a series of items off the front of a list container
  *
  * @param[in]	pstContainer	List container to pop items off
- * @param[in]	pvBase			Array of items to push onto the list
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pvResult		Array of items to push onto the list
+ * @param[in]	szMaxItems		Maximum number of items in the array
  * 
  * @return Number of items popped off the front of a list container
  */
@@ -279,8 +279,8 @@ size_t stdlib_list_pop_front(std_container_t * pstContainer, void * pvResult, si
  * Pop a series of items off the back of a list container
  *
  * @param[in]	pstContainer	List container to pop items off
- * @param[in]	pvBase			Array of items to push onto the list
- * @param[in]	szNumItems		Number of items in the array
+ * @param[in]	pvResult		Array of items to push onto the list
+ * @param[in]	szMaxItems		Maximum number of items in the array
  *
  * @return Number of items popped off the back of a list container
  */
@@ -336,7 +336,7 @@ void stdlib_list_next(std_iterator_t * pstIterator)
 /**
  * Step a list iterator backwards through a list container
  *
- * @param[in]	pstIterator	List iterator
+ * @param[in]	pstIterator			List iterator
  */
 void stdlib_list_prev(std_iterator_t * pstIterator)
 {

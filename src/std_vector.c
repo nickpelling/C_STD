@@ -81,8 +81,9 @@ void* stdlib_vector_at(std_container_t* pstContainer, size_t szIndex);
  * Construct a vector container
  *
  * @param[in]	pstContainer	Vector to initialise
- * @param[in]	szFullSizeof	Size of a (possibly wrapped) item
- * @param[in]	szPayloadOffset	Offset to the payload within the (possibly wrapped) item
+ * @param[in]	szSizeof		Size of an unwrapped item
+ * @param[in]	szWrappedSizeof	Size of a wrapped item
+ * @param[in]	szPayloadOffset	Offset to the payload within the wrapped item
  * @param[in]	eHas			Enumeration saying which handlers to expect
  */
 void stdlib_vector_construct(std_container_t* pstContainer, size_t szSizeof, size_t szWrappedSizeof, size_t szPayloadOffset, std_container_has_t eHas)
@@ -403,6 +404,9 @@ void stdlib_vector_ranged_sort(std_container_t * pstContainer, size_t szFirst, s
 	}
 }
 
+/**
+ *
+ */
 void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
 {
 	if (pvBegin == pvEnd)
@@ -418,6 +422,9 @@ void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_ite
 	}
 }
 
+/**
+ *
+ */
 void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
@@ -426,6 +433,9 @@ void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std
 	stdlib_vector_forwarditerator_range( pstContainer, pstIterator, pvBegin, pvEnd);
 }
 
+/**
+ *
+ */
 void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
 {
 	if (pvBegin == pvEnd)
@@ -441,6 +451,9 @@ void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_ite
 	}
 }
 
+/**
+ *
+ */
 void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
@@ -484,6 +497,7 @@ static size_t stdlib_vector_find_entry(std_container_t* pstContainer, pfn_std_co
  *
  * @param[in]	pstContainer	Vector container to insert the series of items onto
  * @param[in]	pstSeries		Linear series of items to insert into the container
+ * @param[in]	pfnCompare		Comparison function callback
  *
  * @return Number of items inserted into the vector container
  */
@@ -535,6 +549,9 @@ size_t stdlib_vector_heap_insert(std_container_t* pstContainer, const std_linear
 
 // -------------------------------------------------------------------------
 
+/**
+ *
+ */
 static bool vector_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
 {
 	if (pstItemHandler) { /* Unused parameter */ }

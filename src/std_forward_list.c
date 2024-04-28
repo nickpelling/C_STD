@@ -80,7 +80,7 @@ static void node_push_after(std_forward_list_t* pstList, std_forward_list_node_t
  * Initialise a newly-allocated forward list
  *
  * @param[in]	pstContainer	Forward list container to initialise
- * @param[in]	szSizeofItem	Size of a raw (unwrapped) item
+ * @param[in]	szSizeof		Size of a raw (unwrapped) item
  * @param[in]	szWrappedSizeof	Size of a wrapped item (i.e. including its node header)
  * @param[in]	szPayloadOffset	Offset of a raw (payload) item inside a wrapped (node) item
  * @param[in]	eHas			Specifies which kinds of handlers this container uses

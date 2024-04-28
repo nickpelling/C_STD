@@ -711,7 +711,7 @@ STD_INLINE size_t std_iterator_call_push_after(std_iterator_t* pstIterator, std_
 	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_push_after)(pstIterator, &stSeries);
 }
 
-#define std_push_after(IT,...)							\
+#define std_push_after(IT,...)								\
 			std_iterator_call_push_after(					\
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
@@ -719,7 +719,7 @@ STD_INLINE size_t std_iterator_call_push_after(std_iterator_t* pstIterator, std_
 				false,										\
 				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
 
-#define std_push_after_reversed(IT,...)					\
+#define std_push_after_reversed(IT,...)						\
 			std_iterator_call_push_after(					\
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
@@ -748,16 +748,16 @@ STD_INLINE size_t std_iterator_call_push_before(std_iterator_t* pstIterator, std
 	return STD_ITERATOR_CALL(eContainer, eIterator, pfn_push_before)(pstIterator, &stSeries);
 }
 
-#define std_push_before(IT,...)							\
-			std_iterator_call_push_before(				\
+#define std_push_before(IT,...)								\
+			std_iterator_call_push_before(					\
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\
 				false,										\
 				STD_PUSH_DATA(STD_ITEM_TYPEOF(IT),__VA_ARGS__)	)
 
-#define std_push_before_reversed(IT,...)					\
-			std_iterator_call_push_before(				\
+#define std_prepend_before(IT,...)							\
+			std_iterator_call_push_before(					\
 				&IT.stItBody.stIterator,					\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),			\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,next),	\

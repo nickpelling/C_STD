@@ -35,23 +35,23 @@ SOFTWARE.
  * @param[in]	pstItemHandler	Item handler jumptable (NULL if not needed)
  * @param[out]	pvResult		Empty area of memory to pop item into (can be NULL)
  * @param[in]	pvItem			Item
- * @param[in]	szSize			Size of the item
+ * @param[in]	szSizeof		Size of the item
  */
-void stdlib_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHandler, void* pvResult, void* pvItem, size_t szSize)
+void stdlib_item_pop(std_container_has_t eHas, const std_item_handler_t* pstItemHandler, void* pvResult, void* pvItem, size_t szSizeof)
 {
 	if (pvResult != NULL)
 	{
-		memcpy(pvResult, pvItem, szSize);
+		memcpy(pvResult, pvItem, szSizeof);
 		if (eHas & std_container_has_itemhandler)
 		{
-			stdlib_item_relocate(pstItemHandler, pvResult, pvItem, szSize);
+			stdlib_item_relocate(pstItemHandler, pvResult, pvItem, szSizeof);
 		}
 	}
 	else
 	{
 		if (eHas & std_container_has_itemhandler)
 		{
-			stdlib_item_destruct(pstItemHandler, pvItem, szSize);
+			stdlib_item_destruct(pstItemHandler, pvItem, szSizeof);
 		}
 	}
 }

@@ -418,6 +418,9 @@ void stdlib_ring_iterator_prev(std_iterator_t * pstIterator)
     }
 }
 
+/**
+ * 
+ */
 void stdlib_ring_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
 {
 	std_ring_t * pstRing = CONTAINER_TO_RING(pstContainer);
@@ -437,6 +440,9 @@ void stdlib_ring_forwarditerator_range(std_container_t * pstContainer, std_itera
 	}
 }
 
+/**
+ *
+ */
 void stdlib_ring_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_ring_t* pstRing = CONTAINER_TO_RING(pstContainer);
@@ -445,6 +451,9 @@ void stdlib_ring_forwarditerator_construct(std_container_t * pstContainer, std_i
 	stdlib_ring_forwarditerator_range( pstContainer, pstIterator, pvBegin, pvEnd);
 }
 
+/**
+ *
+ */
 void stdlib_ring_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
 {
 	std_ring_t* pstRing = CONTAINER_TO_RING(pstContainer);
@@ -464,6 +473,9 @@ void stdlib_ring_reverseiterator_range(std_container_t * pstContainer, std_itera
 	}
 }
 
+/**
+ *
+ */
 void stdlib_ring_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
 	std_ring_t* pstRing = CONTAINER_TO_RING(pstContainer);
@@ -474,6 +486,9 @@ void stdlib_ring_reverseiterator_construct(std_container_t * pstContainer, std_i
 
 // -------------------------------------------------------------------------
 
+/**
+ *
+ */
 static bool ring_default_destruct(const std_item_handler_t* pstItemHandler, void* pvData)
 {
 	if (pstItemHandler) { /* Unused parameter */ }
