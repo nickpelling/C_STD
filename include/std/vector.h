@@ -99,12 +99,47 @@ extern void stdlib_vector_forwarditerator_construct(std_container_t * pstContain
 extern void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
 extern void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
 extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
-extern void stdlib_vector_iterator_next(std_iterator_t * pstIterator);
-extern void stdlib_vector_iterator_prev(std_iterator_t * pstIterator);
 
 extern size_t stdlib_vector_heap_insert(std_container_t* pstContainer, const std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare);
 
 extern const std_item_handler_t std_vector_default_itemhandler;
+
+/**
+ * Step a vector iterator forwards in memory
+ *
+ * @param[in]	pstIterator		Vector iterator
+ */
+STD_INLINE void stdlib_vector_iterator_next(std_iterator_t* pstIterator)
+{
+	if (pstIterator->pvNext == pstIterator->pvEnd)
+	{
+		pstIterator->bDone = true;
+	}
+	else
+	{
+		pstIterator->pvRef = pstIterator->pvNext;
+		pstIterator->pvNext = STD_LINEAR_ADD(pstIterator->pvRef, pstIterator->szSizeofItem);
+	}
+}
+
+/**
+ * Step a vector iterator backwards in memory
+ *
+ * @param[in]	pstIterator		Vector iterator
+ */
+STD_INLINE void stdlib_vector_iterator_prev(std_iterator_t* pstIterator)
+{
+	if (pstIterator->pvNext == pstIterator->pvEnd)
+	{
+		pstIterator->bDone = true;
+	}
+	else
+	{
+		pstIterator->pvRef = pstIterator->pvNext;
+		pstIterator->pvNext = STD_LINEAR_SUB(pstIterator->pvRef, pstIterator->szSizeofItem);
+	}
+}
+
 
 enum 
 {

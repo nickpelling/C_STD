@@ -345,42 +345,6 @@ size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvResult, 
 }
 
 /**
- * Step a vector iterator forwards in memory
- *
- * @param[in]	pstIterator		Vector iterator
- */
-void stdlib_vector_iterator_next(std_iterator_t * pstIterator)
-{
-	if (pstIterator->pvNext == pstIterator->pvEnd)
-	{
-		pstIterator->bDone = true;
-	}
-	else
-	{
-		pstIterator->pvRef = pstIterator->pvNext;
-		pstIterator->pvNext = next_item(pstIterator, pstIterator->pvRef);
-    }
-}
-
-/**
- * Step a vector iterator backwards in memory
- *
- * @param[in]	pstIterator		Vector iterator
- */
-void stdlib_vector_iterator_prev(std_iterator_t * pstIterator)
-{
-	if (pstIterator->pvNext == pstIterator->pvEnd)
-	{
-		pstIterator->bDone = true;
-	}
-	else
-	{
-		pstIterator->pvRef = pstIterator->pvNext;
-		pstIterator->pvNext = prev_item(pstIterator, pstIterator->pvRef);
-    }
-}
-
-/**
  * Sort a range of items within a vector
  *
  * @param[in]	pstContainer	Vector to sort
