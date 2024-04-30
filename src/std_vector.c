@@ -35,32 +35,6 @@ SOFTWARE.
 #define VECTORIT_TO_ITERATOR(VECTORIT)	&VECTORIT->stIterator
 
 /**
- * Step a linear pointer forwards by the size of an iterator's item
- * 
- * @param[in]	pstIterator		Iterator
- * @param[in]	pvThis			Pointer
- * 
- * @return New pointer value
- */
-static inline void * next_item(std_iterator_t * pstIterator, void * pvThis)
-{
-	return STD_LINEAR_ADD(pvThis, pstIterator->szSizeofItem);
-}
-
-/**
- * Step a linear pointer backwards by the size of an iterator's item
- *
- * @param[in]	pstIterator		Iterator
- * @param[in]	pvThis			Pointer
- *
- * @return New pointer value
- */
-static inline void * prev_item(std_iterator_t * pstIterator, void * pvThis)
-{
-	return STD_LINEAR_SUB(pvThis, pstIterator->szSizeofItem);
-}
-
-/**
  * Calculate the address of an indexed entry in a vector container
  *
  * @param[in]	pstContainer	Vector container
@@ -382,7 +356,7 @@ void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_ite
 		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvNext		= next_item(pstIterator, pvBegin);
+		pstIterator->pvNext		= STD_LINEAR_ADD(pvBegin, pstIterator->szSizeofItem);
 	}
 }
 
@@ -411,7 +385,7 @@ void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_ite
 		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
 		pstIterator->pvBegin	= pvBegin;
 		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvNext		= prev_item(pstIterator, pvBegin);
+		pstIterator->pvNext		= STD_LINEAR_SUB(pvBegin, pstIterator->szSizeofItem);
 	}
 }
 
