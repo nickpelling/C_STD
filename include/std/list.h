@@ -108,13 +108,56 @@ extern size_t stdlib_list_pop_back(		std_container_t * pstContainer, void * pvRe
 
 extern void stdlib_list_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
 extern void stdlib_list_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
-extern void stdlib_list_next(std_iterator_t * pstIterator);
-extern void stdlib_list_prev(std_iterator_t * pstIterator);
 extern size_t stdlib_list_push_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 extern size_t stdlib_list_push_before(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 extern void stdlib_list_pop_at(std_iterator_t* pstIterator, void * pvResult);
 
 extern const std_item_handler_t std_list_default_itemhandler;
+
+// Cast a generic iterator to a list iterator, and a list iterator to a generic iterator
+#define ITERATOR_TO_LISTIT(IT)			STD_CONTAINER_OF(IT, std_list_iterator_t, stIterator)
+#define LISTIT_TO_ITERATOR(LISTIT)		&LISTIT->stIterator
+
+/**
+ * Step a list iterator forwards through a list container
+ *
+ * @param[in]	pstIterator	List iterator
+ */
+STD_INLINE void stdlib_list_next(std_iterator_t* pstIterator)
+{
+	std_list_iterator_t* pstListIt = ITERATOR_TO_LISTIT(pstIterator);
+	if (pstIterator->pvNext == pstIterator->pvEnd)
+	{
+		pstListIt->stIterator.bDone = true;
+	}
+	else
+	{
+		pstListIt->pstNode = pstIterator->pvNext;
+		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
+		pstIterator->pvNext = pstListIt->pstNode->pstNext;
+	}
+}
+
+/**
+ * Step a list iterator backwards through a list container
+ *
+ * @param[in]	pstIterator			List iterator
+ */
+STD_INLINE void stdlib_list_prev(std_iterator_t* pstIterator)
+{
+	std_list_iterator_t* pstListIt = ITERATOR_TO_LISTIT(pstIterator);
+	if (pstIterator->pvNext == pstIterator->pvEnd)
+	{
+		pstListIt->stIterator.bDone = true;
+	}
+	else
+	{
+		pstListIt->pstNode = pstIterator->pvNext;
+		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
+		pstIterator->pvNext = pstListIt->pstNode->pstPrev;
+	}
+}
+
 
 enum
 {

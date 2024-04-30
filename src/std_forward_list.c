@@ -28,10 +28,6 @@ SOFTWARE.
 #define CONTAINER_TO_FORWARD_LIST(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_forward_list_t, stContainer)
 #define FORWARD_LIST_TO_CONTAINER(LIST)			&LIST->stContainer
 
-// Cast a generic iterator to a forward list iterator, and a forward list iterator to a generic iterator
-#define ITERATOR_TO_FORWARDLISTIT(IT)			STD_CONTAINER_OF(IT, std_forward_list_iterator_t, stIterator)
-#define FORWARDLISTIT_TO_ITERATOR(LISTIT)		&LISTIT->stIterator
-
 #define FORWARD_LIST_LINK_SIZEOF(LIST)			sizeof(LIST.pstLink[0])
 #define FORWARD_LIST_LINK_TYPEOF(LIST)			STD_TYPEOF(LIST.pstLink[0])
 #define FORWARD_LIST_LINK_CAST(LIST,X)			((STD_TYPEOF(LIST.pstLink))(X))
@@ -232,32 +228,6 @@ size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResu
 	}
 
 	return i;
-}
-
-/**
- * Step a forward list iterator forwards through a forward list container
- *
- * @param[in]	pstIterator		Forward list iterator
- */
-void stdlib_forward_list_next(std_iterator_t* pstIterator)
-{
-	std_forward_list_iterator_t* pstListIt = ITERATOR_TO_FORWARDLISTIT(pstIterator);
-	std_forward_list_node_t * pstNode;
-
-	if (pstIterator->pvNext == pstIterator->pvEnd)
-	{
-		pstListIt->stIterator.bDone = true;
-	}
-	else
-	{
-		// Keep a copy of the previous node
-		pstListIt->pstPrev = pstListIt->pstNode;
-
-		pstNode = pstIterator->pvNext;
-		pstListIt->pstNode = pstNode;
-		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstNode, pstListIt->szPayloadOffset);
-		pstIterator->pvNext = pstNode->pstNext;
-	}
 }
 
 /**

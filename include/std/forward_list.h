@@ -101,12 +101,41 @@ extern size_t stdlib_forward_list_push_back(std_container_t* pstContainer, const
 extern size_t stdlib_forward_list_pop_front(std_container_t* pstContainer, void* pvResult, size_t szMaxItems);
 
 extern void stdlib_forward_list_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
-extern void stdlib_forward_list_next(std_iterator_t* pstIterator);
 extern size_t stdlib_forward_list_push_after(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 extern size_t stdlib_forward_list_push_before(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 extern void stdlib_forward_list_pop_at(std_iterator_t* pstIterator, void * pvResult);
 
 extern const std_item_handler_t std_forward_list_default_itemhandler;
+
+// Cast a generic iterator to a forward list iterator, and a forward list iterator to a generic iterator
+#define ITERATOR_TO_FORWARDLISTIT(IT)			STD_CONTAINER_OF(IT, std_forward_list_iterator_t, stIterator)
+#define FORWARDLISTIT_TO_ITERATOR(LISTIT)		&LISTIT->stIterator
+
+/**
+ * Step a forward list iterator forwards through a forward list container
+ *
+ * @param[in]	pstIterator		Forward list iterator
+ */
+STD_INLINE void stdlib_forward_list_next(std_iterator_t* pstIterator)
+{
+	std_forward_list_iterator_t* pstListIt = ITERATOR_TO_FORWARDLISTIT(pstIterator);
+	std_forward_list_node_t* pstNode;
+
+	if (pstIterator->pvNext == pstIterator->pvEnd)
+	{
+		pstListIt->stIterator.bDone = true;
+	}
+	else
+	{
+		// Keep a copy of the previous node
+		pstListIt->pstPrev = pstListIt->pstNode;
+
+		pstNode = pstIterator->pvNext;
+		pstListIt->pstNode = pstNode;
+		pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstNode, pstListIt->szPayloadOffset);
+		pstIterator->pvNext = pstNode->pstNext;
+	}
+}
 
 enum
 {

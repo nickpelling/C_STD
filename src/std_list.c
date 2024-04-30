@@ -28,10 +28,6 @@ SOFTWARE.
 #define CONTAINER_TO_LIST(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_list_t, stContainer)
 #define LIST_TO_CONTAINER(LIST)			&LIST->stContainer
 
-// Cast a generic iterator to a list iterator, and a list iterator to a generic iterator
-#define ITERATOR_TO_LISTIT(IT)			STD_CONTAINER_OF(IT, std_list_iterator_t, stIterator)
-#define LISTIT_TO_ITERATOR(LISTIT)		&LISTIT->stIterator
-
 #define LIST_LINK_SIZEOF(LIST)			sizeof(LIST.pstLink[0])
 #define LIST_LINK_TYPEOF(LIST)			STD_TYPEOF(LIST.pstLink[0])
 #define LIST_LINK_CAST(LIST,X)			((STD_TYPEOF(LIST.pstLink))(X))
@@ -311,46 +307,6 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
 	}
 
 	return szMaxItems;
-}
-
-/**
- * Step a list iterator forwards through a list container
- *
- * @param[in]	pstIterator	List iterator
- */
-void stdlib_list_next(std_iterator_t * pstIterator)
-{
-	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
-    if (pstIterator->pvNext == pstIterator->pvEnd)
-    {
-    	pstListIt->stIterator.bDone = true;
-    }
-    else
-    {
-    	pstListIt->pstNode = pstIterator->pvNext;
-    	pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
-		pstIterator->pvNext = pstListIt->pstNode->pstNext;
-    }
-}
-
-/**
- * Step a list iterator backwards through a list container
- *
- * @param[in]	pstIterator			List iterator
- */
-void stdlib_list_prev(std_iterator_t * pstIterator)
-{
-	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
-    if (pstIterator->pvNext == pstIterator->pvEnd)
-    {
-    	pstListIt->stIterator.bDone = true;
-    }
-    else
-    {
-    	pstListIt->pstNode = pstIterator->pvNext;
-    	pstListIt->stIterator.pvRef = STD_LINEAR_ADD(pstListIt->pstNode, pstListIt->szPayloadOffset);
-		pstIterator->pvNext = pstListIt->pstNode->pstPrev;
-    }
 }
 
 /**
