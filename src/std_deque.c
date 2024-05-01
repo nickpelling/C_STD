@@ -89,6 +89,7 @@ static inline void bucket_free(const std_deque_t* pstDeque, void * pvBucket)
 	std_memoryhandler_free(pstDeque->stContainer.pstMemoryHandler, pstDeque->stContainer.eHas, pvBucket);
 }
 
+#if 0
 /**
  * Retrieve a pointer to an item from inside a bucket of items
  */
@@ -96,6 +97,7 @@ static inline void * bucket_at(void * pvBucket, size_t szIndex, size_t szSizeofI
 {
 	return STD_LINEAR_ADD(pvBucket, szIndex * szSizeofItem);
 }
+#endif
 
 /**
  * Insert a new bucket of items at the start of the deque
@@ -307,7 +309,7 @@ void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 	szQuotient  = szIndex / pstDeque->szItemsPerBucket;
 	szRemainder = szIndex % pstDeque->szItemsPerBucket;
 	pvBucket = pstDeque->papvBuckets[szQuotient];
-	return bucket_at(pvBucket, szRemainder, pstContainer->szSizeofItem);
+	return STD_LINEAR_ADD(pvBucket, szRemainder * pstContainer->szSizeofItem);
 }
 
 /**
@@ -318,14 +320,14 @@ void stdlib_deque_next(std_iterator_t * pstIterator)
 	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 	std_container_t* pstContainer = pstDequeIt->stIterator.pstContainer;
 
-	if (++pstDequeIt->szIndex < pstDequeIt->szRangeLen)
+	if (++pstDequeIt->szIndex >= pstDequeIt->szRangeLen)
 	{
-		pstIterator->pvRef = stdlib_deque_at(pstContainer, pstDequeIt->szIndex);
+		pstDequeIt->stIterator.bDone = true;
 	}
 	else
 	{
-    	pstDequeIt->stIterator.bDone = true;
-    }
+		pstIterator->pvRef = stdlib_deque_at(pstContainer, pstDequeIt->szIndex);
+	}
 }
 
 /**
@@ -336,14 +338,14 @@ void stdlib_deque_prev(std_iterator_t * pstIterator)
 	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 	std_container_t* pstContainer = pstIterator->pstContainer;
 
-	if (pstDequeIt->szIndex-- != 0U)
+	if (pstDequeIt->szIndex-- == 0U)
 	{
-		pstIterator->pvRef = stdlib_deque_at(pstContainer, pstDequeIt->szIndex);
+		pstDequeIt->stIterator.bDone = true;
 	}
 	else
 	{
-		pstDequeIt->stIterator.bDone = true;
-    }
+		pstIterator->pvRef = stdlib_deque_at(pstContainer, pstDequeIt->szIndex);
+	}
 }
 
 /**
