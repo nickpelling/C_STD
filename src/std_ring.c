@@ -31,9 +31,6 @@ SOFTWARE.
 #define CONTAINER_TO_RING(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_ring_t, stContainer)
 #define RING_TO_CONTAINER(RING)			&RING->stContainer
 
-#define ITERATOR_TO_RINGIT(IT)			STD_CONTAINER_OF(IT, std_ring_iterator_t, stIterator)
-#define RINGIT_TO_ITERATOR(RINGIT)		&RINGIT->stIterator
-
 /**
  * Step a ring pointer forwards by the size of an iterator's item
  * 
@@ -380,42 +377,6 @@ size_t stdlib_ring_pop_back(std_container_t * pstContainer, void * pvResult, siz
 	pstContainer->szNumItems -= szMaxItems;
 
 	return szMaxItems;
-}
-
-/**
- * Step a ring iterator forwards in memory
- *
- * @param[in]	pstIterator		Ring iterator
- */
-void stdlib_ring_iterator_next(std_iterator_t * pstIterator)
-{
-	if (pstIterator->pvNext == pstIterator->pvEnd)
-	{
-		pstIterator->bDone = true;
-	}
-	else
-	{
-		pstIterator->pvRef = pstIterator->pvNext;
-		pstIterator->pvNext = next_item(pstIterator, pstIterator->pvRef);
-    }
-}
-
-/**
- * Step a ring iterator backwards in memory
- *
- * @param[in]	pstIterator		Ring iterator
- */
-void stdlib_ring_iterator_prev(std_iterator_t * pstIterator)
-{
-	if (pstIterator->pvNext == pstIterator->pvEnd)
-	{
-		pstIterator->bDone = true;
-	}
-	else
-	{
-		pstIterator->pvRef = pstIterator->pvNext;
-		pstIterator->pvNext = prev_item(pstIterator, pstIterator->pvRef);
-    }
 }
 
 /**

@@ -86,10 +86,60 @@ extern void* stdlib_ring_at(std_container_t* pstContainer, size_t szIndex);
 
 extern void stdlib_ring_forwarditerator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
 extern void stdlib_ring_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator);
-extern void stdlib_ring_iterator_next(std_iterator_t* pstIterator);
-extern void stdlib_ring_iterator_prev(std_iterator_t* pstIterator);
 
 extern const std_item_handler_t std_ring_default_itemhandler;
+
+#define ITERATOR_TO_RINGIT(IT)			STD_CONTAINER_OF(IT, std_ring_iterator_t, stIterator)
+#define RINGIT_TO_ITERATOR(RINGIT)		&RINGIT->stIterator
+
+/**
+ * Step a ring iterator forwards in memory
+ *
+ * @param[in]	pstIterator		Ring iterator
+ */
+STD_INLINE void stdlib_ring_iterator_next(std_iterator_t* pstIterator)
+{
+	std_ring_iterator_t* pstRingIt = ITERATOR_TO_RINGIT(pstIterator);
+	void* pvNext = pstIterator->pvNext;
+	if (pvNext == pstIterator->pvEnd)
+	{
+		pstIterator->bDone = true;
+	}
+	else
+	{
+		pstIterator->pvRef = pvNext;
+		pvNext = STD_LINEAR_ADD(pvNext, pstIterator->szSizeofItem);
+		if (pvNext >= pstRingIt->pvRingEnd)
+		{
+			pvNext = pstRingIt->pvRingStart;
+		}
+		pstIterator->pvNext = pvNext;
+	}
+}
+
+/**
+ * Step a ring iterator backwards in memory
+ *
+ * @param[in]	pstIterator		Ring iterator
+ */
+STD_INLINE void stdlib_ring_iterator_prev(std_iterator_t* pstIterator)
+{
+	std_ring_iterator_t* pstRingIt = ITERATOR_TO_RINGIT(pstIterator);
+	void* pvNext = pstIterator->pvNext;
+	if (pvNext == pstIterator->pvEnd)
+	{
+		pstIterator->bDone = true;
+	}
+	else
+	{
+		pstIterator->pvRef = pvNext;
+		if (pvNext <= pstRingIt->pvRingStart)
+		{
+			pvNext = pstRingIt->pvRingEnd;
+		}
+		pstIterator->pvNext = STD_LINEAR_SUB(pvNext, pstIterator->szSizeofItem);
+	}
+}
 
 enum
 {
