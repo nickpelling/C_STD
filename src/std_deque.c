@@ -319,14 +319,30 @@ void stdlib_deque_next(std_iterator_t * pstIterator)
 {
 	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 	std_container_t* pstContainer = pstDequeIt->stIterator.pstContainer;
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	size_t szIndex;
+	size_t szQuotient;
 
-	if (++pstDequeIt->szIndex >= pstDequeIt->szRangeLen)
+	szIndex = pstDequeIt->szIndex;
+	if (szIndex == pstDequeIt->szRangeEnd)
 	{
 		pstDequeIt->stIterator.bDone = true;
 	}
 	else
 	{
-		pstIterator->pvRef = stdlib_deque_at(pstContainer, pstDequeIt->szIndex);
+		pstDequeIt->szIndex = ++szIndex;
+
+		pstIterator->pvRef = STD_LINEAR_ADD(pstIterator->pvRef, pstIterator->szSizeofItem);
+		if (pstIterator->pvRef >= pstDequeIt->pvBucketEnd)
+		{
+			szIndex += pstDeque->szStartOffset;
+			szQuotient  = szIndex / pstDeque->szItemsPerBucket;
+
+			pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
+			pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
+
+			pstIterator->pvRef = pstDequeIt->pvBucketStart;
+		}
 	}
 }
 
@@ -337,14 +353,30 @@ void stdlib_deque_prev(std_iterator_t * pstIterator)
 {
 	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 	std_container_t* pstContainer = pstIterator->pstContainer;
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	size_t szIndex;
+	size_t szQuotient;
 
-	if (pstDequeIt->szIndex-- == 0U)
+	szIndex = pstDequeIt->szIndex;
+	if (szIndex == pstDequeIt->szRangeEnd)
 	{
 		pstDequeIt->stIterator.bDone = true;
 	}
 	else
 	{
-		pstIterator->pvRef = stdlib_deque_at(pstContainer, pstDequeIt->szIndex);
+		pstDequeIt->szIndex = --szIndex;
+
+		pstIterator->pvRef = STD_LINEAR_SUB(pstIterator->pvRef, pstIterator->szSizeofItem);
+		if (pstIterator->pvRef < pstDequeIt->pvBucketStart)
+		{
+			szIndex += pstDeque->szStartOffset;
+			szQuotient = szIndex / pstDeque->szItemsPerBucket;
+
+			pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
+			pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
+
+			pstIterator->pvRef = STD_LINEAR_SUB(pstDequeIt->pvBucketEnd, pstIterator->szSizeofItem);
+		}
 	}
 }
 
@@ -353,17 +385,33 @@ void stdlib_deque_prev(std_iterator_t * pstIterator)
  */
 void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
 {
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	size_t szIndex;
+	size_t szQuotient;
+	size_t szRemainder;
+	void * pvRef;
+
 	if (pstContainer->szNumItems == 0)
 	{
 		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
-		stdlib_iterator_construct(pstIterator, pstContainer, stdlib_deque_at(pstContainer, 0));
+		szIndex = 0;
 
 		std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-		pstDequeIt->szIndex			= 0U;
-		pstDequeIt->szRangeLen		= pstContainer->szNumItems;
+		pstDequeIt->szIndex			= szIndex;
+		pstDequeIt->szRangeEnd		= pstContainer->szNumItems - 1U;
+
+		szIndex += pstDeque->szStartOffset;
+		szQuotient = szIndex / pstDeque->szItemsPerBucket;
+		szRemainder = szIndex % pstDeque->szItemsPerBucket;
+
+		pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
+		pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
+
+		pvRef = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, szRemainder * pstContainer->szSizeofItem);
+		stdlib_iterator_construct(pstIterator, pstContainer, pvRef);
 	}
 }
 
@@ -372,17 +420,33 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
  */
 void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator)
 {
+	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	size_t szIndex;
+	size_t szQuotient;
+	size_t szRemainder;
+	void* pvRef;
+
 	if (pstContainer->szNumItems == 0)
 	{
 		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
-		stdlib_iterator_construct(pstIterator, pstContainer, stdlib_deque_at(pstContainer, pstContainer->szNumItems - 1U));
+		szIndex = pstContainer->szNumItems - 1U;
 
-		std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-		pstDequeIt->szIndex = pstContainer->szNumItems - 1U;
-		pstDequeIt->szRangeLen = pstContainer->szNumItems;
+		pstDequeIt->szIndex = szIndex;
+		pstDequeIt->szRangeEnd = 0;
+
+		szIndex += pstDeque->szStartOffset;
+		szQuotient = szIndex / pstDeque->szItemsPerBucket;
+		szRemainder = szIndex % pstDeque->szItemsPerBucket;
+
+		pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
+		pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
+
+		pvRef = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, szRemainder * pstContainer->szSizeofItem);
+		stdlib_iterator_construct(pstIterator, pstContainer, pvRef);
 	}
 }
 

@@ -81,7 +81,9 @@ typedef struct
 	std_iterator_t stIterator;
 
     size_t szIndex;
-    size_t szRangeLen;
+	size_t szRangeEnd;
+	void * pvBucketStart;
+	void * pvBucketEnd;
 } std_deque_iterator_t;
 
 #define STD_DEQUE_DECLARE(T,HAS_ENUM,...)	\
