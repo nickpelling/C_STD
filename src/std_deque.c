@@ -36,12 +36,6 @@ SOFTWARE.
 
 #define DEFAULT_BUCKET_SIZE		256
 
-#define CONTAINER_TO_DEQUE(CONTAINER)	STD_CONTAINER_OF(CONTAINER, std_deque_t, stContainer)
-#define DEQUE_TO_CONTAINER(DEQUE)		&DEQUE->stContainer
-
-#define ITERATOR_TO_DEQUEIT(IT)			STD_CONTAINER_OF(IT, std_deque_iterator_t, stIterator)
-#define DEQUEIT_TO_ITERATOR(DEQUEIT)	&DEQUEIT->stIterator
-
 /*
  * Step a pointer linearly forwards within a bucket of items
  * 
@@ -310,74 +304,6 @@ void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 	szRemainder = szIndex % pstDeque->szItemsPerBucket;
 	pvBucket = pstDeque->papvBuckets[szQuotient];
 	return STD_LINEAR_ADD(pvBucket, szRemainder * pstContainer->szSizeofItem);
-}
-
-/**
- *
- */
-void stdlib_deque_next(std_iterator_t * pstIterator)
-{
-	std_deque_iterator_t * pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-	std_container_t* pstContainer = pstDequeIt->stIterator.pstContainer;
-	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
-	size_t szIndex;
-	size_t szQuotient;
-
-	szIndex = pstDequeIt->szIndex;
-	if (szIndex == pstDequeIt->szRangeEnd)
-	{
-		pstDequeIt->stIterator.bDone = true;
-	}
-	else
-	{
-		pstDequeIt->szIndex = ++szIndex;
-
-		pstIterator->pvRef = STD_LINEAR_ADD(pstIterator->pvRef, pstIterator->szSizeofItem);
-		if (pstIterator->pvRef >= pstDequeIt->pvBucketEnd)
-		{
-			szIndex += pstDeque->szStartOffset;
-			szQuotient  = szIndex / pstDeque->szItemsPerBucket;
-
-			pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
-			pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
-
-			pstIterator->pvRef = pstDequeIt->pvBucketStart;
-		}
-	}
-}
-
-/**
- *
- */
-void stdlib_deque_prev(std_iterator_t * pstIterator)
-{
-	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
-	std_container_t* pstContainer = pstIterator->pstContainer;
-	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
-	size_t szIndex;
-	size_t szQuotient;
-
-	szIndex = pstDequeIt->szIndex;
-	if (szIndex == pstDequeIt->szRangeEnd)
-	{
-		pstDequeIt->stIterator.bDone = true;
-	}
-	else
-	{
-		pstDequeIt->szIndex = --szIndex;
-
-		pstIterator->pvRef = STD_LINEAR_SUB(pstIterator->pvRef, pstIterator->szSizeofItem);
-		if (pstIterator->pvRef < pstDequeIt->pvBucketStart)
-		{
-			szIndex += pstDeque->szStartOffset;
-			szQuotient = szIndex / pstDeque->szItemsPerBucket;
-
-			pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
-			pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
-
-			pstIterator->pvRef = STD_LINEAR_SUB(pstDequeIt->pvBucketEnd, pstIterator->szSizeofItem);
-		}
-	}
 }
 
 /**
