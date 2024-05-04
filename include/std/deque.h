@@ -111,8 +111,8 @@ extern size_t stdlib_deque_pop_back( std_container_t * pstContainer, void * pvRe
 
 extern void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex);
 
-extern void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
-extern void stdlib_deque_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
+extern void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
+extern void stdlib_deque_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
 
 extern const std_item_handler_t std_deque_default_itemhandler;
 

@@ -95,10 +95,8 @@ extern size_t stdlib_vector_pop_back(	std_container_t * pstContainer, void * pvR
 extern void stdlib_vector_ranged_sort(	std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 extern void * stdlib_vector_at(std_container_t * pstContainer, size_t szIndex);
 
-extern void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
-extern void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
-extern void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator);
-extern void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd);
+extern void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
+extern void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
 
 extern size_t stdlib_vector_heap_insert(std_container_t* pstContainer, const std_linear_series_t* pstSeries, pfn_std_compare_t pfnCompare);
 
@@ -153,9 +151,7 @@ enum
 		| std_container_implements_reserve
 		| std_container_implements_ranged_sort
 		| std_container_implements_forward_constructnextprev
-		| std_container_implements_forward_range
 		| std_container_implements_reverse_constructnextprev
-		| std_container_implements_reverse_range
 		| std_container_implements_default_itemhandler)
 };
 
@@ -175,14 +171,12 @@ enum
 		[std_iterator_enum_forward] =					\
 		{												\
 			.pfn_construct	= &stdlib_vector_forwarditerator_construct,	\
-			.pfn_range		= &stdlib_vector_forwarditerator_range,	\
 			.pfn_next		= &stdlib_vector_iterator_next,			\
 			.pfn_prev		= &stdlib_vector_iterator_prev			\
 		},												\
 		[std_iterator_enum_reverse] =					\
 		{												\
 			.pfn_construct	= &stdlib_vector_reverseiterator_construct,	\
-			.pfn_range		= &stdlib_vector_reverseiterator_range,	\
 			.pfn_next		= &stdlib_vector_iterator_prev,			\
 			.pfn_prev		= &stdlib_vector_iterator_next			\
 		}												\

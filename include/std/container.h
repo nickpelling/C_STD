@@ -83,7 +83,6 @@ typedef struct
 	size_t	(* const pfn_push_back)		(std_container_t * pstContainer, const std_linear_series_t * pstSeries);
 	size_t	(* const pfn_pop_front)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
 	size_t	(* const pfn_pop_back)		(std_container_t * pstContainer, void * pvResult, size_t szMaxItems);
-	void	(* const pfn_range) 		(std_container_t * pstContainer, void * pvBegin, void * pvEnd, std_iterator_t * pstIterator);
 	void	(* const pfn_ranged_sort)	(std_container_t * pstContainer, size_t szFirst, size_t szLast, pfn_std_compare_t pfn_Compare);
 	void *	(* const pfn_at)			(std_container_t * pstContainer, size_t szIndex);
 	bool	(* const pfn_destruct)		(std_container_t * pstContainer);
@@ -488,34 +487,6 @@ STD_INLINE size_t std_container_call_pop_back(std_container_t* pstContainer, std
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * Construct an iterator to step through a specified range of entries in a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	pvBegin			First entry in range
- * @param[in]	pvEnd			Entry after the final entry in range
- * @param[out]	pstIterator		Iterator to construct
- */
-STD_INLINE void std_container_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, void* pvBegin, void* pvEnd, std_iterator_t* pstIterator)
-{
-	std_lock_state_t eOldState = std_container_lock_for_reading(pstContainer, eHas);
-	STD_CONTAINER_CALL(eContainer, pfn_range)(pstContainer, pvBegin, pvEnd, pstIterator);
-	std_container_lock_restore(pstContainer, eHas, eOldState);
-}
-
-#define std_range(V,FIRST,LAST,IT)			\
-			std_container_call_range(		\
-				&V.stBody,					\
-				STD_CONTAINER_ENUM_GET_AND_CHECK(V,range),	\
-				STD_CONTAINER_HAS_GET(V),	\
-				FIRST(V),					\
-				LAST(V),					\
-				&IT)
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
  * Destruct a container
  *
  * @param[in]	pstContainer	The container
@@ -600,50 +571,38 @@ STD_INLINE void* std_container_call_at(std_container_t* pstContainer, std_contai
  * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
  * @param[in]	eIterator		Which iterator type to use
  * @param[in]	pstIterator		Iterator to construct
+ * @param[in]	szFirst			First index in range
+ * @param[in]	szLast			Last index in range
  */
-STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator)
+STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator,
+												std_iterator_t* pstIterator, size_t szFirst, size_t szLast)
 {
 	if (eHas) { /* Unused parameter */ }
 	pstIterator->pstContainer = pstContainer;
 	pstIterator->szSizeofItem = pstContainer->szSizeofItem;
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator);
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_construct)(pstContainer, pstIterator, szFirst, szLast);
 }
 
-#define std_iterator_construct(V, IT)				\
+#define std_iterator_construct(V, IT)	\
 			std_iterator_call_construct(			\
 				&V.stBody.stContainer,				\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
 				STD_ITERATOR_PARENT_HAS_GET(IT),	\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct),	\
-				&IT.stItBody.stIterator)
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
- * Construct an iterator to step through a range of items inside a container
- *
- * @param[in]	pstContainer	The container
- * @param[in]	eContainer		The container type index
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	eIterator		Which iterator type to use
- * @param[out]	pstIterator		Iterator to construct
- * @param[in]	pvBegin			First item in the range
- * @param[in]	pvEnd			Item immediately after the last item in the range
- */
-STD_INLINE void std_iterator_call_range(std_container_t* pstContainer, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, std_iterator_t* pstIterator, void* pvBegin, void* pvEnd)
-{
-	if (eHas) { /* Unused parameter */ }
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_range)(pstContainer, pstIterator, pvBegin, pvEnd);
-}
-
-#define std_iterator_range(IT,BEGIN,END)			\
-			std_iterator_call_range(				\
 				&IT.stItBody.stIterator,			\
+				0,									\
+				std_size(V) - 1U)
+
+#define std_iterator_construct_range(V, IT, FIRST, LAST)	\
+			std_iterator_call_construct(			\
+				&V.stBody.stContainer,				\
 				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
 				STD_ITERATOR_PARENT_HAS_GET(IT),	\
-				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,range),	\
-				BEGIN,								\
-				END)
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct),	\
+				&IT.stItBody.stIterator,			\
+				FIRST,								\
+				LAST )
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

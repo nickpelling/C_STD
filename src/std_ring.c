@@ -380,69 +380,60 @@ size_t stdlib_ring_pop_back(std_container_t * pstContainer, void * pvResult, siz
 }
 
 /**
- * 
- */
-void stdlib_ring_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
-{
-	std_ring_t * pstRing = CONTAINER_TO_RING(pstContainer);
-	std_ring_iterator_t * pstRingIterator = ITERATOR_TO_RINGIT(pstIterator);
-	if (pvBegin == pvEnd)
-	{
-		stdlib_iterator_construct_done(pstIterator);
-	}
-	else
-	{
-		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
-		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
-		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
-		pstIterator->pvBegin	= pvBegin;
-		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvNext		= next_item(pstIterator, pvBegin);
-	}
-}
-
-/**
  *
  */
-void stdlib_ring_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
-{
-	std_ring_t* pstRing = CONTAINER_TO_RING(pstContainer);
-	void * pvBegin = pstRing->pvStartAddr;
-	void * pvEnd   = stdlib_ring_at(pstContainer, pstContainer->szNumItems);
-	stdlib_ring_forwarditerator_range( pstContainer, pstIterator, pvBegin, pvEnd);
-}
-
-/**
- *
- */
-void stdlib_ring_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
+void stdlib_ring_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
 	std_ring_t* pstRing = CONTAINER_TO_RING(pstContainer);
 	std_ring_iterator_t* pstRingIterator = ITERATOR_TO_RINGIT(pstIterator);
-	if (pvBegin == pvEnd)
+
+	if (szLast < szFirst)
 	{
 		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
-		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
 		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
 		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
-		pstIterator->pvBegin	= pvBegin;
-		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvNext		= prev_item(pstIterator, pvBegin);
+
+		void* pvBegin = stdlib_ring_at(pstContainer, szFirst);
+		void* pvEnd   = stdlib_ring_at(pstContainer, szLast);
+
+		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
+		pstIterator->pvBegin = pvBegin;
+		pstIterator->pvEnd   = pvEnd;
+		pstIterator->pvNext  = next_item(pstIterator, pvBegin);
 	}
 }
 
 /**
  *
  */
-void stdlib_ring_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_ring_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
 	std_ring_t* pstRing = CONTAINER_TO_RING(pstContainer);
-	void * pvBegin = stdlib_ring_at(pstContainer, pstContainer->szNumItems - 1U);
-	void * pvEnd   = stdlib_ring_at(pstContainer, pstRing->szNumAlloced - 1U);
-	stdlib_ring_reverseiterator_range( pstContainer, pstIterator, pvBegin, pvEnd);
+	std_ring_iterator_t* pstRingIterator = ITERATOR_TO_RINGIT(pstIterator);
+
+	if (szLast < szFirst)
+	{
+		stdlib_iterator_construct_done(pstIterator);
+	}
+	else
+	{
+		pstRingIterator->pvRingStart = pstRing->pvStartAddr;
+		pstRingIterator->pvRingEnd = STD_LINEAR_ADD(pstRing->pvStartAddr, pstRing->szNumAlloced * pstContainer->szSizeofItem);
+
+		szFirst = (pstContainer->szNumItems - 1U) - szFirst;
+		szLast  = (pstContainer->szNumItems - 1U) - szLast;
+
+		void* pvBegin = stdlib_ring_at(pstContainer, szFirst);
+		void* pvEnd   = stdlib_ring_at(pstContainer, szLast);
+
+		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
+		pstIterator->pvBegin = pvBegin;
+		pstIterator->pvEnd = pvEnd;
+		pstIterator->pvNext = prev_item(pstIterator, pvBegin);
+	}
 }
 
 // -------------------------------------------------------------------------

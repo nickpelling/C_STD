@@ -309,7 +309,7 @@ void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 /**
  *
  */
-void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
 	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
 	size_t szIndex;
@@ -323,11 +323,11 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
 	}
 	else
 	{
-		szIndex = 0;
+		szIndex = szFirst;
 
 		std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 		pstDequeIt->szIndex			= szIndex;
-		pstDequeIt->szRangeEnd		= pstContainer->szNumItems - 1U;
+		pstDequeIt->szRangeEnd		= szLast;
 
 		szIndex += pstDeque->szStartOffset;
 		szQuotient = szIndex / pstDeque->szItemsPerBucket;
@@ -344,7 +344,7 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
 /**
  *
  */
-void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator)
+void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator, size_t szFirst, size_t szLast)
 {
 	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
 	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
@@ -359,10 +359,13 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 	}
 	else
 	{
-		szIndex = pstContainer->szNumItems - 1U;
+		szFirst = (pstContainer->szNumItems - 1U) - szFirst;
+		szLast  = (pstContainer->szNumItems - 1U) - szLast;
+
+		szIndex = szFirst;
 
 		pstDequeIt->szIndex = szIndex;
-		pstDequeIt->szRangeEnd = 0;
+		pstDequeIt->szRangeEnd = szLast;
 
 		szIndex += pstDeque->szStartOffset;
 		szQuotient = szIndex / pstDeque->szItemsPerBucket;

@@ -345,59 +345,47 @@ void stdlib_vector_ranged_sort(std_container_t * pstContainer, size_t szFirst, s
 /**
  *
  */
-void stdlib_vector_forwarditerator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
+void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
-	if (pvBegin == pvEnd)
+	if (szLast < szFirst)
 	{
 		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
+		void* pvBegin = stdlib_vector_at(pstContainer, szFirst);
+		void* pvEnd   = stdlib_vector_at(pstContainer, szLast + 1U);
+
 		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
-		pstIterator->pvBegin	= pvBegin;
-		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvNext		= STD_LINEAR_ADD(pvBegin, pstIterator->szSizeofItem);
+		pstIterator->pvBegin = pvBegin;
+		pstIterator->pvEnd   = pvEnd;
+		pstIterator->pvNext = STD_LINEAR_ADD(pvBegin, pstIterator->szSizeofItem);
 	}
 }
 
 /**
  *
  */
-void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
-	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	void * pvBegin = pstVector->pvStartAddr;
-	void * pvEnd   = stdlib_vector_at(pstContainer, pstContainer->szNumItems);
-	stdlib_vector_forwarditerator_range( pstContainer, pstIterator, pvBegin, pvEnd);
-}
-
-/**
- *
- */
-void stdlib_vector_reverseiterator_range(std_container_t * pstContainer, std_iterator_t * pstIterator, void *pvBegin, void * pvEnd)
-{
-	if (pvBegin == pvEnd)
+	if (szLast < szFirst)
 	{
 		stdlib_iterator_construct_done(pstIterator);
 	}
 	else
 	{
-		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
-		pstIterator->pvBegin	= pvBegin;
-		pstIterator->pvEnd		= pvEnd;
-		pstIterator->pvNext		= STD_LINEAR_SUB(pvBegin, pstIterator->szSizeofItem);
-	}
-}
+		szFirst = (pstContainer->szNumItems - 1U) - szFirst;
+		szLast  = (pstContainer->szNumItems - 1U) - szLast;
 
-/**
- *
- */
-void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
-{
-	std_vector_t* pstVector = CONTAINER_TO_VECTOR(pstContainer);
-	void * pvBegin = stdlib_vector_at(pstContainer, pstContainer->szNumItems - 1U);
-	void * pvEnd = STD_LINEAR_SUB(pstVector->pvStartAddr, pstContainer->szSizeofItem);
-	stdlib_vector_reverseiterator_range( pstContainer, pstIterator, pvBegin, pvEnd );
+		void* pvBegin = stdlib_vector_at(pstContainer, szFirst);
+		void* pvEnd   = stdlib_vector_at(pstContainer, szLast);
+		pvEnd = STD_LINEAR_SUB(pvEnd, pstIterator->szSizeofItem);
+
+		stdlib_iterator_construct(pstIterator, pstContainer, pvBegin);
+		pstIterator->pvBegin = pvBegin;
+		pstIterator->pvEnd   = pvEnd;
+		pstIterator->pvNext = STD_LINEAR_SUB(pvBegin, pstIterator->szSizeofItem);
+	}
 }
 
 // -------------------------------------------------------------------------

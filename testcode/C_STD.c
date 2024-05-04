@@ -1150,16 +1150,16 @@ int main(int argc, char * argv[])
 	}
 
 	bStatus = true;
-	if (bRunAll || strcmp(pachArg, "vector") == 0)		{	bStatus &= vector_test();			}
-	if (bRunAll || strcmp(pachArg, "ring") == 0)		{	bStatus &= ring_test();				}
-	if (bRunAll || strcmp(pachArg, "list") == 0)		{	bStatus &= list_test();				}
-	if (bRunAll || strcmp(pachArg, "forwardlist") == 0) {	bStatus &= forward_list_test();		}
-	if (bRunAll || strcmp(pachArg, "deque") == 0)		{	bStatus &= deque_test();			}
-	if (bRunAll || strcmp(pachArg, "queue") == 0)		{	bStatus &= queue_test();			}
-	if (bRunAll || strcmp(pachArg, "stack") == 0)		{	bStatus &= stack_test();			}
-	if (bRunAll || strcmp(pachArg, "nested") == 0)		{	bStatus &= vector_of_lists_test();	}
-	if (bRunAll || strcmp(pachArg, "priorityqueue") == 0) { bStatus &= priorityqueue_test();	}
-	if (bRunAll || strcmp(pachArg, "prioritydeque") == 0) { bStatus &= prioritydeque_test();	}
+	if (bRunAll || strcmp(pachArg, "vector") == 0)			{	bStatus &= vector_test();			}
+	if (bRunAll || strcmp(pachArg, "forwardlist") == 0)		{	bStatus &= forward_list_test();		}
+	if (bRunAll || strcmp(pachArg, "list") == 0)			{	bStatus &= list_test();				}
+	if (bRunAll || strcmp(pachArg, "deque") == 0)			{	bStatus &= deque_test();			}
+	if (bRunAll || strcmp(pachArg, "ring") == 0)			{	bStatus &= ring_test();				}
+	if (bRunAll || strcmp(pachArg, "queue") == 0)			{	bStatus &= queue_test();			}
+	if (bRunAll || strcmp(pachArg, "stack") == 0)			{	bStatus &= stack_test();			}
+	if (bRunAll || strcmp(pachArg, "priorityqueue") == 0)	{	bStatus &= priorityqueue_test();	}
+	if (bRunAll || strcmp(pachArg, "prioritydeque") == 0)	{	bStatus &= prioritydeque_test();	}
+	if (bRunAll || strcmp(pachArg, "nested") == 0)			{	bStatus &= vector_of_lists_test();	}
 
 	return bStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

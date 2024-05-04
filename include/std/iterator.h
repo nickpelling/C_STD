@@ -32,8 +32,7 @@ typedef struct std_iterator_s std_iterator_t;
 
 typedef struct
 {
-	void (*pfn_construct)(	std_container_t * pstContainer, std_iterator_t * pstIterator);
-	void (*pfn_range)(	std_container_t * pstContainer, std_iterator_t * pstIterator, void * pvBegin, void * pvEnd);
+	void (*pfn_construct)(	std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
 	void (*pfn_next)(	std_iterator_t  * pstIterator);
 	void (*pfn_prev)(	std_iterator_t  * pstIterator);
 	size_t (*pfn_push_after)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
@@ -116,16 +115,14 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 #define std_iterator_done(IT)		IT.stItBody.stIterator.bDone
 #define std_iterator_at(IT)			STD_ITEM_PTR_CAST(IT, IT.stItBody.stIterator.pvRef)
 
+// ----------------------------------------------------------------
+
 #define STD_FOR_LOOP(CONTAINER,IT,IT_TYPE,TEMPVAR)	\
 			IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_construct(CONTAINER,IT),NULL); \
 			!std_iterator_done(IT); \
 			(void)TEMPVAR, std_iterator_next(IT)
 
-#define STD_FOR_RANGE_LOOP(CONTAINER,IT,IT_TYPE,BEGIN,END,TEMPVAR)	\
-			IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_range(CONTAINER,IT,BEGIN,END),NULL); \
-			!std_iterator_done(IT); \
-			(void)TEMPVAR, std_iterator_next(IT)
-
+// 
 // The container library's generic std_for() macro
 //	- locks the container (if the container has a lockhandler)
 //	- instantiates a named iterator in the inner for-loop scope
@@ -140,10 +137,6 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 	std_container_lock_wrapper(CONTAINER, IS_CONST))	\
 		for (STD_FOR_LOOP(CONTAINER,IT,IT_TYPE,STD_FAKEVAR())
 
-#define std_for_range(CONTAINER, IT, IS_CONST, IT_TYPE, BEGIN, END)	\
-	std_container_lock_wrapper(CONTAINER, IS_CONST))				\
-		for (STD_FOR_RANGE_LOOP(CONTAINER, IT, IT_TYPE, BEGIN, END, STD_FAKEVAR())
-
 #define std_each_forward(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_forward_iterator)
 #define std_each_forward_const(CONTAINER, IT)	std_for(CONTAINER, IT, true,  std_forward_const_iterator)
 #define std_each_reverse(CONTAINER, IT)			std_for(CONTAINER, IT, false, std_reverse_iterator)
@@ -151,6 +144,17 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 
 #define std_each(CONTAINER, IT)			std_each_forward(CONTAINER, IT)
 #define std_each_const(CONTAINER, IT)	std_each_forward_const(CONTAINER, IT)
+
+// ----------------------------------------------------------------
+
+#define STD_FOR_RANGE_LOOP(CONTAINER,IT,IT_TYPE,FIRST,LAST,TEMPVAR)	\
+			IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_construct_range(CONTAINER,IT,FIRST,LAST),NULL); \
+			!std_iterator_done(IT); \
+			(void)TEMPVAR, std_iterator_next(IT)
+
+#define std_for_range(CONTAINER, IT, IS_CONST, IT_TYPE, FIRST, LAST)	\
+	std_container_lock_wrapper(CONTAINER, IS_CONST))				\
+		for (STD_FOR_RANGE_LOOP(CONTAINER, IT, IT_TYPE, FIRST, LAST, STD_FAKEVAR())
 
 #define std_for_range_forward(CONTAINER, IT, BEGIN, END)		std_for_range(CONTAINER, IT, false, std_forward_iterator,		BEGIN, END)
 #define std_for_range_forward_const(CONTAINER, IT, BEGIN, END)	std_for_range(CONTAINER, IT, true,  std_forward_const_iterator,	BEGIN, END)

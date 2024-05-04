@@ -315,10 +315,12 @@ size_t stdlib_list_pop_back(std_container_t * pstContainer, void * pvResult, siz
  * @param[in]	pstContainer	List container
  * @param[in]	pstIterator		List iterator
  */
-void stdlib_list_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_list_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
+
+	if (szFirst || szLast) { /* FIXME Ranges don't work yet! */ }
 
 	if (pstList->pstHead == NULL)
 	{
@@ -345,10 +347,12 @@ void stdlib_list_forwarditerator_construct(std_container_t * pstContainer, std_i
  * @param[in]	pstContainer	List container
  * @param[in]	pstIterator		List iterator
  */
-void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator)
+void stdlib_list_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
 	std_list_t * pstList = CONTAINER_TO_LIST(pstContainer);
 	std_list_iterator_t * pstListIt = ITERATOR_TO_LISTIT(pstIterator);
+
+	if (szFirst || szLast) { /* FIXME Ranges don't work yet! */ }
 
 	if (pstList->pstTail == NULL)
 	{
