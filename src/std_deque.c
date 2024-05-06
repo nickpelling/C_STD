@@ -68,6 +68,10 @@ static inline void * prev_item(std_iterator_t * pstIterator, void * pvThis)
 
 /**
  * Grab memory for a bucket of items (but don't initialise them)
+ * 
+ * @param[in]	pstDeque	Deque container
+ * 
+ * @return Pointer to memory allocated for the bucket (NULL if unsuccessful)
  */
 static inline void * bucket_alloc(const std_deque_t * pstDeque)
 {
@@ -77,6 +81,9 @@ static inline void * bucket_alloc(const std_deque_t * pstDeque)
 
 /**
  * Release memory for a bucket of items
+ * 
+ * @param[in]	pstDeque	Deque container
+ * @param[in]	pvBucket	Bucket to release
  */
 static inline void bucket_free(const std_deque_t* pstDeque, void * pvBucket)
 {
@@ -86,6 +93,12 @@ static inline void bucket_free(const std_deque_t* pstDeque, void * pvBucket)
 #if 0
 /**
  * Retrieve a pointer to an item from inside a bucket of items
+ * 
+ * @param[in]	pvBucket		Bucket holding item
+ * @param[in]	szIndex			Index within bucket
+ * @param[in]	szSizeofItem	Size of each item within buck
+ * 
+ * @return Pointer to the specified item
  */
 static inline void * bucket_at(void * pvBucket, size_t szIndex, size_t szSizeofItem)
 {
@@ -95,6 +108,10 @@ static inline void * bucket_at(void * pvBucket, size_t szIndex, size_t szSizeofI
 
 /**
  * Insert a new bucket of items at the start of the deque
+ * 
+ * @param[in]	pstDeque	Deque container
+ * 
+ * @return True if successful, else false
  */
 static bool bucket_insert_at_start(std_deque_t * pstDeque)
 {
@@ -129,6 +146,10 @@ static bool bucket_insert_at_start(std_deque_t * pstDeque)
 
 /**
  * Append a new bucket of items to the end of the deque's set of buckets
+ * 
+ * @param[in]	pstDeque	Deque container
+ * 
+ * @return True if append operation was successful, else false
  */
 static bool bucket_append_to_end(std_deque_t * pstDeque)
 {
@@ -265,6 +286,13 @@ void stdlib_deque_construct(std_container_t * pstContainer, size_t szSizeof, siz
 	pstDeque->szStartOffset		= 0U;
 }
 
+/**
+ * Destruct a deque container
+ *
+ * @param[in]	pstContainer	Deque container to destruct
+ *
+ * @return True if destruction was successful, else false
+ */
 bool stdlib_deque_destruct(std_container_t* pstContainer)
 {
 	if (pstContainer == NULL)
@@ -277,6 +305,12 @@ bool stdlib_deque_destruct(std_container_t* pstContainer)
 	return true;
 }
 
+/**
+ * Set the bucketsize of a deque container
+ *
+ * @param[in]	pstContainer	Deque container to set the bucketsize of
+ * @param[in]	szBucketSize	Bucket set
+ */
 void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketSize)
 {
 	std_deque_t * pstDeque = CONTAINER_TO_DEQUE(pstContainer);
@@ -285,7 +319,12 @@ void stdlib_deque_setbucketsize(std_container_t * pstContainer, size_t szBucketS
 }
 
 /**
+ * Calculate the address of an indexed entry in a deque container
  *
+ * @param[in]	pstContainer	Deque container
+ * @param[in]	szIndex			Index
+ *
+ * @return Address of the indexed entry
  */
 void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 {
@@ -307,7 +346,12 @@ void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 }
 
 /**
+ * Construct a forward iterator for a specified vector container
  *
+ * @param[in]	pstContainer		Vector container
+ * @param[in]	pstIterator			Vector forward iterator to construct
+ * @param[in]	szFirst				First entry (starting with 0)
+ * @param[in]	szLast				Last entry (e.g. if there are 10 entries, this should be 9)
  */
 void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
@@ -342,7 +386,12 @@ void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_
 }
 
 /**
+ * Construct a reverse iterator for a specified vector container
  *
+ * @param[in]	pstContainer		Vector container
+ * @param[in]	pstIterator			Vector reverse iterator to construct
+ * @param[in]	szFirst				First entry (starting with 0), counting backwards from end
+ * @param[in]	szLast				Last entry (e.g. if there are 10 entries, this should be 9), counting backwards from end
  */
 void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_iterator_t* pstIterator, size_t szFirst, size_t szLast)
 {
@@ -380,7 +429,12 @@ void stdlib_deque_reverseiterator_construct(std_container_t* pstContainer, std_i
 }
 
 /**
+ * Push a series of items onto the front of a deque container
  *
+ * @param[in]	pstContainer	Deque container to push the series of items onto
+ * @param[in]	pstSeries		Linear series of items
+ *
+ * @return Number of items pushed onto the deque
  */
 size_t stdlib_deque_push_front(std_container_t * pstContainer, const std_linear_series_t * pstSeries)
 {
@@ -414,7 +468,12 @@ size_t stdlib_deque_push_front(std_container_t * pstContainer, const std_linear_
 }
 
 /**
+ * Push a series of items onto the back of a deque container
  *
+ * @param[in]	pstContainer	Deque container to push the series of items onto
+ * @param[in]	pstSeries		Linear series of items
+ *
+ * @return Number of items pushed onto the deque
  */
 size_t stdlib_deque_push_back(std_container_t * pstContainer, const std_linear_series_t* pstSeries)
 {
@@ -443,7 +502,13 @@ size_t stdlib_deque_push_back(std_container_t * pstContainer, const std_linear_s
 }
 
 /**
+ * Pop a series of items from the very front of a deque container
  *
+ * @param[in]	pstContainer	Deque to pop a series of items from
+ * @param[out]	pvResult		Where to pop a series of items to (can be NULL)
+ * @param[in]	szMaxItems		Maximum number of items that can be popped
+ *
+ * @return	Number of items popped
  */
 size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {
@@ -480,7 +545,13 @@ size_t stdlib_deque_pop_front(std_container_t * pstContainer, void * pvResult, s
 }
 
 /**
+ * Pop a series of items from the very back of a deque container
  *
+ * @param[in]	pstContainer	Deque to pop a series of items from
+ * @param[out]	pvResult		Where to pop a series of items to (can be NULL)
+ * @param[in]	szMaxItems		Maximum number of items that can be popped
+ *
+ * @return	Number of items popped
  */
 size_t stdlib_deque_pop_back(std_container_t * pstContainer, void * pvResult, size_t szMaxItems)
 {

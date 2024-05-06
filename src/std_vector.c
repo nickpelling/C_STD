@@ -151,7 +151,7 @@ bool stdlib_vector_reserve(std_container_t * pstContainer, size_t szNewSize)
 }
 
 /**
- * Push a series of items onto the front of a vector
+ * Push a series of items onto the front of a vector container
  *
  * @param[in]	pstContainer	Vector container to push the series of items onto
  * @param[in]	pstSeries		Linear series of items
@@ -343,7 +343,12 @@ void stdlib_vector_ranged_sort(std_container_t * pstContainer, size_t szFirst, s
 }
 
 /**
- *
+ * Construct a forward iterator for a specified vector container
+ * 
+ * @param[in]	pstContainer		Vector container
+ * @param[in]	pstIterator			Vector forward iterator to construct
+ * @param[in]	szFirst				First entry (starting with 0)
+ * @param[in]	szLast				Last entry (e.g. if there are 10 entries, this should be 9)
  */
 void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {
@@ -364,7 +369,12 @@ void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std
 }
 
 /**
+ * Construct a reverse iterator for a specified vector container
  *
+ * @param[in]	pstContainer		Vector container
+ * @param[in]	pstIterator			Vector reverse iterator to construct
+ * @param[in]	szFirst				First entry (starting with 0), counting backwards from end
+ * @param[in]	szLast				Last entry (e.g. if there are 10 entries, this should be 9), counting backwards from end
  */
 void stdlib_vector_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)
 {

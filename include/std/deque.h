@@ -123,7 +123,9 @@ extern const std_item_handler_t std_deque_default_itemhandler;
 #define DEQUEIT_TO_ITERATOR(DEQUEIT)	&DEQUEIT->stIterator
 
 /**
+ * Step a deque iterator forwards in memory
  *
+ * @param[in]	pstIterator		Deque iterator
  */
 STD_INLINE void stdlib_deque_next(std_iterator_t* pstIterator)
 {
@@ -157,7 +159,9 @@ STD_INLINE void stdlib_deque_next(std_iterator_t* pstIterator)
 }
 
 /**
+ * Step a deque iterator backwards in memory
  *
+ * @param[in]	pstIterator		Deque iterator
  */
 STD_INLINE void stdlib_deque_prev(std_iterator_t* pstIterator)
 {
