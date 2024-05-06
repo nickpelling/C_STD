@@ -228,12 +228,13 @@ static bool vector_test(void)
 	std_construct(v);
 	TEST_SIZE(v, 0);
 	std_push_back(v, 100, 100, 1, 2, 3, 4, 5, 100, 100);
+	TEST_SIZE(v, 2 + 5 + 2);
 	i = 0;
-	for (std_for_range(v, it, 2, 6), i++)
+	for (std_for_range(v, it, 2, 2 + 5 - 1), i++)
 		aiPopped[i] = std_iterator_at(it)[0];
 	TEST_SAME(v, i, 5);
 	TEST_ARRAY(aiPopped, ai12345);
-	std_pop_back(v, NULL, 100);
+	std_pop_back(v, (int *)NULL, 5);
 	std_destruct(v);
 
 	std_construct(v);
@@ -818,12 +819,13 @@ static bool deque_test(void)
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_push_back(v, 100, 100, 1, 2, 3, 4, 5, 100, 100);
+	TEST_SIZE(v, 2 + 5 + 2);
 	i = 0;
-	for (std_for_range(v, it, 2, 6), i++)
+	for (std_for_range(v, it, 2, 2 + 5 - 1), i++)
 		aiPopped[i] = std_iterator_at(it)[0];
 	TEST_SAME(v, i, 5);
 	TEST_ARRAY(aiPopped, ai12345);
-	std_pop_back(v, NULL, 100);
+	std_pop_back(v, (int*)NULL, 100);
 
 	std_destruct(v);
 
@@ -980,12 +982,13 @@ static bool ring_test(void)
 	TEST_ARRAY(aiPopped, ai12345);
 
 	std_push_back(v, 100, 100, 1, 2, 3, 4, 5, 100, 100);
+	TEST_SIZE(v, 2 + 5 + 2);
 	i = 0;
-	for (std_for_range(v, it, 2, 6), i++)
+	for (std_for_range(v, it, 2, 2 + 5 - 1), i++)
 		aiPopped[i] = std_iterator_at(it)[0];
 	TEST_SAME(v, i, 5);
 	TEST_ARRAY(aiPopped, ai12345);
-	std_pop_back(v, NULL, 100);
+	std_pop_back(v, (int *)NULL, 100);
 
 	std_destruct(v);
 
