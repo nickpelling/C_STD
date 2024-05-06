@@ -152,7 +152,8 @@ enum
 		| std_container_implements_ranged_sort
 		| std_container_implements_forward_constructnextprev
 		| std_container_implements_reverse_constructnextprev
-		| std_container_implements_default_itemhandler)
+		| std_container_implements_default_itemhandler
+		| std_container_implements_ranged_iterator	)
 };
 
 #define STD_VECTOR_JUMPTABLE \

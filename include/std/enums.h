@@ -70,6 +70,7 @@ typedef enum
 	std_container_implements_default_itemhandler = 1 << 22,
 	std_container_implements_push_pop = 1 << 23,
 	std_container_implements_enqueue_dequeue = 1 << 24,
+	std_container_implements_ranged_iterator = 1 << 25,
 
 	std_container_implements_pushpop_front = std_container_implements_push_front | std_container_implements_pop_front,
 	std_container_implements_pushpop_back = std_container_implements_push_back | std_container_implements_pop_back,

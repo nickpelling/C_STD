@@ -55,6 +55,9 @@ SOFTWARE.
 #define STD_ITERATOR_PARENT_HAS_GET(IT)			STD_CONTAINER_HAS_GET(IT.puParent[0])
 #define STD_ITERATOR_PARENT_IMPLEMENTS_GET(IT)	STD_CONTAINER_IMPLEMENTS_GET(IT.puParent[0])
 
+#define STD_ITERATOR_PARENT_ENUM_GET_AND_CHECK(IT,IMPLEMENTS)	\
+	(STD_CONTAINER_CALL_EXISTS(IT.puParent[0],IMPLEMENTS), STD_ITERATOR_PARENT_ENUM_GET(IT))
+
 #define STD_ITERATOR_IMPLEMENTS_GET(INDEX,IMPLEMENTS)	\
 			((INDEX == std_iterator_enum_forward) ? std_container_implements_forward_ ## IMPLEMENTS : std_container_implements_reverse_ ## IMPLEMENTS)
 
@@ -596,7 +599,7 @@ STD_INLINE void std_iterator_call_construct(std_container_t* pstContainer, std_c
 #define std_iterator_construct_range(V, IT, FIRST, LAST)	\
 			std_iterator_call_construct(			\
 				&V.stBody.stContainer,				\
-				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_PARENT_ENUM_GET_AND_CHECK(IT,ranged_iterator),	\
 				STD_ITERATOR_PARENT_HAS_GET(IT),	\
 				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,construct),	\
 				&IT.stItBody.stIterator,			\
