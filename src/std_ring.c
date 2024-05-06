@@ -380,6 +380,19 @@ size_t stdlib_ring_pop_back(std_container_t * pstContainer, void * pvResult, siz
 }
 
 /**
+ * Seek a ring iterator to a given index inside the container
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	szIndex			Index
+ */
+void stdlib_ring_forwarditerator_seek(std_iterator_t* pstIterator, size_t szIndex)
+{
+	void* pvRef = stdlib_ring_at(pstIterator->pstContainer, szIndex);
+	pstIterator->pvRef = pvRef;
+	pstIterator->pvNext = next_item(pstIterator, pvRef);
+}
+
+/**
  *
  */
 void stdlib_ring_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast)

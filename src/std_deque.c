@@ -346,6 +346,34 @@ void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex)
 }
 
 /**
+ * Seek a deque iterator to a given index inside the container
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	szIndex			Index
+ */
+void stdlib_deque_forwarditerator_seek(std_iterator_t* pstIterator, size_t szIndex)
+{
+	std_deque_iterator_t* pstDequeIt = ITERATOR_TO_DEQUEIT(pstIterator);
+	std_container_t* pstContainer = pstIterator->pstContainer;
+	std_deque_t* pstDeque = CONTAINER_TO_DEQUE(pstContainer);
+	size_t szQuotient;
+	size_t szRemainder;
+	void* pvRef;
+
+	pstDequeIt->szIndex = szIndex;
+
+	szIndex += pstDeque->szStartOffset;
+	szQuotient = szIndex / pstDeque->szItemsPerBucket;
+	szRemainder = szIndex % pstDeque->szItemsPerBucket;
+
+	pstDequeIt->pvBucketStart = pstDeque->papvBuckets[szQuotient];
+	pstDequeIt->pvBucketEnd = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, pstIterator->szSizeofItem * pstDeque->szItemsPerBucket);
+
+	pvRef = STD_LINEAR_ADD(pstDequeIt->pvBucketStart, szRemainder * pstContainer->szSizeofItem);
+	pstIterator->pvRef = pvRef;
+}
+
+/**
  * Construct a forward iterator for a specified vector container
  *
  * @param[in]	pstContainer		Vector container

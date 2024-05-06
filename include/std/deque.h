@@ -112,6 +112,7 @@ extern size_t stdlib_deque_pop_back( std_container_t * pstContainer, void * pvRe
 extern void * stdlib_deque_at(std_container_t * pstContainer, size_t szIndex);
 
 extern void stdlib_deque_forwarditerator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
+extern void stdlib_deque_forwarditerator_seek(std_iterator_t* pstIterator, size_t szIndex);
 extern void stdlib_deque_reverseiterator_construct(std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
 
 extern const std_item_handler_t std_deque_default_itemhandler;
@@ -194,8 +195,6 @@ STD_INLINE void stdlib_deque_prev(std_iterator_t* pstIterator)
 	}
 }
 
-
-
 enum
 {
 	std_deque_implements =
@@ -206,6 +205,7 @@ enum
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
 		| std_container_implements_forward_constructnext
+		| std_container_implements_forward_seek
 		| std_container_implements_reverse_constructnext
 		| std_container_implements_default_itemhandler
 		| std_container_implements_ranged_iterator )
@@ -225,6 +225,7 @@ enum
 		[std_iterator_enum_forward] =					\
 		{												\
 			.pfn_construct = &stdlib_deque_forwarditerator_construct,	\
+			.pfn_seek = &stdlib_deque_forwarditerator_seek,				\
 			.pfn_next = &stdlib_deque_next,				\
 		},												\
 		[std_iterator_enum_reverse] =					\
