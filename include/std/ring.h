@@ -97,7 +97,7 @@ extern const std_item_handler_t std_ring_default_itemhandler;
  *
  * @param[in]	pstIterator		Ring iterator
  */
-STD_INLINE void stdlib_ring_iterator_next(std_iterator_t* pstIterator)
+STD_INLINE void stdlib_ring_forwarditerator_next(std_iterator_t* pstIterator)
 {
 	std_ring_iterator_t* pstRingIt = ITERATOR_TO_RINGIT(pstIterator);
 	void* pvNext = pstIterator->pvNext;
@@ -122,7 +122,7 @@ STD_INLINE void stdlib_ring_iterator_next(std_iterator_t* pstIterator)
  *
  * @param[in]	pstIterator		Ring iterator
  */
-STD_INLINE void stdlib_ring_iterator_prev(std_iterator_t* pstIterator)
+STD_INLINE void stdlib_ring_reverseiterator_next(std_iterator_t* pstIterator)
 {
 	std_ring_iterator_t* pstRingIt = ITERATOR_TO_RINGIT(pstIterator);
 	void* pvNext = pstIterator->pvNext;
@@ -151,8 +151,8 @@ enum
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
 		| std_container_implements_reserve
-		| std_container_implements_forward_constructnextprev
-		| std_container_implements_reverse_constructnextprev
+		| std_container_implements_forward_constructnext
+		| std_container_implements_reverse_constructnext
 		| std_container_implements_default_itemhandler
 		| std_container_implements_ranged_iterator )
 };
@@ -172,14 +172,12 @@ enum
 		[std_iterator_enum_forward] =					\
 		{												\
 			.pfn_construct	= &stdlib_ring_forwarditerator_construct,	\
-			.pfn_next		= &stdlib_ring_iterator_next,				\
-			.pfn_prev		= &stdlib_ring_iterator_prev				\
+			.pfn_next		= &stdlib_ring_forwarditerator_next,		\
 		},												\
 		[std_iterator_enum_reverse] =					\
 		{												\
 			.pfn_construct	= &stdlib_ring_reverseiterator_construct,	\
-			.pfn_next		= &stdlib_ring_iterator_prev,				\
-			.pfn_prev		= &stdlib_ring_iterator_next				\
+			.pfn_next		= &stdlib_ring_reverseiterator_next,		\
 		}												\
 	},													\
 	.pstDefaultItemHandler = &std_ring_default_itemhandler

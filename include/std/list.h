@@ -123,7 +123,7 @@ extern const std_item_handler_t std_list_default_itemhandler;
  *
  * @param[in]	pstIterator	List iterator
  */
-STD_INLINE void stdlib_list_next(std_iterator_t* pstIterator)
+STD_INLINE void stdlib_list_forwarditerator_next(std_iterator_t* pstIterator)
 {
 	std_list_iterator_t* pstListIt = ITERATOR_TO_LISTIT(pstIterator);
 	if (pstIterator->pvNext == pstIterator->pvEnd)
@@ -143,7 +143,7 @@ STD_INLINE void stdlib_list_next(std_iterator_t* pstIterator)
  *
  * @param[in]	pstIterator			List iterator
  */
-STD_INLINE void stdlib_list_prev(std_iterator_t* pstIterator)
+STD_INLINE void stdlib_list_reverseiterator_next(std_iterator_t* pstIterator)
 {
 	std_list_iterator_t* pstListIt = ITERATOR_TO_LISTIT(pstIterator);
 	if (pstIterator->pvNext == pstIterator->pvEnd)
@@ -167,11 +167,11 @@ enum
 		| std_container_implements_destruct
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
-		| std_container_implements_forward_constructnextprev
+		| std_container_implements_forward_constructnext
 		| std_container_implements_forward_push_after
 		| std_container_implements_forward_push_before
 		| std_container_implements_forward_pop_at
-		| std_container_implements_reverse_constructnextprev
+		| std_container_implements_reverse_constructnext
 		| std_container_implements_reverse_push_after
 		| std_container_implements_reverse_push_before
 		| std_container_implements_reverse_pop_at
@@ -191,8 +191,7 @@ enum
 		[std_iterator_enum_forward] =				\
 		{											\
 			.pfn_construct = &stdlib_list_forwarditerator_construct,	\
-			.pfn_next = &stdlib_list_next,			\
-			.pfn_prev = &stdlib_list_prev,			\
+			.pfn_next = &stdlib_list_forwarditerator_next,			\
 			.pfn_push_after = &stdlib_list_push_after,		\
 			.pfn_push_before = &stdlib_list_push_before,	\
 			.pfn_pop_at = &stdlib_list_pop_at,		\
@@ -200,8 +199,7 @@ enum
 		[std_iterator_enum_reverse] =				\
 		{											\
 			.pfn_construct = &stdlib_list_reverseiterator_construct,	\
-			.pfn_next = &stdlib_list_prev,			\
-			.pfn_prev = &stdlib_list_next,			\
+			.pfn_next = &stdlib_list_reverseiterator_next,			\
 			.pfn_push_after = &stdlib_list_push_before,	\
 			.pfn_push_before = &stdlib_list_push_after,	\
 			.pfn_pop_at = &stdlib_list_pop_at,		\

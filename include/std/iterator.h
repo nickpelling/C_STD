@@ -33,8 +33,8 @@ typedef struct std_iterator_s std_iterator_t;
 typedef struct
 {
 	void (*pfn_construct)(	std_container_t * pstContainer, std_iterator_t * pstIterator, size_t szFirst, size_t szLast);
-	void (*pfn_next)(	std_iterator_t  * pstIterator);
-	void (*pfn_prev)(	std_iterator_t  * pstIterator);
+	void (*pfn_seek)(	std_iterator_t * pstIterator, size_t szIndex);
+	void (*pfn_next)(	std_iterator_t * pstIterator);
 	size_t (*pfn_push_after)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 	size_t (*pfn_push_before)	(std_iterator_t* pstIterator, const std_linear_series_t* pstSeries);
 	void	(* pfn_pop_at)		(std_iterator_t* pstIterator, void * pvResult);

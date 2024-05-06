@@ -369,6 +369,19 @@ void stdlib_vector_forwarditerator_construct(std_container_t * pstContainer, std
 }
 
 /**
+ * Seek a vector iterator to a given index inside the container
+ * 
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	szIndex			Index
+ */
+void stdlib_vector_forwarditerator_seek(std_iterator_t* pstIterator, size_t szIndex)
+{
+	void * pvAt = stdlib_vector_at(pstIterator->pstContainer, szIndex);
+	pstIterator->pvRef = pvAt;
+	pstIterator->pvNext = STD_LINEAR_ADD(pvAt, pstIterator->szSizeofItem);
+}
+
+/**
  * Construct a reverse iterator for a specified vector container
  *
  * @param[in]	pstContainer		Vector container

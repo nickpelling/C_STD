@@ -633,29 +633,6 @@ STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_containe
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * Step an iterator backwards by one
- *
- * @param[in]	pstIterator		Iterator
- * @param[in]	eContainer		Container type
- * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
- * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
- */
-STD_INLINE void std_iterator_call_prev(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator)
-{
-	if (eHas) { /* Unused parameter */ }
-	STD_ITERATOR_CALL(eContainer, eIterator, pfn_prev)(pstIterator);
-}
-
-#define std_iterator_prev(IT)						\
-			std_iterator_call_prev(					\
-				&IT.stItBody.stIterator,			\
-				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
-				STD_ITERATOR_PARENT_HAS_GET(IT),	\
-				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,prev)	)
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/**
  * Insert a linear series of items after the current iterator
  *
  * @param[in]	pstIterator		Iterator

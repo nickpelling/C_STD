@@ -205,8 +205,8 @@ enum
 		| std_container_implements_pushpop_front
 		| std_container_implements_pushpop_back
 		| std_container_implements_at
-		| std_container_implements_forward_constructnextprev
-		| std_container_implements_reverse_constructnextprev
+		| std_container_implements_forward_constructnext
+		| std_container_implements_reverse_constructnext
 		| std_container_implements_default_itemhandler
 		| std_container_implements_ranged_iterator )
 };
@@ -226,13 +226,11 @@ enum
 		{												\
 			.pfn_construct = &stdlib_deque_forwarditerator_construct,	\
 			.pfn_next = &stdlib_deque_next,				\
-			.pfn_prev = &stdlib_deque_prev				\
 		},												\
 		[std_iterator_enum_reverse] =					\
 		{												\
 			.pfn_construct = &stdlib_deque_reverseiterator_construct,	\
 			.pfn_next = &stdlib_deque_prev,				\
-			.pfn_prev = &stdlib_deque_next				\
 		}												\
 	},													\
 	.pstDefaultItemHandler = &std_deque_default_itemhandler
