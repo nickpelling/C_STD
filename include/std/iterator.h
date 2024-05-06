@@ -164,4 +164,21 @@ STD_INLINE void stdlib_iterator_construct(std_iterator_t* pstIterator, std_conta
 #define std_for_range			std_for_range_forward
 #define std_for_range_const		std_for_range_forward_const
 
+// ----------------------------------------------------------------
+
+#define STD_FOR_SCOPE_BLOCK(CONTAINER,IT,IT_TYPE,TEMPVAR)	\
+			IT_TYPE(CONTAINER) IT, * STD_UNUSED TEMPVAR = (std_iterator_construct_range(CONTAINER,IT,0,std_size(V)-1U),NULL); \
+			!std_iterator_done(IT);							\
+			(void)TEMPVAR, pstIterator->bDone = true
+
+#define STD_FOR_SCOPE(CONTAINER, IT, IS_CONST, IT_TYPE)		\
+	std_container_lock_wrapper(CONTAINER, IS_CONST))		\
+		for (STD_FOR_SCOPE_BLOCK(CONTAINER, IT, IT_TYPE, STD_FAKEVAR())
+
+#define std_for_scope_forward(CONTAINER, IT, BEGIN, END)		STD_FOR_SCOPE(CONTAINER, IT, false, std_forward_iterator)
+#define std_for_scope_forward_const(CONTAINER, IT, BEGIN, END)	STD_FOR_SCOPE(CONTAINER, IT, true,  std_forward_const_iterator)
+
+#define std_for_scope			std_for_scope_forward
+#define std_for_scope_const		std_for_scope_forward_const
+
 #endif /* STD_ITERATOR_H_ */
