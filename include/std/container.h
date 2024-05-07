@@ -633,6 +633,28 @@ STD_INLINE void std_iterator_call_next(std_iterator_t* pstIterator, std_containe
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
+ * Random seek an iterator
+ *
+ * @param[in]	pstIterator		Iterator
+ * @param[in]	eContainer		Container type
+ * @param[in]	eHas			Bitmask of flags denoting which handlers this container has
+ * @param[in]	eIterator		Iterator type (e.g. forward or reverse)
+ * @param[in]	szIndex			Index position to seek to
+ */
+STD_INLINE void std_iterator_call_seek(std_iterator_t* pstIterator, std_container_enum_t eContainer, std_container_has_t eHas, std_iterator_enum_t eIterator, size_t szIndex)
+{
+	if (eHas) { /* Unused parameter */ }
+	STD_ITERATOR_CALL(eContainer, eIterator, pfn_seek)(pstIterator, szIndex);
+}
+
+#define std_iterator_seek(IT,POSITION)				\
+			std_iterator_call_seek(					\
+				&IT.stItBody.stIterator,			\
+				STD_ITERATOR_PARENT_ENUM_GET(IT),	\
+				STD_ITERATOR_PARENT_HAS_GET(IT),	\
+				STD_ITERATOR_ENUM_GET_AND_CHECK(IT,seek),	\
+				POSITION )
+/**
  * Insert a linear series of items after the current iterator
  *
  * @param[in]	pstIterator		Iterator
