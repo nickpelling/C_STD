@@ -284,6 +284,7 @@ void stdlib_deque_construct(std_container_t * pstContainer, size_t szSizeof, siz
 	pstDeque->papvBuckets		= NULL;
 	pstDeque->szNumBuckets		= 0;
 	pstDeque->szStartOffset		= 0U;
+	pstContainer->szNumItems	= 0U;
 }
 
 /**

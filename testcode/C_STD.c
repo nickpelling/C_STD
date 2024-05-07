@@ -844,6 +844,20 @@ static bool deque_test(void)
 	std_destruct(v);
 
 	std_construct(v);
+	std_push_back(v, 1, 2, 3, 4, 5);
+	for (std_scope_const(v, it))
+	{
+		for (i = 0; i < 5; i++)
+		{
+			std_iterator_seek(it, 4 - i);
+			aiPopped[i] = std_iterator_at(it)[0];
+		}
+	}
+	TEST_ARRAY(aiPopped, ai54321);
+	std_pop_back(v, (int*)NULL, 5);
+	std_destruct(v);
+
+	std_construct(v);
 	TEST_SIZE(v, 0);
 	std_push_back(v, 1, 2, 3, 4, 5);
 	std_destruct(v);
@@ -1004,6 +1018,20 @@ static bool ring_test(void)
 	TEST_ARRAY(aiPopped, ai12345);
 	std_pop_back(v, (int *)NULL, 100);
 
+	std_destruct(v);
+
+	std_construct(v);
+	for (std_scope_const(v, it))
+	{
+		std_push_back(v, 1, 2, 3, 4, 5);
+		for (i = 0; i < 5; i++)
+		{
+			std_iterator_seek(it, 4 - i);
+			aiPopped[i] = std_iterator_at(it)[0];
+		}
+	}
+	TEST_ARRAY(aiPopped, ai54321);
+	std_pop_back(v, (int*)NULL, 5);
 	std_destruct(v);
 
 	std_construct(v);
